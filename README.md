@@ -18,19 +18,8 @@ life filled with fun and mystery.
 # Credit
 
 * Sundew Valley is created by
-    * Game Engine and General Framework - [Yudong Lin](https://github.com/yudonglin)
-    * Level Design:
-        * [Andrew Lau](https://github.com/andrewlau019),
-        * [Kevin Yang](https://github.com/kevinYang0612),
-        * [Brian LeSmith](https://github.com/CKojiro)
-
-    * User Interface - [Yudong Lin](https://github.com/yudonglin)
-
-* Feel free to make a [pull request](https://github.com/TeamTakes4/TheUntitledFarm/pulls) if you would like to help us
-  to make our make this game better
-
-# Get Started
-
-* You can play this game by clicking this [link](https://teamtakes4.github.io/SundewValleyPrototype/)
+    * Game Engine and General Framework - [Mariem Kamar, Mariam Ali](https://github.com/merokamar05-maker/desktop-tutorial)
+  
+* You can play this game by clicking this [link](https://github.com/merokamar05-maker/SundewValley-master)
 * Have Fun!! :wink:
 
