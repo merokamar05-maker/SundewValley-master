@@ -3,6 +3,41 @@ class FarmLevel extends Level {
         super(_path)
     }
 
+    onEnter() {
+        // --- Animal Spawning from Inventory & ItemBar ---
+        const inventory = Level.PLAYER.getInventory();
+        const itemBar = Level.PLAYER.getItemBar();
+        
+        // Map item keys to their respective classes and a default valid variant
+        const animalMapping = {
+            "chicken": { class: Chicken, variant: "black_chicken" },
+            "cow": { class: Cow, variant: "strawberry_cow" },
+            "goat": { class: Goat, variant: "brown_goat" },
+            "pig": { class: Pig, variant: "pink_pig" },
+            "sheep": { class: Sheep, variant: "fluffy_white_sheep_sheet" }
+        };
+
+        const processContainer = (container) => {
+            Object.keys(animalMapping).forEach(key => {
+                if (container[key] && container[key].amount > 0) {
+                    const count = container[key].amount;
+                    const config = animalMapping[key];
+                    for (let i = 0; i < count; i++) {
+                        // Spawn at a random position near the farm house spawn [15, 40]
+                        const spawnX = 15 + Math.random() * 8;
+                        const spawnY = 36 + Math.random() * 8;
+                        this.addEntity(new config.class(config.variant, spawnX, spawnY, this));
+                    }
+                    // Remove the animal items as they are now on the farm
+                    delete container[key];
+                }
+            });
+        };
+
+        processContainer(inventory);
+        processContainer(itemBar);
+    }
+
     static dailyClosing() {
         const keys = Object.keys(Chest.CHESTS.TradingBox)
         keys.forEach(_key => {

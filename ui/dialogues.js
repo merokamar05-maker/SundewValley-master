@@ -14,9 +14,12 @@ class Dialogues {
             }]
         },
         Mark_interact1: {
-            contents: ["Hey, I am not in the mood of doing business right now", "Go away"],
+            contents: ["Hey, I am Mark. Looking for some animals for your farm?", "I have some fine livestock today."],
             options: [{
-                text: "Sorry",
+                text: "Show me the animals",
+                act: "$trade"
+            }, {
+                text: "Not today",
                 act: "$close"
             }]
         },

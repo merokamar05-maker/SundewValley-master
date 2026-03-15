@@ -32,6 +32,7 @@ class GameEngine {
             this.#levels[this.#currentLevelName] = this.#currentLevelName.startsWith("farm_") ? new FarmLevel(levelPath) : this.#currentLevelName.startsWith("bedroom") ? new Bedroom(levelPath) : new Level(levelPath)
             this.getCurrentLevel().initEntities()
         }
+        this.getCurrentLevel().onEnter()
         this.getCurrentLevel().updateLevelMusic()
         this.#ui = new UserInterfaces();
     }

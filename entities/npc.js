@@ -20,6 +20,13 @@ class Npc extends Character {
                 const _keys = Object.keys(InventoryItems.PRICES)
                 this.obtainItem(_keys[_keys.length * Math.random() << 0], getRandomIntInclusive(1, 3))
             }
+        } else if (this.getName().localeCompare("Mark") === 0) {
+            this.clearInventory()
+            this.setMoney(getRandomIntInclusive(5000, 10000))
+            const _animalKeys = ["chicken", "cow", "goat", "pig", "sheep"]
+            _animalKeys.forEach(key => {
+                this.obtainItem(key, 5) // Give Mark 5 of each animal to start with
+            })
         }
     }
 }

@@ -15,8 +15,12 @@ class Controller {
 
     static startInput(_ctx) {
         let getPixelXandY = function (e) {
-            let x = e.clientX - _ctx.canvas.getBoundingClientRect().left;
-            let y = e.clientY - _ctx.canvas.getBoundingClientRect().top;
+            const rect = _ctx.canvas.getBoundingClientRect();
+            const scaleX = _ctx.canvas.width / rect.width;
+            const scaleY = _ctx.canvas.height / rect.height;
+
+            let x = (e.clientX - rect.left) * scaleX;
+            let y = (e.clientY - rect.top) * scaleY;
 
             return {x: x, y: y, radius: 0};
         }

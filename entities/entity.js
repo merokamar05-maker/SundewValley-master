@@ -41,14 +41,16 @@ class Entity extends GameObject2d {
 
     getSpriteSheet() {
         if (this.#sprite_sheet == null) {
-            this.#sprite_sheet = this.getSubType() ? ASSET_MANAGER.getImage(this.getCategory(), this.getType(), `${this.getSubType()}.png`) : ASSET_MANAGER.getImage(this.getCategory(), `${this.getType()}.png`)
+            const sheet = this.getSubType() ? ASSET_MANAGER.getImage(this.getCategory(), this.getType(), `${this.getSubType()}.png`) : ASSET_MANAGER.getImage(this.getCategory(), `${this.getType()}.png`)
+            this.#sprite_sheet = sheet || new Image() // Fallback to prevent drawImage crash
         }
         return this.#sprite_sheet
     }
 
     getJson() {
         if (this.#json == null) {
-            this.#json = this.getSubType() ? ASSET_MANAGER.getJson("images", this.getCategory(), this.getType(), `${this.getType()}.json`) : ASSET_MANAGER.getJson("images", this.getCategory(), `${this.getType()}.json`)
+            const data = this.getSubType() ? ASSET_MANAGER.getJson("images", this.getCategory(), this.getType(), `${this.getType()}.json`) : ASSET_MANAGER.getJson("images", this.getCategory(), `${this.getType()}.json`)
+            this.#json = data || { animations: {} } // Fallback to avoid "animations" undefined error
         }
         return this.#json
     }

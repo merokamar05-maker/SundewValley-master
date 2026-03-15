@@ -27,7 +27,12 @@ class InventoryItems {
         "pea_seed": [9, 3],
         "pot": [0, 3],
         "axe": [0, 4],
-        "hoe": [3, 4]
+        "hoe": [3, 4],
+        "chicken": [1, 2],
+        "cow": [2, 2],
+        "goat": [4, 2],
+        "pig": [5, 2],
+        "sheep": [6, 2]
     }
     static PRICES = {
         "pumpkin": 200,
@@ -52,6 +57,11 @@ class InventoryItems {
         "lavender_seed": 20,
         "corn_seed": 20,
         "pea_seed": 20,
+        "chicken": 500,
+        "cow": 1500,
+        "goat": 1000,
+        "pig": 2000,
+        "sheep": 1200
     }
     static NAMES = {
         "pumpkin": "Pumpkin",
@@ -76,6 +86,11 @@ class InventoryItems {
         "lavender_seed": "Lavender seed",
         "corn_seed": "Corn seed",
         "pea_seed": "Pea seed",
+        "chicken": "Chicken",
+        "cow": "Cow",
+        "goat": "Goat",
+        "pig": "Pig",
+        "sheep": "Sheep"
     }
 
     static init() {

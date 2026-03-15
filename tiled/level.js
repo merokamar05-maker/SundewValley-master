@@ -129,13 +129,38 @@ class Level extends AbstractTiledMap {
             })
         }
         /*
-        this.addEntity(new Chicken("black_chicken", 10, 10, this));
-        this.addEntity(new Cow("strawberry_cow", 10, 10, this));
-        this.addEntity(new Goat("brown_goat", 10, 10, this));
-        this.addEntity(new Pig("pink_pig", 10, 10, this));
-        this.addEntity(new Sheep("fluffy_white_sheep_sheet", 10, 10, this));
-        this.addEntity(new Crop("potato", 15, 12, this));*/
+        if (this instanceof FarmLevel) {
+            this.addEntity(new Chicken("black_chicken", 10, 10, this));
+            this.addEntity(new Cow("strawberry_cow", 12, 11, this));
+            this.addEntity(new Goat("brown_goat", 15, 12, this));
+            this.addEntity(new Pig("pink_pig", 13, 15, this));
+            this.addEntity(new Sheep("fluffy_white_sheep_sheet", 9, 13, this));
+            this.addEntity(new Crop("potato", 15, 12, this));
+        } */
+
+        if (this instanceof FarmLevel) {
+            for (let i = 0; i < 5; i++) {
+                // spawning in random general places roughly around the farm map manually
+                const randomX = 14 + Math.floor(Math.random() * 8);
+                const randomY = 12 + Math.floor(Math.random() * 8);
+                this.addEntity(new Trash("trash_" + i, randomX, randomY, this));
+            }
+        }
+
+        // Spawn trash in the bedroom
+        if (this instanceof Bedroom) {
+            const bedroomTrashSpots = [
+                [28, 22], [32, 19], [38, 23], [35, 17], [42, 21]
+            ];
+            bedroomTrashSpots.forEach((pos, i) => {
+                this.addEntity(new Trash("bedroom_trash_" + i, pos[0], pos[1], this));
+            });
+        }
     };
+
+    onEnter() {
+        // Default onEnter does nothing
+    }
 
     getEntityUsingFilter(_filter) {
         for (let i = this.#entities.length - 1; i >= 0; i--) {
@@ -350,6 +375,16 @@ class Level extends AbstractTiledMap {
                     if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                         GAME_ENGINE.getPlayerUi().openChest(entitiesThatCollideWithPlayer[0])
                     }
+                }
+            } else if (entitiesThatCollideWithPlayer[0] instanceof Trash) {
+                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                MessageButton.draw(
+                    GAME_ENGINE.ctx, "Pick up (F)", _fontSize,
+                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                );
+                if (Level.PLAYER.notDisablePlayerController() && Controller.keys["KeyF"]) {
+                    entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
+                    Controller.keys["KeyF"] = false; // consume input
                 }
             }
         }
