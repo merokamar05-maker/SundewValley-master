@@ -139,12 +139,24 @@ class Level extends AbstractTiledMap {
         } */
 
         if (this instanceof FarmLevel) {
-            for (let i = 0; i < 5; i++) {
-                // spawning in random general places roughly around the farm map manually
-                const randomX = 14 + Math.floor(Math.random() * 8);
-                const randomY = 12 + Math.floor(Math.random() * 8);
-                this.addEntity(new Trash("trash_" + i, randomX, randomY, this));
-            }
+            const farmTrashSpots = [
+                [18, 15], [22, 18], [25, 12], [28, 20], [15, 25]
+            ];
+            farmTrashSpots.forEach((pos, i) => {
+                this.addEntity(new Trash("farm_trash_" + i, pos[0], pos[1], this));
+            });
+        }
+
+        // Spawn trash in Town
+        // Detect town by its specific music or triggers
+        const isTown = this.getParameter("morning_music") === "OST 1 - Good Morning.ogg";
+        if (isTown && !(this instanceof FarmLevel || this instanceof Bedroom)) {
+            const townTrashSpots = [
+                [35, 65], [40, 60], [38, 55], [42, 68], [32, 58]
+            ];
+            townTrashSpots.forEach((pos, i) => {
+                this.addEntity(new Trash("town_trash_" + i, pos[0], pos[1], this));
+            });
         }
 
         // Spawn trash in the bedroom
