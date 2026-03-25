@@ -93,7 +93,7 @@ class Dialogues {
             next: "Marx_interact4"
         },
         Marx_interact4: {
-            contents: ["Young people these days do not understand the importance", "of taking care of their bodies", "You are not someone like that, aren't you?"],
+            contents: ["Young youths these days do not understand the importance", "of taking care of their bodies", "You are not someone like that, aren't you?"],
         },
         Bar_TV1_1: {
             contents: ["The TV is airing the latest weather report"],
@@ -128,42 +128,177 @@ class Dialogues {
 
     static draw(ctx) {
         if (this.isAnyDialoguePlaying()) {
-            ctx.fillStyle = "#fbd09a"
-            const boxRect = {
-                x: 0,
-                y: Math.ceil(ctx.canvas.height * 0.8),
-                width: ctx.canvas.width,
-                height: Math.ceil(ctx.canvas.height * 0.2)
+            ctx.save();
+            
+            const marginX = ctx.canvas.width * 0.05;
+            const marginY = ctx.canvas.height * 0.05;
+            const boxWidth = ctx.canvas.width - marginX * 2;
+            const boxHeight = ctx.canvas.height * 0.22;
+            const boxX = marginX;
+            const boxY = ctx.canvas.height - boxHeight - marginY;
+
+            // 1. Draw Dialogue Box (No Shadows, Creamy Amber Theme)
+            ctx.save();
+            ctx.shadowBlur = 0;
+            const bgGradient = ctx.createLinearGradient(boxX, boxY, boxX, boxY + boxHeight);
+            bgGradient.addColorStop(0, "rgba(255, 252, 235, 0.96)");
+            bgGradient.addColorStop(1, "rgba(255, 235, 170, 0.96)");
+            ctx.fillStyle = bgGradient;
+            
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 20);
+            else ctx.rect(boxX, boxY, boxWidth, boxHeight);
+            ctx.fill();
+            
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "rgba(255, 180, 0, 0.5)"; // Amber Border
+            ctx.stroke();
+            ctx.restore();
+
+            // 2. 3D Speaker Portrait Bubble (Popping out of the top edge)
+            const portraitSize = boxHeight * 1.1; 
+            const portraitX = boxX + portraitSize * 0.1;
+            const portraitCenterY = boxY - portraitSize * 0.4; // Centered on the top edge (popping out)
+            
+            if (Dialogues.#CURRENT_INIT_BY && Dialogues.#CURRENT_INIT_BY.getName) {
+                const charName = Dialogues.#CURRENT_INIT_BY.getName().toLowerCase();
+                // Prioritize HD portrait, fallback to standard spritesheet
+                const hdImg = ASSET_MANAGER.getImage("characters", "portraits", charName + "_hd.png");
+                const charImg = hdImg || ASSET_MANAGER.getImage("characters", charName + ".png");
+                
+                if (charImg) {
+                    ctx.save();
+                    // Draw Bubble Background (Soft depth)
+                    ctx.beginPath();
+                    ctx.arc(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2, 0, Math.PI * 2);
+                    const bgGrad = ctx.createRadialGradient(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, 0, portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2);
+                    bgGrad.addColorStop(0, "rgba(255, 245, 200, 0.4)");
+                    bgGrad.addColorStop(1, "rgba(255, 200, 100, 0.2)");
+                    ctx.fillStyle = bgGrad;
+                    ctx.fill();
+
+                    // Draw Bubble Glow
+                    ctx.beginPath();
+                    ctx.arc(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 1.8, 0, Math.PI * 2);
+                    const bubbleGrad = ctx.createRadialGradient(portraitX + portraitSize * 0.4, portraitCenterY + portraitSize * 0.4, 0, portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2);
+                    bubbleGrad.addColorStop(0, "rgba(255, 255, 255, 0.3)");
+                    bubbleGrad.addColorStop(0.8, "rgba(255, 215, 0, 0.1)");
+                    bubbleGrad.addColorStop(1, "rgba(255, 180, 0, 0.3)");
+                    ctx.fillStyle = bubbleGrad;
+                    ctx.fill();
+                    
+                    // Clip and Draw Character
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2.1, 0, Math.PI * 2);
+                    ctx.clip();
+                    
+                    if (hdImg) {
+                        // HD Portrait (Single frame, high res)
+                        ctx.imageSmoothingEnabled = true;
+                        const drawW = portraitSize * 1.1; 
+                        const drawH = drawW * (charImg.height / charImg.width);
+                        const drawX = (portraitX + portraitSize / 2) - drawW / 2;
+                        const drawY = (portraitCenterY + portraitSize / 2) - drawH * 0.5; // Shifted down slightly (from 0.55)
+                        ctx.drawImage(charImg, drawX, drawY, drawW, drawH);
+                    } else {
+                        // Spritesheet Fallback (Pixel art)
+                        const frameW = charImg.width / 4; 
+                        const frameH = charImg.height / 4;
+                        const drawW = portraitSize * 1.8;
+                        const drawH = drawW * (frameH / frameW);
+                        const drawX = (portraitX + portraitSize / 2) - drawW / 2;
+                        const drawY = (portraitCenterY + portraitSize / 2) - drawH * 0.38; // Shifted down slightly (from 0.45)
+                        ctx.imageSmoothingEnabled = false;
+                        ctx.drawImage(charImg, 0, 0, frameW, frameH, drawX, drawY, drawW, drawH);
+                    }
+                    ctx.restore();
+                    
+                    // 3D Glassy Rim
+                    ctx.lineWidth = 4;
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+                    ctx.beginPath();
+                    ctx.arc(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2.1, -Math.PI * 0.8, -Math.PI * 0.2);
+                    ctx.stroke();
+                    
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = "rgba(255, 180, 0, 0.8)";
+                    ctx.beginPath();
+                    ctx.arc(portraitX + portraitSize / 2, portraitCenterY + portraitSize / 2, portraitSize / 2.1, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
             }
-            ctx.fillRect(boxRect.x, boxRect.y, boxRect.width, boxRect.height);
-            ctx.strokeStyle = "#2e1626"
-            ctx.lineWidth = 6;
-            ctx.strokeRect(boxRect.x + ctx.lineWidth / 2, boxRect.y - ctx.lineWidth / 2, boxRect.width - ctx.lineWidth, boxRect.height)
-            ctx.lineWidth = 1;
-            const textFontSize = Math.floor(ctx.canvas.height / 25)
-            let lineIndex = 0
-            this.#CURRENT.contents.forEach(_l => {
-                Font.draw(ctx, _l, textFontSize, boxRect.x + textFontSize, boxRect.y + textFontSize * (1.25 + lineIndex))
-                lineIndex += 1.1;
-            })
-            const hasNoOption = this.#CURRENT["options"] == null || this.#CURRENT["options"].length <= 0
-            let currentHover = -1
+
+            // 3. Dialogue Content Layout (Increased padding and line height)
+            const portraitExists = (Dialogues.#CURRENT_INIT_BY && Dialogues.#CURRENT_INIT_BY.getName);
+            const contentOffsetX = portraitExists ? portraitSize * 1.3 : marginX * 1.5;
+            const textFontSize = Math.floor(ctx.canvas.height / 28);
+            const labelColor = "#5d4037"; // Warmer Rich Brown
+
+            // Draw character name label
+            const shouldShowName = Dialogues.#CURRENT.contents.length > 1;
+            if (shouldShowName && Dialogues.#CURRENT_INIT_BY) {
+                const nameStr = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
+                const namePx = boxX + contentOffsetX;
+                const namePy = boxY + textFontSize * 0.8;
+                
+                Font.draw(ctx, nameStr, textFontSize * 1.0, namePx, namePy, labelColor, "rgba(0,0,0,0.05)", "Segoe UI", "bold", false);
+            }
+
+            // Draw dialogue lines (Refined line index and spacing)
+            let lineIndex = 0;
+            Dialogues.#CURRENT.contents.forEach(_l => {
+                Font.draw(
+                    ctx, _l, textFontSize, 
+                    boxX + contentOffsetX, 
+                    boxY + textFontSize * (2.6 + lineIndex), 
+                    "#3e2723", "rgba(255,255,255,0.1)", "Segoe UI", "bold", false
+                );
+                lineIndex += 1.5; // Increased line spacing from 1.3
+            });
+
+            // Handle Next Indicator / Options
+            const hasNoOption = this.#CURRENT["options"] == null || this.#CURRENT["options"].length <= 0;
+            let currentHover = -1;
+            
             if (hasNoOption) {
-                Font.draw(ctx, ">>", Math.floor(ctx.canvas.height / 33), ctx.canvas.width * 0.95, ctx.canvas.height * 0.975)
+                // Calm Floating Arrow (No Shadow)
+                const indicatorX = boxX + boxWidth - textFontSize * 2;
+                const indicatorY = boxY + boxHeight - textFontSize;
+                const timeStr = Date.now() / 350;
+                const floatOffset = Math.sin(timeStr) * 4;
+                
+                ctx.fillStyle = "rgba(255, 160, 0, 0.8)";
+                ctx.beginPath();
+                ctx.moveTo(indicatorX - 8, indicatorY - 8 + floatOffset);
+                ctx.lineTo(indicatorX + 8, indicatorY - 8 + floatOffset);
+                ctx.lineTo(indicatorX, indicatorY + 4 + floatOffset);
+                ctx.closePath();
+                ctx.fill();
             } else {
+                // Draw Options
                 for (let i = 0, l = this.#CURRENT["options"].length; i < l; i++) {
-                    if (MessageButton.draw(
-                        ctx, this.#CURRENT["options"][i]["text"], textFontSize,
-                        ctx.canvas.width * 0.925 - Font.measure(ctx, this.#CURRENT["options"][i]["text"]).width, boxRect.y - textFontSize * (l - i) * 2 - textFontSize / 2
-                    )) {
-                        currentHover = i
+                    const optionText = this.#CURRENT["options"][i]["text"];
+                    Font.update(ctx, textFontSize);
+                    const textWidth = Font.measure(ctx, optionText).width;
+                    const optX = boxX + boxWidth - textWidth - textFontSize * 3;
+                    const optY = boxY - textFontSize * (l - i) * 2.2 - textFontSize;
+                    
+                    if (MessageButton.draw(ctx, optionText, textFontSize, optX, optY)) {
+                        currentHover = i;
                     }
                 }
             }
+
+            ctx.restore();
+
+            // Mouse Click Handling
             if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                 if (hasNoOption) {
                     if (this.#CURRENT.next == null) {
                         this.#CURRENT = null;
+                        setTimeout(() => Controller.keys["KeyF"] = false, 50); // consume key buffer fast
                     } else {
                         this.update(this.#CURRENT.next, this.#CURRENT_INIT_BY)
                     }

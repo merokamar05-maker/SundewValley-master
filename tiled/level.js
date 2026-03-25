@@ -162,7 +162,7 @@ class Level extends AbstractTiledMap {
         // Spawn trash in the bedroom
         if (this instanceof Bedroom) {
             const bedroomTrashSpots = [
-                [28, 22], [32, 19], [38, 23], [35, 17], [42, 21]
+                [8, 22], [18, 24], [30, 25], [38, 23], [45, 22]
             ];
             bedroomTrashSpots.forEach((pos, i) => {
                 this.addEntity(new Trash("bedroom_trash_" + i, pos[0], pos[1], this));

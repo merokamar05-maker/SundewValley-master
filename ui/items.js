@@ -93,6 +93,15 @@ class InventoryItems {
         "sheep": "Sheep"
     }
 
+    // Animals: map to their image path that is already loaded via additional.json
+    static ANIMAL_IMAGES = {
+        "chicken": "./images/animals/chicken/white_chicken.png",
+        "cow": "./images/animals/cow/black_cow.png",
+        "goat": "./images/animals/goat/black_goat.png",
+        "pig": "./images/animals/pig/pink_pig.png",
+        "sheep": "./images/animals/sheep/white_sheep_sheet.png"
+    }
+
     static init() {
         this.#ITEMS_SPRITE_SHEET = ASSET_MANAGER.getImage("items", "items.png")
         this.#PIXEL_SIZE = ASSET_MANAGER.getJson("images", "items", "items.json")["tilewidth"]
@@ -104,8 +113,34 @@ class InventoryItems {
     }
 
     static drawImage(ctx, key, pixelX, pixelY, width, height, offsetTileX = 0, offsetTileY = 0) {
+        // If it's an animal, draw its sprite directly from the cached image
+        if (this.ANIMAL_IMAGES[key] != null) {
+            const imgPath = this.ANIMAL_IMAGES[key];
+            const img = ASSET_MANAGER.getImageByPath(imgPath);
+            if (img && img.complete && img.naturalWidth > 0) {
+                // Determine frame size: 16x16 for chicken, 26x26 for others (cow, goat, pig, sheep)
+                const frameSize = (key === "chicken") ? 16 : 26;
+                
+                // Draw just the first frame (idle) for high clarity
+                // Center it in the slot with a small margin
+                const margin = width * 0.1;
+                const dw = width - margin * 2;
+                const dh = height - margin * 2;
+                const dx = pixelX + margin;
+                const dy = pixelY + margin;
+                
+                ctx.drawImage(img, 
+                    0, 0, frameSize, frameSize, // Source frame (top-left)
+                    dx, dy, dw, dh              // Destination slot
+                );
+                return;
+            }
+        }
+        
+        // Default items drawing from sprite sheet
         const _loc = this.#LOCATIONS[key]
-        ctx.drawImage(this.#ITEMS_SPRITE_SHEET, (_loc[0] + offsetTileX) * this.#PIXEL_SIZE, (_loc[1] + offsetTileY) * this.#PIXEL_SIZE, this.#PIXEL_SIZE, this.#PIXEL_SIZE, pixelX, pixelY, width, height)
+        if (_loc) {
+            ctx.drawImage(this.#ITEMS_SPRITE_SHEET, (_loc[0] + offsetTileX) * this.#PIXEL_SIZE, (_loc[1] + offsetTileY) * this.#PIXEL_SIZE, this.#PIXEL_SIZE, this.#PIXEL_SIZE, pixelX, pixelY, width, height)
+        }
     }
 }
-

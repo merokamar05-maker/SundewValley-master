@@ -16,9 +16,14 @@ class Npc extends Character {
         if (this.getName().localeCompare("Amely") === 0) {
             this.clearInventory()
             this.setMoney(getRandomIntInclusive(2000, 5000))
+            const _allKeys = Object.keys(InventoryItems.PRICES)
+            // Filter to only include crops and seeds (exclude animals and tools)
+            const _cropsAndKeys = _allKeys.filter(key => 
+                key.endsWith("_seed") || 
+                ["pumpkin", "cabbage", "carrot", "grain", "potato", "strawberry", "tomato", "eggplant", "lavender", "corn", "pea"].includes(key)
+            )
             for (let i = 0; i < 50; i++) {
-                const _keys = Object.keys(InventoryItems.PRICES)
-                this.obtainItem(_keys[_keys.length * Math.random() << 0], getRandomIntInclusive(1, 3))
+                this.obtainItem(_cropsAndKeys[_cropsAndKeys.length * Math.random() << 0], getRandomIntInclusive(1, 3))
             }
         } else if (this.getName().localeCompare("Mark") === 0) {
             this.clearInventory()

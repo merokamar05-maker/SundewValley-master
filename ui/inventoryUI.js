@@ -43,53 +43,108 @@ class InventoryUI extends ItemBarUI {
         this.isOpening = false
     }
 
+    // Returns the computed backpack panel dimensions for ChestUI to use
+    getBackpackLayout(ctx) {
+        const padding = this.getPadding();
+        const boxSize = this.getBoxSize();
+        const gap = Math.floor(padding * 0.4);
+        const innerGridWidth = ItemBarUI.ITEMS_PER_ROW * boxSize + (ItemBarUI.ITEMS_PER_ROW - 1) * gap;
+        const innerGridHeight = this.ROWS_PER_PAGE * boxSize + (this.ROWS_PER_PAGE - 1) * gap;
+        const colPad = Math.floor(padding * 0.8);
+        const headerHeight = Math.floor(padding * 2);
+        const footerHeight = Math.floor(padding * 1.5);
+        const uiWidth = innerGridWidth + colPad * 2;
+        const uiHeight = headerHeight + innerGridHeight + footerHeight;
+        const uiX = Math.floor((ctx.canvas.width - uiWidth) / 2);
+        return { uiX, uiWidth, uiHeight, colPad, headerHeight, footerHeight, innerGridWidth, innerGridHeight, boxSize, gap };
+    }
 
     drawInventory(ctx) {
         this.drawItemBar(ctx)
-        // padding of the container
-        const padding = this.getPadding()
-        // get keys
-        const inventoryKeys = this.#inventoryContainer.keys()
-        // draw inventory background image
-        this.#backpackTiledStaticImage.setTileWidth(ItemBarUI.getItemsBarTiledStaticImage().getTileWidth())
-        this.#backpackTiledStaticImage.setTileHeight(ItemBarUI.getItemsBarTiledStaticImage().getTileHeight())
-        this.#backpackTiledStaticImage.setPixelX(this.getPixelX() + ItemBarUI.getItemsBarTiledStaticImage().getTileWidth() * this.BLOCK_X_OFFSET)
-        this.#backpackTiledStaticImage.setPixelBottom(ItemBarUI.getItemsBarTiledStaticImage().getPixelY() - padding * 2)
-        // calculate the maximum total numbers of items that can be displayed per page
-        const ITEM_PER_PAGE = ItemBarUI.ITEMS_PER_ROW * this.ROWS_PER_PAGE
-        // calculate the maximum numbers of pages that is needed
-        const MAX_NUM_OF_PAGES = Math.ceil(this.#inventoryContainer.getNumOfItems() / ITEM_PER_PAGE)
-        // if more than one page
+        
+        const padding = this.getPadding();
+        const inventoryKeys = this.#inventoryContainer.keys();
+        const boxSize = this.getBoxSize();
+        const gap = Math.floor(padding * 0.4);
+        
+        // Calculate exact grid dimensions for 9 items per row
+        const innerGridWidth = ItemBarUI.ITEMS_PER_ROW * boxSize + (ItemBarUI.ITEMS_PER_ROW - 1) * gap;
+        const innerGridHeight = this.ROWS_PER_PAGE * boxSize + (this.ROWS_PER_PAGE - 1) * gap;
+        
+        const colPad = Math.floor(padding * 0.8);
+        const headerHeight = Math.floor(padding * 2);
+        const footerHeight = Math.floor(padding * 1.5);
+        
+        const uiWidth = innerGridWidth + colPad * 2;
+        const uiHeight = headerHeight + innerGridHeight + footerHeight;
+        const uiX = Math.floor((ctx.canvas.width - uiWidth) / 2);
+        // Position: sits above the item bar with some space
+        const uiY = Math.floor(this.getPixelY() - uiHeight - padding);
+
+        // Lighter Amber & Cream Backpack Background (No Shadows)
+        ctx.save();
+        ctx.shadowBlur = 0; 
+        const bgGradient = ctx.createLinearGradient(uiX, uiY, uiX, uiY + uiHeight);
+        bgGradient.addColorStop(0, "rgba(255, 240, 180, 0.96)");
+        bgGradient.addColorStop(1, "rgba(255, 210, 100, 0.96)");
+        ctx.fillStyle = bgGradient;
+        
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(uiX, uiY, uiWidth, uiHeight, 20);
+        else ctx.rect(uiX, uiY, uiWidth, uiHeight);
+        ctx.fill();
+        
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255, 180, 0, 0.5)"; // Soft Amber Border
+        ctx.stroke();
+        ctx.restore();
+
+        const ITEM_PER_PAGE = ItemBarUI.ITEMS_PER_ROW * this.ROWS_PER_PAGE;
+        const MAX_NUM_OF_PAGES = Math.max(1, Math.ceil(this.#inventoryContainer.getNumOfItems() / ITEM_PER_PAGE));
+        
+        const gridStartX = uiX + colPad;
+        const gridStartY = uiY + headerHeight;
+
+        // Title text
+        let _fontSize = Math.floor(boxSize * 0.35);
+        ctx.save();
+        ctx.fillStyle = "#3e2723"; // Rich chocolate for contrast
+        ctx.font = `bold ${_fontSize}px 'Segoe UI', sans-serif`;
+        ctx.fillText("Backpack", gridStartX, uiY + headerHeight - _fontSize * 0.5);
+        ctx.restore();
+
+        // Pagination
         if (MAX_NUM_OF_PAGES > 1) {
-            this.#backpackTiledStaticImage.draw(ctx)
-            if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                if (this.#backpackTiledStaticImage.isTilesHovered(47, 48, 14, 15)) {
-                    this.#currentInventoryPage = Math.max(this.#currentInventoryPage - 1, 0)
-                } else if (this.#backpackTiledStaticImage.isTilesHovered(47, 48, 18, 19)) {
-                    this.#currentInventoryPage += 1
-                }
+            const arrowY = uiY + uiHeight - footerHeight + gap;
+            if (MessageButton.draw(ctx, "<", _fontSize, gridStartX, arrowY)) {
+                if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick)
+                    this.#currentInventoryPage = Math.max(this.#currentInventoryPage - 1, 0);
             }
-        } else {
-            this.#backpackTiledStaticImage.drawTiles(ctx, null, null, null, null, 2)
+            if (MessageButton.draw(ctx, ">", _fontSize, gridStartX + innerGridWidth - _fontSize * 2, arrowY)) {
+                if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick)
+                    this.#currentInventoryPage = Math.min(this.#currentInventoryPage + 1, MAX_NUM_OF_PAGES - 1);
+            }
         }
-        this.#currentInventoryPage = Math.min(this.#currentInventoryPage, MAX_NUM_OF_PAGES)
-        // draw out all the item(s) in player's inventory
+        this.#currentInventoryPage = Math.min(this.#currentInventoryPage, MAX_NUM_OF_PAGES - 1);
+        
+        // Draw grid
         for (let i = this.#currentInventoryPage * ITEM_PER_PAGE, n = i + ITEM_PER_PAGE; i < n; i++) {
-            // calculate pixel x of the box
-            const _pixelX = Math.floor(this.getPixelX() + (i % ItemBarUI.ITEMS_PER_ROW) * 5 * this.#backpackTiledStaticImage.getTileWidth() + padding)
-            // calculate pixel y of the box
-            const _pixelY = Math.floor(this.#backpackTiledStaticImage.getPixelY() + padding + 5 * this.#backpackTiledStaticImage.getTileHeight() * (Math.floor(i / ItemBarUI.ITEMS_PER_ROW) % this.ROWS_PER_PAGE))
+            const col = i % ItemBarUI.ITEMS_PER_ROW;
+            const row = Math.floor((i % ITEM_PER_PAGE) / ItemBarUI.ITEMS_PER_ROW);
+            const px = gridStartX + col * (boxSize + gap);
+            const py = gridStartY + row * (boxSize + gap);
             if (i < inventoryKeys.length) {
-                const key = inventoryKeys[i]
-                this.drawItem(ctx, key, this.#inventoryContainer.get(key), i + ItemBarUI.ITEMS_PER_ROW, _pixelX, _pixelY, this.getBoxSize(), this.getBoxSize())
+                const key = inventoryKeys[i];
+                this.drawItem(ctx, key, this.#inventoryContainer.get(key), i + ItemBarUI.ITEMS_PER_ROW, px, py, boxSize, boxSize);
             } else {
-                this.drawItem(ctx, null, null, i + ItemBarUI.ITEMS_PER_ROW, _pixelX, _pixelY, this.getBoxSize(), this.getBoxSize())
+                this.drawItem(ctx, null, null, i + ItemBarUI.ITEMS_PER_ROW, px, py, boxSize, boxSize);
             }
         }
-        const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
-        if (MessageButton.draw(GAME_ENGINE.ctx, "Close", _fontSize, GAME_ENGINE.ctx.canvas.width * 0.85, GAME_ENGINE.ctx.canvas.height * 0.7)) {
+        
+        // Close button
+        if (MessageButton.draw(ctx, "Close", _fontSize * 1.2, uiX + uiWidth - _fontSize * 5, uiY + uiHeight + _fontSize * 0.5)) {
             if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                this.closeUI()
+                this.closeUI();
             }
         }
     }

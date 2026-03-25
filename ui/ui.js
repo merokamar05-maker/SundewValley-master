@@ -52,7 +52,7 @@ class UserInterfaces {
             const _width = ctx.canvas.width * 0.8
             const _height = ctx.canvas.height * 0.2
             ctx.drawImage(ASSET_MANAGER.getImage("ui", "title.png"), (ctx.canvas.width - _width) / 2, ctx.canvas.height * 0.2, _width, _height)
-            if (MessageButton.draw(ctx, "Start", ctx.canvas.height * 0.05, ctx.canvas.width * 0.425, ctx.canvas.height * 0.6) && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
+            if (MessageButton.draw(ctx, "Start", ctx.canvas.height * 0.05, ctx.canvas.width * 0.425, ctx.canvas.height * 0.6, undefined, undefined, true) && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                 Transition.start(() => {
                     GAME_ENGINE.enterLevel("farm")
                     Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
@@ -90,28 +90,28 @@ class UserInterfaces {
         ctx.shadowBlur = 10;
         ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
         
-        // 2. Draw Main Background (Glassmorphism)
+        // 2. Main Background (Amber & Cream - No Shadows)
         const bgGradient = ctx.createLinearGradient(x, y, x, y + boxHeight);
-        bgGradient.addColorStop(0, "rgba(40, 40, 40, 0.85)");
-        bgGradient.addColorStop(1, "rgba(20, 20, 20, 0.95)");
+        bgGradient.addColorStop(0, "rgba(255, 245, 190, 0.95)");
+        bgGradient.addColorStop(1, "rgba(255, 220, 140, 0.95)");
         ctx.fillStyle = bgGradient;
         
         ctx.beginPath();
         if (ctx.roundRect) {
-            ctx.roundRect(x, y, boxWidth, boxHeight, 12);
+            ctx.roundRect(x, y, boxWidth, boxHeight, 15);
         } else {
             ctx.rect(x, y, boxWidth, boxHeight);
         }
         ctx.fill();
 
-        // 3. Draw Dual Border (Light inner, dark outer)
-        ctx.shadowBlur = 0; // Reset shadow for borders
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+        // 3. Soft Amber Border (Clean edge)
+        ctx.shadowBlur = 0; 
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(255, 180, 0, 0.55)"; 
         ctx.stroke();
         
-        ctx.lineWidth = 0.5;
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
         ctx.stroke();
 
         // 4. Draw Gold Coin icon
