@@ -130,6 +130,12 @@
         "height": 2,
         "name": "TradingBox",
         "type": "chest"
+      },
+      {
+        "x": 17,
+        "y": 38,
+        "name": "Mimo",
+        "type": "npc"
       }
     ],
     "light_sources": [
@@ -195,7 +201,7 @@
       {
         "x": 22,
         "y": 12,
-        "name": "Amely",
+        "name": "Maya",
         "type": "npc"
       }
     ]
@@ -291,7 +297,7 @@
       {
         "x": 20,
         "y": 17,
-        "name": "Yu",
+        "name": "Maryoma",
         "type": "npc"
       },
       {
@@ -303,7 +309,7 @@
       {
         "x": 26.25,
         "y": 18,
-        "name": "Marx",
+        "name": "Medo",
         "type": "npc"
       }
     ]

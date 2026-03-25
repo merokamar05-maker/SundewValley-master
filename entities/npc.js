@@ -13,7 +13,7 @@ class Npc extends Character {
     }
 
     dailyClosing() {
-        if (this.getName().localeCompare("Amely") === 0) {
+        if (this.getName().localeCompare("Maya") === 0) {
             this.clearInventory()
             this.setMoney(getRandomIntInclusive(2000, 5000))
             const _allKeys = Object.keys(InventoryItems.PRICES)

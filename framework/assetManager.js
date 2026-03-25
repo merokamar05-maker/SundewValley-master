@@ -156,6 +156,8 @@ class AssetManager {
 
     playSound(...args) {
         const music = this.#getAudioByPath([".", "audios", "sound"].concat(args).join("/"))
+        if (!music) return;
+        
         if (document.getElementById("mute").checked) {
             music.volume = 0
         } else {

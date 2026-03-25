@@ -3,8 +3,8 @@ class Dialogues {
     static #CURRENT_INIT_BY = null
 
     static #SCRIPTS = {
-        Amely_interact1: {
-            contents: ["Hello my Name is Amely", "What can I do for you, my dear customer?"],
+        Maya_interact1: {
+            contents: ["Hello my Name is Maya", "What can I do for you, my dear customer?"],
             options: [{
                 text: "I want to see what you have",
                 act: "$trade"
@@ -23,41 +23,41 @@ class Dialogues {
                 act: "$close"
             }]
         },
-        Yu_interact1: {
+        Maryoma_interact1: {
             contents: ["Greeting, want something to drink?"],
             options: [{
                 text: "Sure, what do you have",
-                act: "Yu_interact2"
+                act: "Maryoma_interact2"
             }, {
                 text: "No, thanks",
                 act: "$close"
             }]
         },
-        Yu_interact2: {
+        Maryoma_interact2: {
             contents: ["We have... water."],
             options: [{
                 text: "And...??",
-                act: "Yu_interact3"
+                act: "Maryoma_interact3"
             }]
         },
-        Yu_interact3: {
+        Maryoma_interact3: {
             contents: ["And that is it"],
             options: [{
                 text: "What kinds of bar only serves water?",
-                act: "Yu_interact4"
+                act: "Maryoma_interact4"
             }]
         },
-        Yu_interact4: {
+        Maryoma_interact4: {
             contents: ["Well... we do."],
             options: [{
                 text: "Never mind, have a nice day",
                 act: "%close"
             }, {
                 text: "Ok, I will have some water",
-                act: "Yu_interact5"
+                act: "Maryoma_interact5"
             }]
         },
-        Yu_interact5: {
+        Maryoma_interact5: {
             contents: ["Here you go, have a nice day"],
         },
         Adian_interact1: {
@@ -80,20 +80,32 @@ class Dialogues {
         Adian_interact2_disagree: {
             contents: ["Well go away then", "There is no reason for me to talk to someone like you"],
         },
-        Marx_interact1: {
+        Medo_interact1: {
             contents: ["Hello stranger", "Never see you here before", "Where do you come from?"],
-            next: "Marx_interact2"
+            next: "Medo_interact2"
         },
-        Marx_interact2: {
-            contents: ["Hmm interesting", "Just move here and inherit a farm from a recent died relative?", "Sounds like something that will only come out of a video game"],
-            next: "Marx_interact3"
+        Medo_interact2: {
+            contents: ["Hmm interesting", "Just move here and inherit a farm", "from a recently deceased relative?"],
+            next: "Medo_interact2_2"
         },
-        Marx_interact3: {
-            contents: ["You see, I think it is great that there is a bar out here", "that only serves water", "Alcohol will only cause problem"],
-            next: "Marx_interact4"
+        Medo_interact2_2: {
+            contents: ["Sounds like something that will", "only come out of a video game"],
+            next: "Medo_interact3"
         },
-        Marx_interact4: {
-            contents: ["Young youths these days do not understand the importance", "of taking care of their bodies", "You are not someone like that, aren't you?"],
+        Medo_interact3: {
+            contents: ["You see, I think it is great that", "there is a bar out here", "that only serves water and juices."],
+            next: "Medo_interact3_2"
+        },
+        Medo_interact3_2: {
+            contents: ["Energy drinks will only", "cause problem."],
+            next: "Medo_interact4"
+        },
+        Medo_interact4: {
+            contents: ["The youths these days do not", "understand the importance of", "taking care of their bodies."],
+            next: "Medo_interact4_2"
+        },
+        Medo_interact4_2: {
+            contents: ["You are not someone like that,", "aren't you?"],
         },
         Bar_TV1_1: {
             contents: ["The TV is airing the latest weather report"],
@@ -114,7 +126,47 @@ class Dialogues {
         },
         Bar_TV2_2: {
             contents: ["The screen is still black", "The TV seems to be broken"],
+        },
+        Mimo_interact1: {
+            contents: ["Hello! I'm Mimo.", "Welcome to Sundew Valley!", "It's so good to have you here."],
+            next: "Mimo_interact1_2"
+        },
+        Mimo_interact1_2: {
+            contents: ["This farm has a long history.", "It was once the heart of the village."],
+            next: "Mimo_interact2"
+        },
+        Mimo_interact2: {
+            contents: ["Your grandfather loved this land.", "But over time, it became neglected."],
+            next: "Mimo_interact2_2"
+        },
+        Mimo_interact2_2: {
+            contents: ["The farm was filled with trash.", "We need your help to bring it back!"],
+            next: "Mimo_interact3"
+        },
+        Mimo_interact3: {
+            contents: ["To start, you can plant seeds", "and sell your crops."],
+            next: "Mimo_interact3_2"
+        },
+        Mimo_interact3_2: {
+            contents: ["You can also raise animals", "and sell its products.", "That's how you'll earn money."],
+            next: "Mimo_interact4"
+        },
+        Mimo_interact4: {
+            contents: ["One more thing! Please keep it clean.", "If you leave trash around,"],
+            next: "Mimo_interact4_2"
+        },
+        Mimo_interact4_2: {
+            contents: ["It will cause pollution.", "Nature is precious, let's protect it!"],
         }
+    }
+
+
+    static #PORTRAIT_CONFIG = {
+        maya: { scale: 1.55, yOffset: 0.6 },
+        medo: { scale: 1.55, yOffset: 0.6 },
+        mimo: { scale: 1.1, yOffset: 0.5 },
+        maryoma: { scale: 0.9, yOffset: 0.47 },
+        mark: { scale: 1.1, yOffset: 0.5 }
     }
 
     static isAnyDialoguePlaying() {
@@ -162,6 +214,8 @@ class Dialogues {
             
             if (Dialogues.#CURRENT_INIT_BY && Dialogues.#CURRENT_INIT_BY.getName) {
                 const charName = Dialogues.#CURRENT_INIT_BY.getName().toLowerCase();
+                const config = Dialogues.#PORTRAIT_CONFIG[charName] || { scale: 1.1, yOffset: 0.5 };
+                
                 // Prioritize HD portrait, fallback to standard spritesheet
                 const hdImg = ASSET_MANAGER.getImage("characters", "portraits", charName + "_hd.png");
                 const charImg = hdImg || ASSET_MANAGER.getImage("characters", charName + ".png");
@@ -196,10 +250,10 @@ class Dialogues {
                     if (hdImg) {
                         // HD Portrait (Single frame, high res)
                         ctx.imageSmoothingEnabled = true;
-                        const drawW = portraitSize * 1.1; 
+                        const drawW = portraitSize * config.scale; 
                         const drawH = drawW * (charImg.height / charImg.width);
                         const drawX = (portraitX + portraitSize / 2) - drawW / 2;
-                        const drawY = (portraitCenterY + portraitSize / 2) - drawH * 0.5; // Shifted down slightly (from 0.55)
+                        const drawY = (portraitCenterY + portraitSize / 2) - drawH * config.yOffset;
                         ctx.drawImage(charImg, drawX, drawY, drawW, drawH);
                     } else {
                         // Spritesheet Fallback (Pixel art)
@@ -237,8 +291,7 @@ class Dialogues {
             const labelColor = "#5d4037"; // Warmer Rich Brown
 
             // Draw character name label
-            const shouldShowName = Dialogues.#CURRENT.contents.length > 1;
-            if (shouldShowName && Dialogues.#CURRENT_INIT_BY) {
+            if (Dialogues.#CURRENT_INIT_BY) {
                 const nameStr = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
                 const namePx = boxX + contentOffsetX;
                 const namePy = boxY + textFontSize * 0.8;
