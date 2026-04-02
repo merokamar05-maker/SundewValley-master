@@ -1,15 +1,105 @@
 class Npc extends Character {
+    #waypoints
+    #target_waypoint_idx
+    #isSoso
+    #isMovingNpc
+    #prev_x
+    #prev_y
+    #stuck_timer
+
     constructor(name, x, y, mapRef) {
         super(name, name.toLowerCase(), x, y, mapRef)
         this.setMovingSpeedX(5)
         this.setMovingSpeedY(5)
-        this.setSize(this.getMapReference().getTileSize() * 1, this.getMapReference().getTileSize() * 1.3)
+        const heightMultiplier = name === "Grandmother" ? 1.3 : 1.3
+        this.setSize(this.getMapReference().getTileSize() * 1, this.getMapReference().getTileSize() * heightMultiplier)
         this.customHitBox = {x: -1, y: -1, width: 3, height: 3}
+        this.#isSoso = name === "Soso"
+        this.#isMovingNpc = ["7azo", "Ganna", "Kinzy", "Mario"].includes(name) || this.#isSoso
+        if (this.#isMovingNpc) {
+            let baseWaypoints = this.#isSoso ? [[20, 45], [40, 45], [40, 60], [20, 60]] : [[15, 42], [45, 42], [45, 63], [15, 63]];
+            
+            // Reverse direction for Kinzy and Mario to make them move opposite to the others
+            if (name === "Kinzy" || name === "Mario") {
+                baseWaypoints = [[15, 42], [15, 63], [45, 63], [45, 42]];
+            }
+            
+            this.#waypoints = baseWaypoints;
+            
+            // Set initial target waypoint based on starting position to ensure they don't all cluster at one point
+            if (name === "7azo" || this.#isSoso) this.#target_waypoint_idx = 1;      // Moving from NW to NE
+            else if (name === "Ganna") this.#target_waypoint_idx = 2;           // Moving from NE to SE
+            else if (name === "Kinzy") this.#target_waypoint_idx = 3;           // Moving from SE to NE (Reversed)
+            else if (name === "Mario") this.#target_waypoint_idx = 2;           // Moving from SW to SE (Reversed)
+            else this.#target_waypoint_idx = 0;
+
+            this.#prev_x = x
+            this.#prev_y = y
+            this.#stuck_timer = 0
+            const speed = this.#isSoso ? 1.5 : 3
+            this.setMovingSpeedX(speed) // Configurable walking speed
+            this.setMovingSpeedY(speed)
+        }
         this.dailyClosing()
     }
 
     interact() {
         Dialogues.update(this.getName() + "_interact1", this)
+    }
+
+    update() {
+        if (this.#isMovingNpc) {
+            // Stop movement if the dialogue is currently being initiated by this NPC
+            if (Dialogues.isAnyDialoguePlaying() && Dialogues.getInitBy() === this) {
+                this.setCurrentMovingSpeedX(0);
+                this.setCurrentMovingSpeedY(0);
+                this.setCurrentAction("idle");
+                this.#stuck_timer = 0; // Reset timer while talking
+            } else {
+                const target = this.#waypoints[this.#target_waypoint_idx];
+                const dx = target[0] - this.getBlockX();
+                const dy = target[1] - this.getBlockY();
+                const distanceSq = dx * dx + dy * dy;
+
+                if (distanceSq < 0.04) { // Reached waypoint (distance < 0.2)
+                    this.#target_waypoint_idx = (this.#target_waypoint_idx + 1) % this.#waypoints.length;
+                    this.#stuck_timer = 0;
+                } else {
+                    // Anti-Stuck Detection
+                    const movedDistSq = Math.pow(this.getBlockX() - this.#prev_x, 2) + Math.pow(this.getBlockY() - this.#prev_y, 2);
+                    // If trying to move but not actually moving
+                    if ((this.getCurrentMovingSpeedX() !== 0 || this.getCurrentMovingSpeedY() !== 0) && movedDistSq < 0.0001) {
+                        this.#stuck_timer++;
+                        if (this.#stuck_timer > 100) { // Capped at ~1.5s (assuming 60fps)
+                            this.#target_waypoint_idx = (this.#target_waypoint_idx + 1) % this.#waypoints.length;
+                            this.#stuck_timer = 0;
+                        }
+                    } else {
+                        this.#stuck_timer = 0;
+                    }
+                    this.#prev_x = this.getBlockX();
+                    this.#prev_y = this.getBlockY();
+
+                    // Move toward current waypoint
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // Choose direction based on major axis
+                        this.setCurrentMovingSpeedX(dx > 0 ? this.getMovingSpeedX() : -this.getMovingSpeedX());
+                        this.setCurrentMovingSpeedY(0);
+                        this.setDirectionFacing(dx > 0 ? "r" : "l");
+                    } else {
+                        this.setCurrentMovingSpeedY(dy > 0 ? this.getMovingSpeedY() : -this.getMovingSpeedY());
+                        this.setCurrentMovingSpeedX(0);
+                        // Standard characters only have 'l' and 'r' animations
+                        // so we determine 'l' or 'r' even when moving vertically to keep it visually consistent
+                        if (this.getCurrentMovingSpeedX() === 0) {
+                            // Keep current horizontal direction or default to "r" if newly started moving down/up
+                        }
+                    }
+                    this.setCurrentAction("move");
+                }
+            }
+        }
+        super.update();
     }
 
     dailyClosing() {
@@ -25,12 +115,12 @@ class Npc extends Character {
             for (let i = 0; i < 50; i++) {
                 this.obtainItem(_cropsAndKeys[_cropsAndKeys.length * Math.random() << 0], getRandomIntInclusive(1, 3))
             }
-        } else if (this.getName().localeCompare("Mark") === 0) {
+        } else if (this.getName().localeCompare("Zozo") === 0) {
             this.clearInventory()
             this.setMoney(getRandomIntInclusive(5000, 10000))
             const _animalKeys = ["chicken", "cow", "goat", "pig", "sheep"]
             _animalKeys.forEach(key => {
-                this.obtainItem(key, 5) // Give Mark 5 of each animal to start with
+                this.obtainItem(key, 5) // Give Zozo 5 of each animal to start with
             })
         }
     }

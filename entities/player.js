@@ -22,7 +22,7 @@ class Player extends Character {
             super.obtainItem(key, num)
         } else if (this.#itemBar[key] != null) {
             this.#itemBar[key]["amount"] += num
-        } else if (Object.keys(this.#itemBar).length < InventoryUI.ITEMS_PER_ROW) {
+        } else if (Object.keys(this.#itemBar).length < ItemBarUI.ITEMS_PER_ROW) {
             this.#itemBar[key] = {"amount": num}
         } else {
             super.obtainItem(key, num)

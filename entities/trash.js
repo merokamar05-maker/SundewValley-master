@@ -12,7 +12,7 @@ class Trash extends Entity {
     }
 
     interact(playerRef) {
-        if (playerRef.earnMoney) playerRef.earnMoney(5);
+        playerRef.obtainItem("trash", 1);
         this.removeFromWorld = true;
         ASSET_MANAGER.playSound("Gravel_hit1.ogg");
     }

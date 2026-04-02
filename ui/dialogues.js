@@ -1,8 +1,135 @@
 class Dialogues {
     static #CURRENT = null
     static #CURRENT_INIT_BY = null
+    static HAS_KNOCKED_TODAY = false
 
     static #SCRIPTS = {
+        FarmHouse_Door: {
+            contents: ["You are at the farmhouse door.", "What would you like to do?"],
+            options: [{
+                text: "*Knock Knock*",
+                act: "$knock_door"
+            }, {
+                text: "Enter the house",
+                act: "$enter_farmhouse"
+            }]
+        },
+        FarmHouse_Knock_First: {
+            contents: ["You should knock before entering!", "It is only polite."],
+            options: [{
+                text: "You are right, let me knock.",
+                act: "FarmHouse_Door"
+            }]
+        },
+        FarmHouse_Knock_First_Reward: {
+            contents: ["*Knock Knock*", "Welcome back! Here is $20 as a daily reward for keeping up the farm!"],
+            options: [{
+                text: "Enter the house",
+                act: "$enter_farmhouse"
+            }, {
+                text: "Not yet, I am still outside.",
+                act: "$close"
+            }]
+        },
+        FarmHouse_Knock_Repeat: {
+            contents: ["*Knock Knock*", "You knocked again and found $5 on the doorstep!"],
+            options: [{
+                text: "Enter the house",
+                act: "$enter_farmhouse"
+            }, {
+                text: "Not yet, I am still outside.",
+                act: "$close"
+            }]
+        },
+        Recycler_interact1: {
+            contents: ["Hello! I'm Tawfiq.", "People leave their trash everywhere.", "If you find any, bring it to me!"],
+            options: [{
+                text: "Here, I found some trash!",
+                act: "$give_trash"
+            }, {
+                text: "I will keep an eye out.",
+                act: "$close"
+            }]
+        },
+        Recycler_trash_success: {
+            contents: [
+                "Excellent! Thank you for cleaning up the whole town.", 
+                "Here is your reward for all the bags you brought!"
+            ]
+        },
+        Recycler_trash_fail: {
+            contents: [
+                "Hmm... I don't see any trash in your pockets.", 
+                "Come back when you find some green trash bags!"
+            ]
+        },
+        Maryoma_interact1: {
+            contents: ["Welcome to the Bar! *hic*", "What can I get for you today, kid?"],
+            options: [
+                { text: "Water (5$)", act: "$buy_water" },
+                { text: "Orange Juice (15$)", act: "$buy_orange_juice" },
+                { text: "Apple Juice (15$)", act: "$buy_apple_juice" },
+                { text: "Nothing, just looking.", act: "$close" }
+            ]
+        },
+        Bar_buy_success: {
+            contents: ["Here you go! Enjoy your drink.", "Come back if you get thirsty again!"]
+        },
+        Bar_buy_fail: {
+            contents: ["Sorry kid, you don't have enough money for that.", "Come back when you've earned some coins!"]
+        },
+        Grandmother_interact1: {
+            contents: ["*Cough* *Cough*", "Oh my dear... I'm feeling so weak today..."],
+            options: [{
+                text: "Here, I brought the special medicinal juice!",
+                act: "$give_juice"
+            }, {
+                text: "Rest well, grandma.",
+                act: "$close"
+            }]
+        },
+        Grandmother_juice_success: {
+            contents: [
+                "Oh... this smells wonderful.", 
+                "(Drinks the juice)",
+                "Thank you so much! I feel my strength returning already!"
+            ]
+        },
+        Grandmother_juice_fail: {
+            contents: [
+                "You don't seem to have the juice... *Cough*"
+            ]
+        },
+        Grandmother_scold: {
+            contents: [
+                "*adjusts glasses*",
+                "You walk into MY house without knocking?!",
+                "When I was young, we respected the house we live in!"
+            ],
+            next: "Grandmother_advice"
+        },
+        Grandmother_advice: {
+            contents: [
+                "Listen to me, my dear.",
+                "Go work hard, earn money, and ALWAYS knock first!",
+                "Now come in, since you are already here..."
+            ],
+            options: [{
+                text: "Enter the house",
+                act: "$enter_farmhouse"
+            }]
+        },
+        Grandmother_fine: {
+            contents: [
+                "RUDE! No knock?!",
+                "I am taking $15 from your pocket as a fine!",
+                "Next time KNOCK first, you hear me?!"
+            ],
+            options: [{
+                text: "Sorry grandma, I will knock next time.",
+                act: "$enter_farmhouse"
+            }]
+        },
         Maya_interact1: {
             contents: ["Hello my Name is Maya", "What can I do for you, my dear customer?"],
             options: [{
@@ -13,8 +140,8 @@ class Dialogues {
                 act: "$close"
             }]
         },
-        Mark_interact1: {
-            contents: ["Hey, I am Mark. Looking for some animals for your farm?", "I have some fine livestock today."],
+        Zozo_interact1: {
+            contents: ["Hey, I am Zozo. Looking for some animals for your farm?", "I have some fine livestock today."],
             options: [{
                 text: "Show me the animals",
                 act: "$trade"
@@ -29,29 +156,32 @@ class Dialogues {
                 text: "Sure, what do you have",
                 act: "Maryoma_interact2"
             }, {
+                text: "Can you make the special juice for my grandmother?",
+                act: "Maryoma_juice_info"
+            }, {
                 text: "No, thanks",
                 act: "$close"
             }]
         },
         Maryoma_interact2: {
-            contents: ["We have... water."],
+            contents: ["We have... water.", "And some fresh fruit juices too!"],
             options: [{
                 text: "And...??",
                 act: "Maryoma_interact3"
             }]
         },
         Maryoma_interact3: {
-            contents: ["And that is it"],
+            contents: ["And that is it, for now."],
             options: [{
-                text: "What kinds of bar only serves water?",
+                text: "What kinds of bar only serves water and juice?",
                 act: "Maryoma_interact4"
             }]
         },
         Maryoma_interact4: {
-            contents: ["Well... we do."],
+            contents: ["A healthy one! We take care of our customers."],
             options: [{
                 text: "Never mind, have a nice day",
-                act: "%close"
+                act: "$close"
             }, {
                 text: "Ok, I will have some water",
                 act: "Maryoma_interact5"
@@ -59,6 +189,33 @@ class Dialogues {
         },
         Maryoma_interact5: {
             contents: ["Here you go, have a nice day"],
+        },
+        Maryoma_juice_info: {
+            contents: [
+                "Of course! I've heard your grandmother isn't feeling well.", 
+                "If you bring me 1 Pumpkin and 1 Strawberry,", 
+                "I can brew a special medicinal juice for her."
+            ],
+            options: [{
+                text: "I have them right here!",
+                act: "$make_juice"
+            }, {
+                text: "I'll be back later.",
+                act: "$close"
+            }]
+        },
+        Maryoma_juice_success: {
+            contents: [
+                "Perfect! Just a moment...", 
+                "...here it is! A fresh medicinal juice.", 
+                "Give this to your grandmother, it should help."
+            ]
+        },
+        Maryoma_juice_fail: {
+            contents: [
+                "Oh, it seems you're missing some ingredients.", 
+                "I need 1 Pumpkin and 1 Strawberry to make it."
+            ]
         },
         Adian_interact1: {
             contents: ["Hey you, yeah I am talking to you", "Come here"],
@@ -157,6 +314,63 @@ class Dialogues {
         },
         Mimo_interact4_2: {
             contents: ["It will cause pollution.", "Nature is precious, let's protect it!"],
+        },
+        Sebaey_interact1: {
+            contents: [
+                "Hey kid! Come here.", 
+                "Why are there no energy drinks in this place?", 
+                "And why is smoking prohibited here?!"
+            ],
+            options: [{
+                text: "Because they are bad for your health.",
+                act: "Sebaey_interact2"
+            }, {
+                text: "It's just the bar's rules.",
+                act: "Sebaey_interact3"
+            }]
+        },
+        Sebaey_interact2: {
+            contents: ["Bad for my health? Nonsense!", "But I guess I have no choice...", "Guess I'll just drink water."]
+        },
+        Sebaey_interact3: {
+            contents: ["Rules? What a boring place...", "Whatever, I'll just drink water."]
+        },
+        Soso_interact1: {
+            contents: ["Help me please, I am very sick and hungry.", "Could you spare some money?"],
+            options: [{
+                text: "Give $10",
+                act: "$give_money_10"
+            }, {
+                text: "Give $50",
+                act: "$give_money_50"
+            }, {
+                text: "Sorry, I don't have any money",
+                act: "Soso_no_money_response"
+            }]
+        },
+        Soso_give_10_success: {
+            contents: ["Thank you so much!", "This will buy me some bread to eat today."],
+        },
+        Soso_give_50_success: {
+            contents: ["Oh! You are so generous!", "Now I can buy both medicine and a good meal.", "May God bless you!"],
+        },
+        Soso_give_fail: {
+            contents: ["You don't even have that much...", "It's okay, I'll ask someone else."],
+        },
+        Soso_no_money_response: {
+            contents: ["I understand... things are hard for everyone.", "Thank you anyway. Have a nice day."],
+        },
+        "7azo_interact1": {
+            contents: ["Yo! Ready for some action?"],
+        },
+        Ganna_interact1: {
+            contents: ["Hi there! Have you seen my friends around?"],
+        },
+        Kinzy_interact1: {
+            contents: ["Hello! What a beautiful day to be in the town square!"],
+        },
+        Mario_interact1: {
+            contents: ["Hey! I'm Mario. Nice to meet you!"],
         }
     }
 
@@ -166,11 +380,23 @@ class Dialogues {
         medo: { scale: 1.55, yOffset: 0.6 },
         mimo: { scale: 1.1, yOffset: 0.5 },
         maryoma: { scale: 0.9, yOffset: 0.47 },
-        mark: { scale: 1.1, yOffset: 0.5 }
+        zozo: { scale: 1.1, yOffset: 0.5 },
+        recycler: { scale: 1.1, yOffset: 0.5 },
+        sebaey: { scale: 2.6, yOffset: 0.14 },
+        soso: { scale: 2.6, yOffset: 0.14 },
+        grandmother: { scale: 2.5, yOffset: 0.1 },
+        "7azo": { scale: 1.1, yOffset: 0.5 },
+        ganna: { scale: 0.9, yOffset: 0.47 },
+        kinzy: { scale: 1.55, yOffset: 0.6 },
+        mario: { scale: 1.55, yOffset: 0.6 }
     }
 
     static isAnyDialoguePlaying() {
         return this.#CURRENT != null
+    }
+
+    static getInitBy() {
+        return this.#CURRENT_INIT_BY
     }
 
     static update(key, initBy) {
@@ -362,6 +588,102 @@ class Dialogues {
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$trade") === 0) {
                             this.#CURRENT = null;
                             GAME_ENGINE.getPlayerUi().startATrade(this.#CURRENT_INIT_BY);
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$make_juice") === 0) {
+                            if (Level.PLAYER.tryUseItem("pumpkin", 1) && Level.PLAYER.tryUseItem("strawberry", 1)) {
+                                Level.PLAYER.obtainItem("medicinal_juice", 1);
+                                this.update("Maryoma_juice_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Maryoma_juice_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_juice") === 0) {
+                            if (Level.PLAYER.tryUseItem("medicinal_juice", 1)) {
+                                this.update("Grandmother_juice_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Grandmother_juice_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_trash") === 0) {
+                            // Calculate total trash from both inventory and item bar
+                            const invTrash = Level.PLAYER.getInventory()["trash"] ? Level.PLAYER.getInventory()["trash"].amount : 0;
+                            const barTrash = Level.PLAYER.getItemBar()["trash"] ? Level.PLAYER.getItemBar()["trash"].amount : 0;
+                            const totalTrash = invTrash + barTrash;
+
+                            if (totalTrash > 0) {
+                                Level.PLAYER.earnMoney(totalTrash * 15);
+                                // Remove from inventory if exists
+                                if (invTrash > 0) Level.PLAYER.tryUseItem("trash", invTrash);
+                                // Remove from bar if exists
+                                if (barTrash > 0) Level.PLAYER.tryUseItem("trash", barTrash);
+                                
+                                this.update("Recycler_trash_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Recycler_trash_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$knock_door") === 0) {
+                            if (!Dialogues.HAS_KNOCKED_TODAY) {
+                                Dialogues.HAS_KNOCKED_TODAY = true;
+                                Level.PLAYER.earnMoney(20);
+                                this.update("FarmHouse_Knock_First_Reward", null);
+                            } else {
+                                Level.PLAYER.earnMoney(5);
+                                this.update("FarmHouse_Knock_Repeat", null);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$enter_farmhouse") === 0) {
+                            if (!Dialogues.HAS_KNOCKED_TODAY) {
+                                // Penalty for not knocking!
+                                if (Level.PLAYER.getMoney() >= 15) {
+                                    Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 15);
+                                    Dialogues.HAS_KNOCKED_TODAY = true; // allow entry after fine
+                                    this.update("Grandmother_fine", null);
+                                } else {
+                                    Dialogues.HAS_KNOCKED_TODAY = true; // allow entry after scold
+                                    this.update("Grandmother_scold", null);
+                                }
+                            } else {
+                                this.#CURRENT = null;
+                                Transition.start(() => {
+                                    GAME_ENGINE.enterLevel("bedroom");
+                                    Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel());
+                                    Level.teleportPlayer(24.5, 25.9);
+                                });
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_money_10") === 0) {
+                            if (Level.PLAYER.getMoney() >= 10) {
+                                Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 10);
+                                this.update("Soso_give_10_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Soso_give_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_money_50") === 0) {
+                            if (Level.PLAYER.getMoney() >= 50) {
+                                Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 50);
+                                this.update("Soso_give_50_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Soso_give_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$buy_water") === 0) {
+                            if (Level.PLAYER.getMoney() >= 5) {
+                                Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 5);
+                                Level.PLAYER.obtainItem("water", 1);
+                                this.update("Bar_buy_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Bar_buy_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$buy_orange_juice") === 0) {
+                            if (Level.PLAYER.getMoney() >= 15) {
+                                Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 15);
+                                Level.PLAYER.obtainItem("orange_juice", 1);
+                                this.update("Bar_buy_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Bar_buy_fail", this.#CURRENT_INIT_BY);
+                            }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$buy_apple_juice") === 0) {
+                            if (Level.PLAYER.getMoney() >= 15) {
+                                Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 15);
+                                Level.PLAYER.obtainItem("apple_juice", 1);
+                                this.update("Bar_buy_success", this.#CURRENT_INIT_BY);
+                            } else {
+                                this.update("Bar_buy_fail", this.#CURRENT_INIT_BY);
+                            }
                         }
                     } else {
                         this.update(this.#CURRENT["options"][currentHover].act, this.#CURRENT_INIT_BY)

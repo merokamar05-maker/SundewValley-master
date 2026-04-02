@@ -32,6 +32,10 @@ class Level extends AbstractTiledMap {
         return Level.#ALL_ENTITIES.find(_filter)
     }
 
+    static teleportPlayer(x, y) {
+        this.#setPlayerCoordinate(x, y)
+    }
+
     #getBgm() {
         const theBgm = (6 < DateTimeSystem.getHour() && DateTimeSystem.getHour() < 18) ? this.getParameter("morning_music") : this.getParameter("night_music")
         return theBgm != null ? theBgm : "$NO_MUSIC$"

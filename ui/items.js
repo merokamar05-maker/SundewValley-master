@@ -32,7 +32,12 @@ class InventoryItems {
         "cow": [2, 2],
         "goat": [4, 2],
         "pig": [5, 2],
-        "sheep": [6, 2]
+        "sheep": [6, 2],
+        "medicinal_juice": [1, 3],
+        "water": [2, 3],
+        "orange_juice": [3, 3],
+        "apple_juice": [4, 3],
+        "trash": [9, 2]
     }
     static PRICES = {
         "pumpkin": 200,
@@ -61,7 +66,12 @@ class InventoryItems {
         "cow": 1500,
         "goat": 1000,
         "pig": 2000,
-        "sheep": 1200
+        "sheep": 1200,
+        "medicinal_juice": 500,
+        "water": 5,
+        "orange_juice": 15,
+        "apple_juice": 15,
+        "trash": 5
     }
     static NAMES = {
         "pumpkin": "Pumpkin",
@@ -90,7 +100,12 @@ class InventoryItems {
         "cow": "Cow",
         "goat": "Goat",
         "pig": "Pig",
-        "sheep": "Sheep"
+        "sheep": "Sheep",
+        "medicinal_juice": "Medicinal Juice",
+        "water": "Water",
+        "orange_juice": "Orange Juice",
+        "apple_juice": "Apple Juice",
+        "trash": "Trash Bag"
     }
 
     // Animals: map to their image path that is already loaded via additional.json

@@ -48,6 +48,8 @@ class FarmLevel extends Level {
         })
         const amelyPtr = this.findEntityGlobally(_e => _e instanceof Npc && _e.getName().localeCompare("Amely") === 0)
         if (amelyPtr != null) amelyPtr.dailyClosing()
+        // Reset the daily knock reward
+        Dialogues.HAS_KNOCKED_TODAY = false
     }
 
     getCropOnCoordinate(x, y) {
