@@ -109,7 +109,11 @@
     "./images/characters/portraits/7azo_hd.png",
     "./images/characters/portraits/ganna_hd.png",
     "./images/characters/portraits/kinzy_hd.png",
-    "./images/characters/portraits/mario_hd.png"
+    "./images/characters/portraits/mario_hd.png",
+    "./images/characters/portraits/youssef_hd.png",
+    "./images/items/grand juice.png",
+    "./images/items/trash.png",
+    "./images/characters/youssef.png"
   ],
   "jsons": [
     "./images/animals/chicken/chicken.json",
@@ -184,6 +188,7 @@
     "./images/characters/7azo.json",
     "./images/characters/ganna.json",
     "./images/characters/kinzy.json",
-    "./images/characters/mario.json"
+    "./images/characters/mario.json",
+    "./images/characters/youssef.json"
   ]
 }

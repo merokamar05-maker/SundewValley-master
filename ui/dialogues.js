@@ -63,20 +63,11 @@ class Dialogues {
                 "Come back when you find some green trash bags!"
             ]
         },
-        Maryoma_interact1: {
-            contents: ["Welcome to the Bar! *hic*", "What can I get for you today, kid?"],
-            options: [
-                { text: "Water (5$)", act: "$buy_water" },
-                { text: "Orange Juice (15$)", act: "$buy_orange_juice" },
-                { text: "Apple Juice (15$)", act: "$buy_apple_juice" },
-                { text: "Nothing, just looking.", act: "$close" }
+        Recycler_trash_fail: {
+            contents: [
+                "Hmm... I don't see any trash in your pockets.", 
+                "Come back when you find some green trash bags!"
             ]
-        },
-        Bar_buy_success: {
-            contents: ["Here you go! Enjoy your drink.", "Come back if you get thirsty again!"]
-        },
-        Bar_buy_fail: {
-            contents: ["Sorry kid, you don't have enough money for that.", "Come back when you've earned some coins!"]
         },
         Grandmother_interact1: {
             contents: ["*Cough* *Cough*", "Oh my dear... I'm feeling so weak today..."],
@@ -151,15 +142,18 @@ class Dialogues {
             }]
         },
         Maryoma_interact1: {
-            contents: ["Greeting, want something to drink?"],
+            contents: ["Greeting! We serve only water and fresh natural juices here.", "What can I get you today?"],
             options: [{
-                text: "Sure, what do you have",
-                act: "Maryoma_interact2"
+                text: "I'll have a Water ($5)",
+                act: "$buy_water"
+            }, {
+                text: "I'll have an Orange Juice ($15)",
+                act: "$buy_orange_juice"
             }, {
                 text: "Can you make the special juice for my grandmother?",
                 act: "Maryoma_juice_info"
             }, {
-                text: "No, thanks",
+                text: "Nothing for now, thanks",
                 act: "$close"
             }]
         },
@@ -216,6 +210,12 @@ class Dialogues {
                 "Oh, it seems you're missing some ingredients.", 
                 "I need 1 Pumpkin and 1 Strawberry to make it."
             ]
+        },
+        Bar_buy_success: {
+            contents: ["Perfect! Here is your drink.", "Enjoy and have a great day!"]
+        },
+        Bar_buy_fail: {
+            contents: ["Oh, it seems you don't have enough money for that.", "Water and juice are cheap, but not free!"]
         },
         Adian_interact1: {
             contents: ["Hey you, yeah I am talking to you", "Come here"],
@@ -318,9 +318,12 @@ class Dialogues {
         Sebaey_interact1: {
             contents: [
                 "Hey kid! Come here.", 
-                "Why are there no energy drinks in this place?", 
-                "And why is smoking prohibited here?!"
+                "Why are there no energy drinks in this place?"
             ],
+            next: "Sebaey_interact1_2"
+        },
+        Sebaey_interact1_2: {
+            contents: ["And why is smoking prohibited here?!"],
             options: [{
                 text: "Because they are bad for your health.",
                 act: "Sebaey_interact2"
@@ -336,7 +339,11 @@ class Dialogues {
             contents: ["Rules? What a boring place...", "Whatever, I'll just drink water."]
         },
         Soso_interact1: {
-            contents: ["Help me please, I am very sick and hungry.", "Could you spare some money?"],
+            contents: ["Help me please, I am very sick and hungry."],
+            next: "Soso_interact1_2"
+        },
+        Soso_interact1_2: {
+            contents: ["Could you spare some money?"],
             options: [{
                 text: "Give $10",
                 act: "$give_money_10"
@@ -362,33 +369,79 @@ class Dialogues {
         },
         "7azo_interact1": {
             contents: ["Yo! Ready for some action?"],
+            options: [
+                { text: "Yeah, let's go!", act: "7azo_yes" },
+                { text: "Not right now, sorry.", act: "7azo_no" }
+            ]
         },
+        "7azo_yes": { contents: ["Awesome! Let me know when you are fully ready!"] },
+        "7azo_no": { contents: ["Ah, maybe next time then. Take care!"] },
         Ganna_interact1: {
             contents: ["Hi there! Have you seen my friends around?"],
+            options: [
+                { text: "No, I haven't seen them.", act: "Ganna_no" },
+                { text: "I think they are at the farm.", act: "Ganna_yes" }
+            ]
         },
+        Ganna_no: { contents: ["Oh okay, let me know if you do!"] },
+        Ganna_yes: { contents: ["Really? I'll go check there! Thank you so much!"] },
         Kinzy_interact1: {
             contents: ["Hello! What a beautiful day to be in the town square!"],
+            options: [
+                { text: "Yes, the weather is perfect.", act: "Kinzy_good" },
+                { text: "It's a bit too hot for me.", act: "Kinzy_hot" }
+            ]
         },
+        Kinzy_good: { contents: ["I couldn't agree more! Enjoy your day!"] },
+        Kinzy_hot: { contents: ["Haha, make sure you drink plenty of cold water then!"] },
         Mario_interact1: {
             contents: ["Hey! I'm Mario. Nice to meet you!"],
-        }
+            options: [
+                { text: "Nice to meet you too Mario!", act: "Mario_nice" },
+                { text: "What do you do around here?", act: "Mario_work" }
+            ]
+        },
+        Mario_nice: { contents: ["Let's be great friends!"] },
+        Mario_work: { contents: ["I just love exploring the town and hanging out!"] },
+        Youssef_interact1: {
+            contents: ["Hello! Have you seen these buildings? They are going to become a big gym!"],
+            next: "Youssef_interact1_2"
+        },
+        Youssef_interact1_2: {
+            contents: ["Each building will be dedicated to a specific type of training."],
+            next: "Youssef_interact2"
+        },
+        Youssef_interact2: {
+            contents: ["Always remember the importance of sports.", "Staying active keeps both your body and mind strong!"],
+            next: "Youssef_interact3"
+        },
+        Youssef_interact3: {
+            contents: ["Will you do your best to stay active?"],
+            options: [
+                { text: "I totally agree! I love sports.", act: "Youssef_agree" },
+                { text: "I will try my best to be active.", act: "Youssef_try" }
+            ]
+        },
+        Youssef_agree: { contents: ["That's the spirit! Keep it up!"] },
+        Youssef_try: { contents: ["A little effort every day goes a long way!"] }
     }
 
 
     static #PORTRAIT_CONFIG = {
-        maya: { scale: 1.55, yOffset: 0.6 },
-        medo: { scale: 1.55, yOffset: 0.6 },
-        mimo: { scale: 1.1, yOffset: 0.5 },
-        maryoma: { scale: 0.9, yOffset: 0.47 },
-        zozo: { scale: 1.1, yOffset: 0.5 },
-        recycler: { scale: 1.1, yOffset: 0.5 },
-        sebaey: { scale: 2.6, yOffset: 0.14 },
-        soso: { scale: 2.6, yOffset: 0.14 },
-        grandmother: { scale: 2.5, yOffset: 0.1 },
-        "7azo": { scale: 1.1, yOffset: 0.5 },
-        ganna: { scale: 0.9, yOffset: 0.47 },
-        kinzy: { scale: 1.55, yOffset: 0.6 },
-        mario: { scale: 1.55, yOffset: 0.6 }
+        maya: { scale: 1.0, yOffset: 0.5 },
+        medo: { scale: 1.3, yOffset: 0.5 },
+        mimo: { scale: 1.0, yOffset: 0.5 },
+        maryoma: { scale: 1.0, yOffset: 0.45 },
+        zozo: { scale: 1.0, yOffset: 0.5 },
+        recycler: { scale: 1.0, yOffset: 0.5 },
+        sebaey: { scale: 1.0, yOffset: 0.3 },
+        soso: { scale: 1.0, yOffset: 0.3 },
+        grandmother: { scale: 1.0, yOffset: 0.25 },
+        "7azo": { scale: 1.0, yOffset: 0.4 },
+        ganna: { scale: 1.0, yOffset: 0.45 },
+        kinzy: { scale: 1.0, yOffset: 0.5 },
+        mario: { scale: 1.0, yOffset: 0.5 },
+        youssef: { scale: 1.0, yOffset: 0.4 }
     }
 
     static isAnyDialoguePlaying() {
@@ -476,10 +529,13 @@ class Dialogues {
                     if (hdImg) {
                         // HD Portrait (Single frame, high res)
                         ctx.imageSmoothingEnabled = true;
+
+                        // Use custom config to frame the image perfectly filling the circle
                         const drawW = portraitSize * config.scale; 
                         const drawH = drawW * (charImg.height / charImg.width);
                         const drawX = (portraitX + portraitSize / 2) - drawW / 2;
                         const drawY = (portraitCenterY + portraitSize / 2) - drawH * config.yOffset;
+                        
                         ctx.drawImage(charImg, drawX, drawY, drawW, drawH);
                     } else {
                         // Spritesheet Fallback (Pixel art)
@@ -525,16 +581,40 @@ class Dialogues {
                 Font.draw(ctx, nameStr, textFontSize * 1.0, namePx, namePy, labelColor, "rgba(0,0,0,0.05)", "Segoe UI", "bold", false);
             }
 
-            // Draw dialogue lines (Refined line index and spacing)
+            // Draw dialogue lines with Auto-Wrap wrapping (Refined line index and spacing)
             let lineIndex = 0;
+            const maxLineWidth = boxWidth - contentOffsetX - textFontSize * 2;
+            Font.update(ctx, textFontSize); 
+            
             Dialogues.#CURRENT.contents.forEach(_l => {
+                const words = _l.split(' ');
+                let currentLine = '';
+                
+                for (let i = 0; i < words.length; i++) {
+                    const testLine = currentLine + words[i] + ' ';
+                    const testWidth = Font.measure(ctx, testLine).width;
+                    
+                    if (testWidth > maxLineWidth && i > 0) {
+                        Font.draw(
+                            ctx, currentLine, textFontSize, 
+                            boxX + contentOffsetX, 
+                            boxY + textFontSize * (2.6 + lineIndex), 
+                            "#3e2723", "rgba(255,255,255,0.1)", "Segoe UI", "bold", false
+                        );
+                        currentLine = words[i] + ' ';
+                        lineIndex += 1.5;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+                
                 Font.draw(
-                    ctx, _l, textFontSize, 
+                    ctx, currentLine, textFontSize, 
                     boxX + contentOffsetX, 
                     boxY + textFontSize * (2.6 + lineIndex), 
                     "#3e2723", "rgba(255,255,255,0.1)", "Segoe UI", "bold", false
                 );
-                lineIndex += 1.5; // Increased line spacing from 1.3
+                lineIndex += 1.5;
             });
 
             // Handle Next Indicator / Options

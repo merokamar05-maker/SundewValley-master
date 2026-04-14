@@ -127,6 +127,12 @@
         "y": 45,
         "name": "Soso",
         "type": "npc"
+      },
+      {
+        "x": 75,
+        "y": 37,
+        "name": "Youssef",
+        "type": "npc"
       }
     ]
   },

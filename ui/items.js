@@ -37,6 +37,7 @@ class InventoryItems {
         "water": [2, 3],
         "orange_juice": [3, 3],
         "apple_juice": [4, 3],
+        "pineapple_juice": [5, 3],
         "trash": [9, 2]
     }
     static PRICES = {
@@ -71,6 +72,7 @@ class InventoryItems {
         "water": 5,
         "orange_juice": 15,
         "apple_juice": 15,
+        "pineapple_juice": 15,
         "trash": 5
     }
     static NAMES = {
@@ -105,6 +107,7 @@ class InventoryItems {
         "water": "Water",
         "orange_juice": "Orange Juice",
         "apple_juice": "Apple Juice",
+        "pineapple_juice": "Pineapple Juice",
         "trash": "Trash Bag"
     }
 
@@ -115,6 +118,11 @@ class InventoryItems {
         "goat": "./images/animals/goat/black_goat.png",
         "pig": "./images/animals/pig/pink_pig.png",
         "sheep": "./images/animals/sheep/white_sheep_sheet.png"
+    }
+
+    static STANDALONE_IMAGES = {
+        "medicinal_juice": "./images/items/grand juice.png",
+        "trash": "./images/items/trash.png"
     }
 
     static init() {
@@ -148,6 +156,16 @@ class InventoryItems {
                     0, 0, frameSize, frameSize, // Source frame (top-left)
                     dx, dy, dw, dh              // Destination slot
                 );
+                return;
+            }
+        }
+
+        // If it's a standalone image for an item
+        if (this.STANDALONE_IMAGES[key] != null) {
+            const imgPath = this.STANDALONE_IMAGES[key];
+            const img = ASSET_MANAGER.getImageByPath(imgPath);
+            if (img && img.complete && img.naturalWidth > 0) {
+                ctx.drawImage(img, pixelX, pixelY, width, height);
                 return;
             }
         }

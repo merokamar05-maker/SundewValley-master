@@ -32,6 +32,11 @@ class TradeUI extends ItemBarUI {
     }
 
     moveStuffBetweenContainers(currentIndex, key) {
+        // Trash can only be given to the recycler (Tawfiq) - not sold in trade screens
+        if (key === "trash") {
+            return;
+        }
+
         if (currentIndex >= 0) {
             if (InventoryItems.PRICES[key] != null) {
                 if (currentIndex < ItemBarUI.ITEMS_PER_ROW) {

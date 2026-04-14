@@ -122,6 +122,13 @@ class Npc extends Character {
             _animalKeys.forEach(key => {
                 this.obtainItem(key, 5) // Give Zozo 5 of each animal to start with
             })
+        } else if (this.getName().localeCompare("Maryoma") === 0) {
+            this.clearInventory()
+            this.setMoney(getRandomIntInclusive(1000, 3000))
+            const _drinkKeys = ["water", "orange_juice", "apple_juice", "pineapple_juice"]
+            _drinkKeys.forEach(key => {
+                this.obtainItem(key, 10) // Give Maryoma 10 of each drink to sell
+            })
         }
     }
 }

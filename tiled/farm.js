@@ -23,9 +23,16 @@ class FarmLevel extends Level {
                     const count = container[key].amount;
                     const config = animalMapping[key];
                     for (let i = 0; i < count; i++) {
-                        // Spawn at a random position near the farm house spawn [15, 40]
-                        const spawnX = 15 + Math.random() * 8;
-                        const spawnY = 36 + Math.random() * 8;
+                        let spawnX, spawnY;
+                        if (key === "chicken") {
+                            // Moved 2 steps up from [7, 45]
+                            spawnX = 7 + Math.random() * 2;
+                            spawnY = 43 + Math.random() * 2;
+                        } else {
+                            // Moved 2 steps up and 5 steps right from [5, 18]
+                            spawnX = 10 + Math.random() * 4;
+                            spawnY = 16 + Math.random() * 4;
+                        }
                         this.addEntity(new config.class(config.variant, spawnX, spawnY, this));
                     }
                     // Remove the animal items as they are now on the farm

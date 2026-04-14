@@ -52,22 +52,22 @@ class Animal extends Creature {
             }
         }
         super.update()
-        // In non-farm levels, clamp movement to stay within a circular radius of spawn position
-        if (!(this.getMapReference() instanceof FarmLevel)) {
-            const tileSize = this.getMapReference().getTileSize()
-            const rPixels = Animal.#SHOP_WANDER_RADIUS * tileSize
-            const spawnXPixels = this.#spawnBlockX * tileSize
-            const spawnYPixels = this.#spawnBlockY * tileSize
-            
-            const dx = this.getPixelX() - spawnXPixels
-            const dy = this.getPixelY() - spawnYPixels
-            const distSq = dx * dx + dy * dy
-            
-            if (distSq > rPixels * rPixels) {
-                const dist = Math.sqrt(distSq)
-                this.setPixelX(spawnXPixels + (dx / dist) * rPixels)
-                this.setPixelY(spawnYPixels + (dy / dist) * rPixels)
-            }
+        // Clamp movement to stay within a circular radius of spawn position
+        const isFarm = this.getMapReference() instanceof FarmLevel
+        const wanderRadius = isFarm ? 6 : Animal.#SHOP_WANDER_RADIUS
+        const tileSize = this.getMapReference().getTileSize()
+        const rPixels = wanderRadius * tileSize
+        const spawnXPixels = this.#spawnBlockX * tileSize
+        const spawnYPixels = this.#spawnBlockY * tileSize
+        
+        const dx = this.getPixelX() - spawnXPixels
+        const dy = this.getPixelY() - spawnYPixels
+        const distSq = dx * dx + dy * dy
+        
+        if (distSq > rPixels * rPixels) {
+            const dist = Math.sqrt(distSq)
+            this.setPixelX(spawnXPixels + (dx / dist) * rPixels)
+            this.setPixelY(spawnYPixels + (dy / dist) * rPixels)
         }
     };
 
