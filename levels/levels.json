@@ -133,6 +133,12 @@
         "y": 37,
         "name": "Youssef",
         "type": "npc"
+      },
+      {
+        "x": 55,
+        "y": 39,
+        "name": "Beko",
+        "type": "npc"
       }
     ]
   },

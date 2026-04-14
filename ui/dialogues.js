@@ -238,31 +238,55 @@ class Dialogues {
             contents: ["Well go away then", "There is no reason for me to talk to someone like you"],
         },
         Medo_interact1: {
-            contents: ["Hello stranger", "Never see you here before", "Where do you come from?"],
-            next: "Medo_interact2"
+            contents: ["Hello there, stranger!", "First time I have seen you around here."],
+            next: "Medo_interact1_2"
         },
-        Medo_interact2: {
-            contents: ["Hmm interesting", "Just move here and inherit a farm", "from a recently deceased relative?"],
-            next: "Medo_interact2_2"
+        Medo_interact1_2: {
+            contents: ["So tell me... what brings you to Sundew Valley?"],
+            options: [
+                { text: "I inherited the old farm nearby.", act: "Medo_reply_farm" },
+                { text: "I am just exploring the area.", act: "Medo_reply_explore" }
+            ]
         },
-        Medo_interact2_2: {
-            contents: ["Sounds like something that will", "only come out of a video game"],
-            next: "Medo_interact3"
+        Medo_reply_farm: {
+            contents: ["The old farm?!", "That place used to be the heart of this whole village."],
+            next: "Medo_reply_farm_2"
         },
-        Medo_interact3: {
-            contents: ["You see, I think it is great that", "there is a bar out here", "that only serves water and juices."],
-            next: "Medo_interact3_2"
+        Medo_reply_farm_2: {
+            contents: ["Are you planning to bring it back to life?"],
+            options: [
+                { text: "Absolutely! That is my goal.", act: "Medo_farm_yes" },
+                { text: "I am still figuring things out.", act: "Medo_farm_maybe" }
+            ]
         },
-        Medo_interact3_2: {
-            contents: ["Energy drinks will only", "cause problem."],
-            next: "Medo_interact4"
+        Medo_farm_yes: {
+            contents: ["Ha! I love that confidence.", "This village needs someone with that spirit."],
+            next: "Medo_health_topic"
         },
-        Medo_interact4: {
-            contents: ["The youths these days do not", "understand the importance of", "taking care of their bodies."],
-            next: "Medo_interact4_2"
+        Medo_farm_maybe: {
+            contents: ["Do not worry, the land is patient.", "Take your time and you will find your way."],
+            next: "Medo_health_topic"
         },
-        Medo_interact4_2: {
-            contents: ["You are not someone like that,", "aren't you?"],
+        Medo_reply_explore: {
+            contents: ["Exploring, you say?", "Well Sundew Valley is a beautiful place.", "But I will tell you a little secret..."],
+            next: "Medo_reply_explore_2"
+        },
+        Medo_reply_explore_2: {
+            contents: ["Nobody just passes through here.", "This place has a way of keeping people."],
+            next: "Medo_health_topic"
+        },
+        Medo_health_topic: {
+            contents: ["By the way, I love that this bar only serves water and juice."],
+            options: [
+                { text: "Me too! Healthy drinks are the best.", act: "Medo_health_agree" },
+                { text: "Honestly I was hoping for something stronger.", act: "Medo_health_disagree" }
+            ]
+        },
+        Medo_health_agree: {
+            contents: ["My kind of person!", "Taking care of your body is the most important thing.", "The body is a blessing — never forget that."],
+        },
+        Medo_health_disagree: {
+            contents: ["Ha! I understand, but trust me...", "Energy drinks and bad habits will catch up with you.", "Take care of your body while you still can!"],
         },
         Bar_TV1_1: {
             contents: ["The TV is airing the latest weather report"],
@@ -423,25 +447,43 @@ class Dialogues {
             ]
         },
         Youssef_agree: { contents: ["That's the spirit! Keep it up!"] },
-        Youssef_try: { contents: ["A little effort every day goes a long way!"] }
+        Youssef_try: { contents: ["A little effort every day goes a long way!"] },
+        Beko_interact1: {
+            contents: ["Hey! I'm Beko. I just arrived in Sundew Valley.", "I've been looking for the perfect spot for my new project."],
+            next: "Beko_interact2"
+        },
+        Beko_interact2: {
+            contents: ["I'm going to open the village's first luxury clothing store right here!", "Everyone needs to look their best, even on a farm, don't you think?"],
+            options: [
+                { text: "That sounds amazing! We need some style.", act: "Beko_choice_yes" },
+                { text: "Luxury clothes? On a farm? Good luck...", act: "Beko_choice_no" }
+            ]
+        },
+        Beko_choice_yes: {
+            contents: ["Exactly! I knew you'd understand.", "I'll have some high-end fabrics arriving soon. Stay tuned!"],
+        },
+        Beko_choice_no: {
+            contents: ["Haha, I like a challenge!", "Once people see my designs, they won't want to wear anything else!"],
+        }
     }
 
 
     static #PORTRAIT_CONFIG = {
         maya: { scale: 1.0, yOffset: 0.5 },
-        medo: { scale: 1.3, yOffset: 0.5 },
+        medo: { scale: 1.4, yOffset: 0.5 },
         mimo: { scale: 1.0, yOffset: 0.5 },
         maryoma: { scale: 1.0, yOffset: 0.45 },
         zozo: { scale: 1.0, yOffset: 0.5 },
         recycler: { scale: 1.0, yOffset: 0.5 },
-        sebaey: { scale: 1.0, yOffset: 0.3 },
+        sebaey: { scale: 1.1, yOffset: 0.3 },
         soso: { scale: 1.0, yOffset: 0.3 },
         grandmother: { scale: 1.0, yOffset: 0.25 },
         "7azo": { scale: 1.0, yOffset: 0.4 },
         ganna: { scale: 1.0, yOffset: 0.45 },
         kinzy: { scale: 1.0, yOffset: 0.5 },
         mario: { scale: 1.0, yOffset: 0.5 },
-        youssef: { scale: 1.0, yOffset: 0.4 }
+        youssef: { scale: 1.0, yOffset: 0.4 },
+        beko: { scale: 1.0, yOffset: 0.3 }
     }
 
     static isAnyDialoguePlaying() {
@@ -574,14 +616,21 @@ class Dialogues {
 
             // Draw character name label
             if (Dialogues.#CURRENT_INIT_BY) {
-                const nameStr = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
+                const _DISPLAY_NAMES = { "medo": "Mohamed" };
+                const _rawName = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
+                const nameStr = _DISPLAY_NAMES[_rawName.toLowerCase()] || _rawName;
                 const namePx = boxX + contentOffsetX;
                 const namePy = boxY + textFontSize * 0.8;
                 
                 Font.draw(ctx, nameStr, textFontSize * 1.0, namePx, namePy, labelColor, "rgba(0,0,0,0.05)", "Segoe UI", "bold", false);
             }
 
-            // Draw dialogue lines with Auto-Wrap wrapping (Refined line index and spacing)
+            // Draw dialogue lines with Auto-Wrap wrapping — clipped to box so text never overflows
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(boxX + contentOffsetX, boxY + textFontSize * 1.2, boxWidth - contentOffsetX - marginX, boxHeight - textFontSize * 1.5);
+            ctx.clip();
+
             let lineIndex = 0;
             const maxLineWidth = boxWidth - contentOffsetX - textFontSize * 2;
             Font.update(ctx, textFontSize); 
@@ -616,6 +665,7 @@ class Dialogues {
                 );
                 lineIndex += 1.5;
             });
+            ctx.restore(); // end text clip region
 
             // Handle Next Indicator / Options
             const hasNoOption = this.#CURRENT["options"] == null || this.#CURRENT["options"].length <= 0;

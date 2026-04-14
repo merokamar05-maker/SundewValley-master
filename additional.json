@@ -113,7 +113,9 @@
     "./images/characters/portraits/youssef_hd.png",
     "./images/items/grand juice.png",
     "./images/items/trash.png",
-    "./images/characters/youssef.png"
+    "./images/characters/youssef.png",
+    "./images/characters/beko.png",
+    "./images/characters/portraits/beko_hd.png"
   ],
   "jsons": [
     "./images/animals/chicken/chicken.json",
@@ -189,6 +191,7 @@
     "./images/characters/ganna.json",
     "./images/characters/kinzy.json",
     "./images/characters/mario.json",
-    "./images/characters/youssef.json"
+    "./images/characters/youssef.json",
+    "./images/characters/beko.json"
   ]
 }
