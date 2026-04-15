@@ -1,26 +1,26 @@
 {
   "animations": {
     "idle_l": [
-      1,
+      0,
       0,
       1
     ],
     "idle_r": [
-      1,
+      0,
       0,
       1
     ],
     "move_l": [
       0,
-      1,
-      3
+      0,
+      1
     ],
     "move_r": [
       0,
-      2,
-      3
+      0,
+      1
     ]
   },
-  "tileheight": 20,
-  "tilewidth": 16
+  "tileheight": 1024,
+  "tilewidth": 1024
 }

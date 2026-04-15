@@ -13,9 +13,11 @@ class Trash extends Entity {
 
     interact(playerRef) {
         playerRef.obtainItem("trash", 1);
+        playerRef.addKarma(5); // +5 Karma for cleaning up the world
         this.removeFromWorld = true;
         ASSET_MANAGER.playSound("Gravel_hit1.ogg");
     }
+
 
     update() {
         // Trash doesn't need to update state every frame

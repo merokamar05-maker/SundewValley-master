@@ -233,11 +233,14 @@
     ],
     "entities": [
       {
-        "x": 30,
-        "y": 19,
+        "x": 30.5,
+        "y": 20.5,
         "name": "Grandmother",
         "type": "npc"
       }
+
+
+
     ]
   },
   "crop_shop": {

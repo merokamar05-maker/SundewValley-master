@@ -2,6 +2,13 @@ class Dialogues {
     static #CURRENT = null
     static #CURRENT_INIT_BY = null
     static HAS_KNOCKED_TODAY = false
+    static LAST_CURED_DAY = -10 // Starts sick at day 0
+    static MIMO_INTERACTION_COUNT = 0
+    static SOSO_GENEROSITY_LEVEL = 0
+    static MEDO_INTERACTION_COUNT = 0
+
+
+
 
     static #SCRIPTS = {
         FarmHouse_Door: {
@@ -121,6 +128,22 @@ class Dialogues {
                 act: "$enter_farmhouse"
             }]
         },
+        Grandmother_healthy_start: {
+            contents: ["Hello my dear! I feel so much better thanks to you.", "You know, your grandfather always said the secret to a good farm is in the timing."],
+            next: "Grandmother_planting_tip1"
+        },
+        Grandmother_planting_tip1: {
+            contents: ["Always check the season before you plant.", "Some seeds love the spring, while others need the summer sun.", "Check the guide if you are ever unsure!"],
+            next: "Grandmother_planting_tip2"
+        },
+        Grandmother_planting_tip2: {
+            contents: ["And don't forget to water them!", "Plants are like us, they need a drink to stay strong.", "If they turn yellow, they are thirsty!"],
+            next: "Grandmother_healthy_end"
+        },
+        Grandmother_healthy_end: {
+            contents: ["I'm so proud of you for taking care of this land.", "Go on now, the earth is waiting for you!"]
+        },
+
         Maya_interact1: {
             contents: ["Hello my Name is Maya", "What can I do for you, my dear customer?"],
             options: [{
@@ -276,18 +299,57 @@ class Dialogues {
             next: "Medo_health_topic"
         },
         Medo_health_topic: {
-            contents: ["By the way, I love that this bar only serves water and juice."],
-            options: [
-                { text: "Me too! Healthy drinks are the best.", act: "Medo_health_agree" },
-                { text: "Honestly I was hoping for something stronger.", act: "Medo_health_disagree" }
-            ]
+            contents: ["By the way, I love that this bar only serves water and juice.", "It's refreshing to see people caring for their bodies."],
         },
-        Medo_health_agree: {
-            contents: ["My kind of person!", "Taking care of your body is the most important thing.", "The body is a blessing — never forget that."],
+        Medo_stage2_1: {
+            contents: ["I've been thinking... failure is just a different kind of harvest.", "Don't you agree, farmer?"],
+            options: [{
+                text: "I agree! It's a lesson for the next season.",
+                act: "Medo_stage2_optimist"
+            }, {
+                text: "Maybe, but it still hurts the pocket!",
+                act: "Medo_stage2_realist"
+            }]
         },
-        Medo_health_disagree: {
-            contents: ["Ha! I understand, but trust me...", "Energy drinks and bad habits will catch up with you.", "Take care of your body while you still can!"],
+        Medo_stage2_optimist: {
+            contents: ["Spoken like a true farmer.", "Patience is your greatest tool, even more than your hoe."],
         },
+        Medo_stage2_realist: {
+            contents: ["Haha, very true. The soil doesn't pay the bills directly.", "But a lesson learned today saves a crop tomorrow."],
+        },
+        Medo_stage3_1: {
+            contents: ["SunDew Valley feels warmer lately. Not just the weather...", "Is it the season, or is it your influence on the village?"],
+            options: [{
+                text: "It's the spirit of the people here.",
+                act: "Medo_stage3_humble"
+            }, {
+                text: "I'm doing my best to bring it back!",
+                act: "Medo_stage3_proud"
+            }]
+        },
+        Medo_stage3_humble: {
+            contents: ["A modest answer. I like that.", "True change always starts from the community, but it needs a spark."],
+        },
+        Medo_stage3_proud: {
+            contents: ["And it shows. That fire in your eyes is what this valley needed.", "Keep that passion alive, kid."],
+        },
+        Medo_stage4_1: {
+            contents: ["Every plant has its own time to bloom. You can't rush the spring.", "Do you ever feel like you're rushing life too much?"],
+            options: [{
+                text: "Sometimes, there's so much to do!",
+                act: "Medo_stage4_busy"
+            }, {
+                text: "I try to take it one day at a time.",
+                act: "Medo_stage4_calm"
+            }]
+        },
+        Medo_stage4_busy: {
+            contents: ["Slow down for a moment. Take a breath.", "The crops can wait 5 minutes. Your soul needs the rest more."],
+        },
+        Medo_stage4_calm: {
+            contents: ["That is wisdom right there.", "The farmer who walks slowly sees the weeds before they take root."],
+        },
+
         Bar_TV1_1: {
             contents: ["The TV is airing the latest weather report"],
             next: "Bar_TV1_2"
@@ -339,6 +401,40 @@ class Dialogues {
         Mimo_interact4_2: {
             contents: ["It will cause pollution.", "Nature is precious, let's protect it!"],
         },
+        Mimo_stage2_1: {
+            contents: ["Ah, I see you are getting the hang of things!", "The farm already looks much more alive."],
+            next: "Mimo_stage2_2"
+        },
+        Mimo_stage2_2: {
+            contents: ["Have you visited the shops in town yet?", "Maya at the crop shop has all the seasonal seeds you need."],
+            next: "Mimo_stage2_3"
+        },
+        Mimo_stage2_3: {
+            contents: ["And don't be shy with the other villagers!", "Medo at the bar is a bit of a philosopher, but he tells great stories."],
+        },
+        Mimo_stage3_1: {
+            contents: ["Did you know that SunDew Valley has its little secrets?", "Always keep an eye on the weather report!"],
+            next: "Mimo_stage3_2"
+        },
+        Mimo_stage3_2: {
+            contents: ["The TV in Maryoma's bar is old, but the forecast is usually right.", "Rainy days are perfect for visiting the mines or the forest!"],
+            next: "Mimo_stage3_3"
+        },
+        Mimo_stage3_3: {
+            contents: ["One more tip: Tawfiq at the recycler is a good friend to have.", "He'll pay you for any trash you find. It's a win-win for everyone!"],
+        },
+        Mimo_stage4_1: {
+            contents: ["Every time I look at this land, I'm reminded of your grandfather.", "He would be so happy to see what you are doing here."],
+            next: "Mimo_stage4_2"
+        },
+        Mimo_stage4_2: {
+            contents: ["You aren't just planting crops, you are planting hope.", "The whole valley is beginning to bloom because of you."],
+            next: "Mimo_stage4_3"
+        },
+        Mimo_stage4_3: {
+            contents: ["I'm proud of you, kid. Keep that spirit alive!", "Sundew Valley is truly your home now."],
+        },
+
         Sebaey_interact1: {
             contents: [
                 "Hey kid! Come here.", 
@@ -391,6 +487,35 @@ class Dialogues {
         Soso_no_money_response: {
             contents: ["I understand... things are hard for everyone.", "Thank you anyway. Have a nice day."],
         },
+        Soso_spy_stage_1: {
+            contents: ["You are so kind to me...", "Wait, let me tell you something I saw."],
+            next: "Soso_spy_stage_2"
+        },
+        Soso_spy_stage_2: {
+            contents: ["I saw Tawfiq the recycler hiding a shiny bag behind the shops last night.", "Maybe there is something valuable inside!"],
+        },
+        Soso_reward_stage_1: {
+            contents: ["God bless you! Because of your help, I bought my medicine.", "I feel so much better now."],
+            next: "Soso_reward_stage_2"
+        },
+        Soso_reward_stage_2: {
+            contents: ["I found this item while walking by the farm.", "It looks like a special seed. Please, take it as a gift from me."],
+            options: [{
+                text: "Thank you, Soso!",
+                act: "$soso_gift"
+            }]
+        },
+        Soso_reward_success: {
+            contents: ["It's the least I can do.", "You have a heart of gold, my friend."],
+        },
+        Soso_grateful_1: {
+            contents: ["Ah, my favorite person!", "How is the farm today?"],
+            next: "Soso_grateful_2"
+        },
+        Soso_grateful_2: {
+            contents: ["The sunshine today reminds me of your kindness.", "May your crops grow tall and strong!"],
+        },
+
         "7azo_interact1": {
             contents: ["Yo! Ready for some action?"],
             options: [
@@ -489,6 +614,13 @@ class Dialogues {
     static isAnyDialoguePlaying() {
         return this.#CURRENT != null
     }
+
+    static isGrandmotherSick() {
+        // She gets sick every 5 days.
+        const currentDay = DateTimeSystem.getTotalDays()
+        return currentDay - this.LAST_CURED_DAY >= 5
+    }
+
 
     static getInitBy() {
         return this.#CURRENT_INIT_BY
@@ -727,10 +859,14 @@ class Dialogues {
                             }
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_juice") === 0) {
                             if (Level.PLAYER.tryUseItem("medicinal_juice", 1)) {
+                                this.LAST_CURED_DAY = DateTimeSystem.getTotalDays()
+                                Level.PLAYER.addKarma(40); // Large karma boost for helping Grandma
                                 this.update("Grandmother_juice_success", this.#CURRENT_INIT_BY);
+
                             } else {
                                 this.update("Grandmother_juice_fail", this.#CURRENT_INIT_BY);
                             }
+
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_trash") === 0) {
                             // Calculate total trash from both inventory and item bar
                             const invTrash = Level.PLAYER.getInventory()["trash"] ? Level.PLAYER.getInventory()["trash"].amount : 0;
@@ -744,7 +880,11 @@ class Dialogues {
                                 // Remove from bar if exists
                                 if (barTrash > 0) Level.PLAYER.tryUseItem("trash", barTrash);
                                 
+                                // Each bag of trash recycled adds to the Good Deed bar
+                                Level.PLAYER.addKarma(totalTrash * 3);
+                                
                                 this.update("Recycler_trash_success", this.#CURRENT_INIT_BY);
+
                             } else {
                                 this.update("Recycler_trash_fail", this.#CURRENT_INIT_BY);
                             }
@@ -779,14 +919,22 @@ class Dialogues {
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_money_10") === 0) {
                             if (Level.PLAYER.getMoney() >= 10) {
                                 Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 10);
+                                Dialogues.SOSO_GENEROSITY_LEVEL++;
+                                Level.PLAYER.addKarma(10);
                                 this.update("Soso_give_10_success", this.#CURRENT_INIT_BY);
+
+
                             } else {
                                 this.update("Soso_give_fail", this.#CURRENT_INIT_BY);
                             }
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$give_money_50") === 0) {
                             if (Level.PLAYER.getMoney() >= 50) {
                                 Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 50);
+                                Dialogues.SOSO_GENEROSITY_LEVEL += 2; // Giving more builds trust faster
+                                Level.PLAYER.addKarma(35);
                                 this.update("Soso_give_50_success", this.#CURRENT_INIT_BY);
+
+
                             } else {
                                 this.update("Soso_give_fail", this.#CURRENT_INIT_BY);
                             }
@@ -814,7 +962,12 @@ class Dialogues {
                             } else {
                                 this.update("Bar_buy_fail", this.#CURRENT_INIT_BY);
                             }
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$soso_gift") === 0) {
+
+                            Level.PLAYER.obtainItem("strawberry_seed", 5);
+                            this.update("Soso_reward_success", this.#CURRENT_INIT_BY);
                         }
+
                     } else {
                         this.update(this.#CURRENT["options"][currentHover].act, this.#CURRENT_INIT_BY)
                     }

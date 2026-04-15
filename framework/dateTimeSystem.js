@@ -51,4 +51,10 @@ class DateTimeSystem {
         }
     }
 
+    static getTotalDays() {
+        const start = new Date(this.#data.getFullYear(), 2, 1, 6, 0, 1, 0); // Match init date
+        const diff = this.#data.getTime() - start.getTime();
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+
 }

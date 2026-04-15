@@ -11,9 +11,28 @@ class Npc extends Character {
         super(name, name.toLowerCase(), x, y, mapRef)
         this.setMovingSpeedX(5)
         this.setMovingSpeedY(5)
-        const heightMultiplier = name === "Grandmother" ? 1.3 : 1.3
-        this.setSize(this.getMapReference().getTileSize() * 1, this.getMapReference().getTileSize() * heightMultiplier)
-        this.customHitBox = {x: -1, y: -1, width: 3, height: 3}
+        
+        // Special scaling for the high-res Grandmother image
+        const widthScale = name === "Grandmother" ? 2.5 : 1
+        const heightMultiplier = name === "Grandmother" ? 2.5 : 1.3
+
+        
+        this.setSize(this.getMapReference().getTileSize() * widthScale, this.getMapReference().getTileSize() * heightMultiplier)
+        
+        // RE-CALCULATE POSITION: After setting a custom size, we MUST re-set the block coordinates
+        // because setBlockX/Y depends on the width/height which just changed. 
+        // Failing to do this results in the NPC being positioned off-screen based on the old 1024x1024 size.
+        this.setBlockX(x)
+        this.setBlockY(y)
+
+        if (name === "Grandmother") {
+
+            // Adjust hitbox for the larger sprite
+            this.customHitBox = {x: 0.25, y: 0.5, width: 1.5, height: 2}
+        } else {
+            this.customHitBox = {x: -1, y: -1, width: 3, height: 3}
+        }
+
         this.#isSoso = name === "Soso"
         this.#isMovingNpc = ["7azo", "Ganna", "Kinzy", "Mario"].includes(name) || this.#isSoso
         if (this.#isMovingNpc) {
@@ -32,7 +51,7 @@ class Npc extends Character {
             else if (name === "Kinzy") this.#target_waypoint_idx = 3;           // Moving from SE to NE (Reversed)
             else if (name === "Mario") this.#target_waypoint_idx = 2;           // Moving from SW to SE (Reversed)
             else this.#target_waypoint_idx = 0;
-
+ 
             this.#prev_x = x
             this.#prev_y = y
             this.#stuck_timer = 0
@@ -44,8 +63,58 @@ class Npc extends Character {
     }
 
     interact() {
-        Dialogues.update(this.getName() + "_interact1", this)
+        const name = this.getName();
+        if (name === "Grandmother") {
+            if (Dialogues.isGrandmotherSick()) {
+                Dialogues.update("Grandmother_interact1", this)
+            } else {
+                Dialogues.update("Grandmother_healthy_start", this)
+            }
+        } else if (name === "Mimo") {
+            Dialogues.MIMO_INTERACTION_COUNT++;
+            const stage = Math.floor((Dialogues.MIMO_INTERACTION_COUNT - 1) / 2);
+            
+            if (stage === 0) {
+                Dialogues.update("Mimo_interact1", this);
+            } else if (stage === 1) {
+                Dialogues.update("Mimo_stage2_1", this);
+            } else if (stage === 2) {
+                Dialogues.update("Mimo_stage3_1", this);
+            } else {
+                Dialogues.update("Mimo_stage4_1", this);
+            }
+        } else if (name === "Soso") {
+            if (Dialogues.SOSO_GENEROSITY_LEVEL <= 2) {
+                Dialogues.update("Soso_interact1", this);
+            } else if (Dialogues.SOSO_GENEROSITY_LEVEL <= 5) {
+                Dialogues.update("Soso_spy_stage_1", this);
+            } else if (Dialogues.SOSO_GENEROSITY_LEVEL === 6) {
+                Dialogues.update("Soso_reward_stage_1", this);
+                Dialogues.SOSO_GENEROSITY_LEVEL++; // Move to grateful stage after one reward
+            } else {
+                Dialogues.update("Soso_grateful_1", this);
+            }
+        } else if (name === "Medo") {
+            Dialogues.MEDO_INTERACTION_COUNT++;
+            const stage = Math.floor((Dialogues.MEDO_INTERACTION_COUNT - 1) / 2);
+            
+            if (stage === 0) {
+                Dialogues.update("Medo_interact1", this);
+            } else if (stage === 1) {
+                Dialogues.update("Medo_stage2_1", this);
+            } else if (stage === 2) {
+                Dialogues.update("Medo_stage3_1", this);
+            } else {
+                Dialogues.update("Medo_stage4_1", this);
+            }
+        } else {
+            Dialogues.update(name + "_interact1", this)
+        }
+
+
     }
+
+
 
     update() {
         if (this.#isMovingNpc) {

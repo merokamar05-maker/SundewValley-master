@@ -2,6 +2,7 @@ class Player extends Character {
     // whether the player is in idle or not
     #isIdle
     #itemBar
+    #karma
 
     constructor(name, x, y, mapRef) {
         super(name, "player", x, y, mapRef)
@@ -11,7 +12,23 @@ class Player extends Character {
         this.#isIdle = true
         this.ishidden = false
         this.#itemBar = {}
+        this.#karma = 0
     }
+
+    getKarma() {
+        return this.#karma;
+    }
+
+    addKarma(amount) {
+        this.#karma += amount;
+        if (this.#karma >= 100) {
+            this.#karma = 0;
+            this.earnMoney(500); 
+            // We could play a sound here if we want!
+            ASSET_MANAGER.playSound("Gravel_hit3.ogg"); // Use a distinct sound for reward
+        }
+    }
+
 
     getItemBar() {
         return this.#itemBar

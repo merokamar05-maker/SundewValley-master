@@ -63,7 +63,9 @@ class UserInterfaces {
         } else {
             this.#CURRENT.draw(ctx)
             this.drawMoney(ctx)
+            this.drawKarmaBar(ctx)
         }
+
     }
 
     drawMoney(ctx) {
@@ -171,4 +173,106 @@ class UserInterfaces {
 
         ctx.restore();
     }
+
+    drawKarmaBar(ctx) {
+        const karma = Level.PLAYER.getKarma();
+        const maxKarma = 100;
+        const progress = Math.min(karma / maxKarma, 1);
+        
+        const padding = 20;
+        const barWidth = 300;
+        const barHeight = 26;
+        const x = (ctx.canvas.width - barWidth) / 2;
+        const y = padding;
+        
+        ctx.save();
+        
+        // 1. Label / Icon
+        const labelText = "GOOD DEEDS";
+        ctx.font = "bold 14px 'Trebuchet MS', Verdana, sans-serif";
+        
+        // Draw Label Shadow for visibility
+        ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.fillText(labelText, x + barWidth / 2 + 15, y - 10);
+
+        // Draw small Heart Icon
+        const heartX = x + barWidth / 2 - 45;
+        const heartY = y - 15;
+        ctx.fillStyle = "#ff5252";
+        ctx.beginPath();
+        ctx.moveTo(heartX, heartY + 4);
+        ctx.bezierCurveTo(heartX, heartY, heartX - 8, heartY, heartX - 8, heartY + 8);
+        ctx.bezierCurveTo(heartX - 8, heartY + 12, heartX, heartY + 16, heartX, heartY + 20);
+        ctx.bezierCurveTo(heartX, heartY + 16, heartX + 8, heartY + 12, heartX + 8, heartY + 8);
+        ctx.bezierCurveTo(heartX + 8, heartY, heartX, heartY, heartX, heartY + 4);
+        ctx.fill();
+
+        // 2. Main Container (High Contrast Background)
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+        
+        // Darker glass background for contrast
+        const bgGradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+        bgGradient.addColorStop(0, "rgba(20, 30, 20, 0.85)");
+        bgGradient.addColorStop(1, "rgba(5, 10, 5, 0.95)");
+        ctx.fillStyle = bgGradient;
+        
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x, y, barWidth, barHeight, 13);
+        else ctx.rect(x, y, barWidth, barHeight);
+        ctx.fill();
+        
+        // Border
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 3. Progress Fill (Vibrant Pulse Gradient)
+        if (progress > 0) {
+            const time = Date.now() / 1000;
+            const pulse = Math.abs(Math.sin(time)) * 0.15;
+            
+            const fillGradient = ctx.createLinearGradient(x, y, x + barWidth * progress, y);
+            fillGradient.addColorStop(0, "rgba(67, 160, 71, 0.9)"); // Green
+            fillGradient.addColorStop(0.5, "rgba(129, 199, 132, 0.9)"); // Light Green
+            fillGradient.addColorStop(1, "rgba(255, 215, 0, 0.95)"); // Golden Tip
+            
+            ctx.fillStyle = fillGradient;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = `rgba(129, 199, 132, ${0.4 + pulse})`;
+            
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(x + 2, y + 2, (barWidth - 4) * progress, barHeight - 4, 11);
+            } else {
+                ctx.rect(x + 2, y + 2, (barWidth - 4) * progress, barHeight - 4);
+            }
+            ctx.fill();
+            
+            // Glossy Shine
+            const shine = ctx.createLinearGradient(x, y, x, y + barHeight * 0.4);
+            shine.addColorStop(0, "rgba(255, 255, 255, 0.25)");
+            shine.addColorStop(1, "rgba(255, 255, 255, 0)");
+            ctx.fillStyle = shine;
+            ctx.fill();
+        }
+
+        // 4. Percentage Text Overlay
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 13px Verdana";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        // Draw subtle text stroke for maximum readability
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.lineWidth = 2;
+        ctx.strokeText(`${karma}%`, x + barWidth / 2, y + barHeight / 2);
+        ctx.fillText(`${karma}%`, x + barWidth / 2, y + barHeight / 2);
+
+        ctx.restore();
+    }
+
 }
