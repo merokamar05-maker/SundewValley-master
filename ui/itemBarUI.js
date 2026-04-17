@@ -30,34 +30,60 @@ class ItemBarUI extends GameObjectsMapContainer {
     }
 
     drawTool(ctx, key, pixelX, pixelY, width, height, toolLevel = 0) {
-        const boxWidth = this.#boxSize * 1.75
-        const boxHeight = this.#boxSize * 1.75
-        const boxStartX = pixelX + (width - boxWidth) / 2
-        const boxStartY = pixelY + (height - boxHeight) / 2
+        const boxWidth = this.#boxSize * 1.4;
+        const boxHeight = this.#boxSize * 1.4;
+        const boxStartX = pixelX;
+        const boxStartY = pixelY;
         
         ctx.save();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.15)"; // Brighter glassy tool slot
-        ctx.shadowColor = "rgba(255, 255, 255, 0.2)";
-        ctx.shadowBlur = 8;
+        // Calm Dark Beige HUD Background (No Shadows inside for consistency, glowing drop shadow on container)
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        
+        const barGradient = ctx.createLinearGradient(boxStartX, boxStartY, boxStartX, boxStartY + boxHeight);
+        barGradient.addColorStop(0, "rgba(225, 200, 170, 0.96)");
+        barGradient.addColorStop(1, "rgba(190, 160, 130, 0.96)");
+        ctx.fillStyle = barGradient;
+
         ctx.beginPath();
         if (ctx.roundRect) ctx.roundRect(boxStartX, boxStartY, boxWidth, boxHeight, 14);
         else ctx.rect(boxStartX, boxStartY, boxWidth, boxHeight);
         ctx.fill();
 
+        ctx.shadowBlur = 0;
         ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(160, 130, 90, 0.8)"; // Match dark organic border of Hotbar
+        ctx.stroke();
+        
+        // Inner depth highlight
+        ctx.lineWidth = 1;
         ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
         ctx.stroke();
         ctx.restore();
 
-        InventoryItems.drawImage(ctx, key, pixelX, pixelY, width, height, toolLevel)
+        // Draw icon cleanly centered inside the unified box
+        const iconSize = this.#boxSize * 0.85;
+        const iconPx = boxStartX + (boxWidth - iconSize) / 2;
+        const iconPy = boxStartY + (boxHeight - iconSize) / 2;
+        
+        InventoryItems.drawImage(ctx, key, iconPx, iconPy, iconSize, iconSize, toolLevel)
     }
 
     //draw all the tools
     drawTools(ctx) {
-        const size = Math.floor(this.#boxSize * 2 / 3)
-        this.drawTool(ctx, "pot", size, size, size, size, 1)
-        this.drawTool(ctx, "axe", size + this.#boxSize * 3 / 2, size, size, size, 1)
-        this.drawTool(ctx, "hoe", size + this.#boxSize * 3, size, size, size, 1)
+        const padding = 20;
+        ctx.save();
+        const tools = ["pot", "axe", "hoe"];
+        const gap = this.#boxSize * 1.6; // Increased gap to ensure NO overlapping
+        
+        tools.forEach((tool, index) => {
+            const px = padding + index * gap;
+            const py = padding; 
+            
+            // width and height are handled internally by the new drawTool
+            this.drawTool(ctx, tool, px, py, 0, 0, 1);
+        });
+        ctx.restore();
     }
 
     caseItemBeingHovered(currentIndex, key) {

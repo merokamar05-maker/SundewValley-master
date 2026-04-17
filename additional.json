@@ -43,7 +43,7 @@
     "./images/background.png",
     "./images/characters/adian.png",
     "./images/characters/zozo.png",
-    "./images/characters/medo.png",
+    "./images/characters/mohamed.png",
     "./images/characters/nothing.png",
     "./images/characters/player.png",
     "./images/characters/mimo.png",
@@ -52,7 +52,7 @@
     "./images/characters/portraits/maya_hd.png",
     "./images/characters/portraits/zozo_hd.png",
     "./images/characters/portraits/mimo_hd.png",
-    "./images/characters/portraits/medo_hd.png",
+    "./images/characters/portraits/mohamed_hd.png",
     "./images/characters/portraits/maryoma_hd.png",
     "./images/crops/cabbage.png",
     "./images/crops/carrot.png",
@@ -115,7 +115,7 @@
     "./images/items/trash.png",
     "./images/characters/youssef.png",
     "./images/characters/beko.png",
-    "./images/characters/portraits/beko_hd.png"
+    "./images/characters/menna.png"
   ],
   "jsons": [
     "./images/animals/chicken/chicken.json",
@@ -125,7 +125,7 @@
     "./images/animals/sheep/sheep.json",
     "./images/characters/adian.json",
     "./images/characters/zozo.json",
-    "./images/characters/medo.json",
+    "./images/characters/mohamed.json",
     "./images/characters/nothing.json",
     "./images/characters/player.json",
     "./images/characters/mimo.json",
@@ -192,6 +192,7 @@
     "./images/characters/kinzy.json",
     "./images/characters/mario.json",
     "./images/characters/youssef.json",
-    "./images/characters/beko.json"
+    "./images/characters/beko.json",
+    "./images/characters/menna.json"
   ]
 }

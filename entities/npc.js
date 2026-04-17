@@ -8,13 +8,25 @@ class Npc extends Character {
     #stuck_timer
 
     constructor(name, x, y, mapRef) {
-        super(name, name.toLowerCase(), x, y, mapRef)
+        const visualMapping = {
+            "Sebaey": "soso",
+            "Nader": "mario",
+            "Omar": "7azo",
+            "Ramy": "Mohamed",
+            "Menna": "maya"
+        };
+        const visualType = visualMapping[name] || name.toLowerCase();
+        super(name, visualType, x, y, mapRef)
         this.setMovingSpeedX(5)
         this.setMovingSpeedY(5)
         
-        // Special scaling for the high-res Grandmother image
-        const widthScale = name === "Grandmother" ? 2.5 : 1
-        const heightMultiplier = name === "Grandmother" ? 2.5 : 1.3
+        // Special scaling for the high-res images
+        let widthScale = 1;
+        let heightMultiplier = 1.3;
+        if (name === "Grandmother") {
+            widthScale = 2.5;
+            heightMultiplier = 2.5;
+        }
 
         
         this.setSize(this.getMapReference().getTileSize() * widthScale, this.getMapReference().getTileSize() * heightMultiplier)
@@ -34,13 +46,16 @@ class Npc extends Character {
         }
 
         this.#isSoso = name === "Soso"
-        this.#isMovingNpc = ["7azo", "Ganna", "Kinzy", "Mario"].includes(name) || this.#isSoso
+        this.#isMovingNpc = ["7azo", "Ganna", "Kinzy", "Mario", "Nader", "Omar", "Ramy", "Menna"].includes(name) || this.#isSoso
         if (this.#isMovingNpc) {
             let baseWaypoints = this.#isSoso ? [[20, 45], [40, 45], [40, 60], [20, 60]] : [[15, 42], [45, 42], [45, 63], [15, 63]];
             
             // Reverse direction for Kinzy and Mario to make them move opposite to the others
             if (name === "Kinzy" || name === "Mario") {
                 baseWaypoints = [[15, 42], [15, 63], [45, 63], [45, 42]];
+            } else if (["Nader", "Omar", "Ramy", "Menna"].includes(name)) {
+                // Move in a large rectangle (10 steps)
+                baseWaypoints = [[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10]];
             }
             
             this.#waypoints = baseWaypoints;
@@ -50,12 +65,13 @@ class Npc extends Character {
             else if (name === "Ganna") this.#target_waypoint_idx = 2;           // Moving from NE to SE
             else if (name === "Kinzy") this.#target_waypoint_idx = 3;           // Moving from SE to NE (Reversed)
             else if (name === "Mario") this.#target_waypoint_idx = 2;           // Moving from SW to SE (Reversed)
+            else if (["Nader", "Omar", "Ramy", "Menna"].includes(name)) this.#target_waypoint_idx = 1; // start by moving right
             else this.#target_waypoint_idx = 0;
  
             this.#prev_x = x
             this.#prev_y = y
             this.#stuck_timer = 0
-            const speed = this.#isSoso ? 1.5 : 3
+            const speed = this.#isSoso ? 1.5 : (["Nader", "Omar", "Ramy", "Menna"].includes(name) ? 2 : 3)
             this.setMovingSpeedX(speed) // Configurable walking speed
             this.setMovingSpeedY(speed)
         }
@@ -64,6 +80,8 @@ class Npc extends Character {
 
     interact() {
         const name = this.getName();
+        if (["Nader", "Omar", "Ramy", "Menna"].includes(name)) return;
+        
         if (name === "Grandmother") {
             if (Dialogues.isGrandmotherSick()) {
                 Dialogues.update("Grandmother_interact1", this)
@@ -94,18 +112,39 @@ class Npc extends Character {
             } else {
                 Dialogues.update("Soso_grateful_1", this);
             }
-        } else if (name === "Medo") {
-            Dialogues.MEDO_INTERACTION_COUNT++;
-            const stage = Math.floor((Dialogues.MEDO_INTERACTION_COUNT - 1) / 2);
+        } else if (name === "Mohamed") {
+            Dialogues.Mohamed_INTERACTION_COUNT++;
+            const stage = (Dialogues.Mohamed_INTERACTION_COUNT - 1) % 8;
             
             if (stage === 0) {
-                Dialogues.update("Medo_interact1", this);
+                Dialogues.update("Mohamed_interact1", this);
             } else if (stage === 1) {
-                Dialogues.update("Medo_stage2_1", this);
+                Dialogues.update("Mohamed_stage2_1", this);
             } else if (stage === 2) {
-                Dialogues.update("Medo_stage3_1", this);
+                Dialogues.update("Mohamed_stage3_1", this);
+            } else if (stage === 3) {
+                Dialogues.update("Mohamed_stage4_1", this);
+            } else if (stage === 4) {
+                Dialogues.update("Mohamed_stage5_1", this);
+            } else if (stage === 5) {
+                Dialogues.update("Mohamed_stage6_1", this);
+            } else if (stage === 6) {
+                Dialogues.update("Mohamed_stage7_1", this);
             } else {
-                Dialogues.update("Medo_stage4_1", this);
+                Dialogues.update("Mohamed_stage8_1", this);
+            }
+        } else if (name === "Sebaey") {
+            Dialogues.SEBAEY_INTERACTION_COUNT++;
+            const stage = (Dialogues.SEBAEY_INTERACTION_COUNT - 1) % 4;
+            
+            if (stage === 0) {
+                Dialogues.update("Sebaey_interact1", this);
+            } else if (stage === 1) {
+                Dialogues.update("Sebaey_stage2_1", this);
+            } else if (stage === 2) {
+                Dialogues.update("Sebaey_stage3_1", this);
+            } else {
+                Dialogues.update("Sebaey_stage4_1", this);
             }
         } else {
             Dialogues.update(name + "_interact1", this)

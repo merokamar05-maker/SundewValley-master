@@ -372,14 +372,16 @@ class Level extends AbstractTiledMap {
         const entitiesThatCollideWithPlayer = this.getEntitiesThatCollideWith(Level.PLAYER)
         if (entitiesThatCollideWithPlayer.length > 0) {
             if (entitiesThatCollideWithPlayer[0] instanceof Npc) {
-                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
-                if (Level.PLAYER.notDisablePlayerController() && MessageButton.draw(
-                    GAME_ENGINE.ctx, "Interact", _fontSize,
-                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                )) {
-                    if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                        entitiesThatCollideWithPlayer[0].interact();
-                        Controller.mouse.leftClick = false
+                if (!["Nader", "Omar", "Ramy", "Menna"].includes(entitiesThatCollideWithPlayer[0].getName())) {
+                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                    if (Level.PLAYER.notDisablePlayerController() && MessageButton.draw(
+                        GAME_ENGINE.ctx, "Interact", _fontSize,
+                        Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                    )) {
+                        if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
+                            entitiesThatCollideWithPlayer[0].interact();
+                            Controller.mouse.leftClick = false
+                        }
                     }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Chest) {

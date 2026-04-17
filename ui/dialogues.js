@@ -5,7 +5,8 @@ class Dialogues {
     static LAST_CURED_DAY = -10 // Starts sick at day 0
     static MIMO_INTERACTION_COUNT = 0
     static SOSO_GENEROSITY_LEVEL = 0
-    static MEDO_INTERACTION_COUNT = 0
+    static Mohamed_INTERACTION_COUNT = 0
+    static SEBAEY_INTERACTION_COUNT = 0
 
 
 
@@ -176,7 +177,7 @@ class Dialogues {
                 text: "Can you make the special juice for my grandmother?",
                 act: "Maryoma_juice_info"
             }, {
-                text: "Nothing for now, thanks",
+                text: "No thanks, thank you!",
                 act: "$close"
             }]
         },
@@ -240,114 +241,161 @@ class Dialogues {
         Bar_buy_fail: {
             contents: ["Oh, it seems you don't have enough money for that.", "Water and juice are cheap, but not free!"]
         },
-        Adian_interact1: {
-            contents: ["Hey you, yeah I am talking to you", "Come here"],
-            next: "Adian_interact2"
-        },
-        Adian_interact2: {
-            contents: ["This is so stupid", "Have you ever see a bar that only serves water?"],
-            options: [{
-                text: "Well, water is good for your health",
-                act: "Adian_interact2_disagree"
-            }, {
-                text: "It is kind of strange",
-                act: "Adian_interact2_agree"
-            }]
-        },
-        Adian_interact2_agree: {
-            contents: ["Finally, there are still smart people on this plant", "I thought I am the one one left"],
-        },
-        Adian_interact2_disagree: {
-            contents: ["Well go away then", "There is no reason for me to talk to someone like you"],
-        },
-        Medo_interact1: {
+        Mohamed_interact1: {
             contents: ["Hello there, stranger!", "First time I have seen you around here."],
-            next: "Medo_interact1_2"
+            next: "Mohamed_interact1_2"
         },
-        Medo_interact1_2: {
+        Mohamed_interact1_2: {
             contents: ["So tell me... what brings you to Sundew Valley?"],
             options: [
-                { text: "I inherited the old farm nearby.", act: "Medo_reply_farm" },
-                { text: "I am just exploring the area.", act: "Medo_reply_explore" }
+                { text: "I inherited the old farm nearby.", act: "Mohamed_reply_farm" },
+                { text: "I am just exploring the area.", act: "Mohamed_reply_explore" }
             ]
         },
-        Medo_reply_farm: {
+        Mohamed_reply_farm: {
             contents: ["The old farm?!", "That place used to be the heart of this whole village."],
-            next: "Medo_reply_farm_2"
+            next: "Mohamed_reply_farm_2"
         },
-        Medo_reply_farm_2: {
+        Mohamed_reply_farm_2: {
             contents: ["Are you planning to bring it back to life?"],
             options: [
-                { text: "Absolutely! That is my goal.", act: "Medo_farm_yes" },
-                { text: "I am still figuring things out.", act: "Medo_farm_maybe" }
+                { text: "Absolutely! That is my goal.", act: "Mohamed_farm_yes" },
+                { text: "I am still figuring things out.", act: "Mohamed_farm_maybe" }
             ]
         },
-        Medo_farm_yes: {
+        Mohamed_farm_yes: {
             contents: ["Ha! I love that confidence.", "This village needs someone with that spirit."],
-            next: "Medo_health_topic"
+            next: "Mohamed_health_topic",
+            act: "$Mohamed_karma"
         },
-        Medo_farm_maybe: {
+        Mohamed_farm_maybe: {
             contents: ["Do not worry, the land is patient.", "Take your time and you will find your way."],
-            next: "Medo_health_topic"
+            next: "Mohamed_health_topic"
         },
-        Medo_reply_explore: {
+        Mohamed_reply_explore: {
             contents: ["Exploring, you say?", "Well Sundew Valley is a beautiful place.", "But I will tell you a little secret..."],
-            next: "Medo_reply_explore_2"
+            next: "Mohamed_reply_explore_2"
         },
-        Medo_reply_explore_2: {
+        Mohamed_reply_explore_2: {
             contents: ["Nobody just passes through here.", "This place has a way of keeping people."],
-            next: "Medo_health_topic"
+            next: "Mohamed_health_topic"
         },
-        Medo_health_topic: {
+        Mohamed_health_topic: {
             contents: ["By the way, I love that this bar only serves water and juice.", "It's refreshing to see people caring for their bodies."],
         },
-        Medo_stage2_1: {
+        Mohamed_stage2_1: {
             contents: ["I've been thinking... failure is just a different kind of harvest.", "Don't you agree, farmer?"],
             options: [{
                 text: "I agree! It's a lesson for the next season.",
-                act: "Medo_stage2_optimist"
+                act: "Mohamed_stage2_optimist"
             }, {
                 text: "Maybe, but it still hurts the pocket!",
-                act: "Medo_stage2_realist"
+                act: "Mohamed_stage2_realist"
             }]
         },
-        Medo_stage2_optimist: {
+        Mohamed_stage2_optimist: {
             contents: ["Spoken like a true farmer.", "Patience is your greatest tool, even more than your hoe."],
         },
-        Medo_stage2_realist: {
+        Mohamed_stage2_realist: {
             contents: ["Haha, very true. The soil doesn't pay the bills directly.", "But a lesson learned today saves a crop tomorrow."],
         },
-        Medo_stage3_1: {
+        Mohamed_stage3_1: {
             contents: ["SunDew Valley feels warmer lately. Not just the weather...", "Is it the season, or is it your influence on the village?"],
             options: [{
                 text: "It's the spirit of the people here.",
-                act: "Medo_stage3_humble"
+                act: "Mohamed_stage3_humble"
             }, {
                 text: "I'm doing my best to bring it back!",
-                act: "Medo_stage3_proud"
+                act: "Mohamed_stage3_proud"
             }]
         },
-        Medo_stage3_humble: {
+        Mohamed_stage3_humble: {
             contents: ["A modest answer. I like that.", "True change always starts from the community, but it needs a spark."],
         },
-        Medo_stage3_proud: {
+        Mohamed_stage3_proud: {
             contents: ["And it shows. That fire in your eyes is what this valley needed.", "Keep that passion alive, kid."],
         },
-        Medo_stage4_1: {
+        Mohamed_stage4_1: {
             contents: ["Every plant has its own time to bloom. You can't rush the spring.", "Do you ever feel like you're rushing life too much?"],
             options: [{
                 text: "Sometimes, there's so much to do!",
-                act: "Medo_stage4_busy"
+                act: "Mohamed_stage4_busy"
             }, {
                 text: "I try to take it one day at a time.",
-                act: "Medo_stage4_calm"
+                act: "$Mohamed_karma"
             }]
         },
-        Medo_stage4_busy: {
+        Mohamed_stage4_busy: {
             contents: ["Slow down for a moment. Take a breath.", "The crops can wait 5 minutes. Your soul needs the rest more."],
         },
-        Medo_stage4_calm: {
+        Mohamed_stage4_calm: {
             contents: ["That is wisdom right there.", "The farmer who walks slowly sees the weeds before they take root."],
+        },
+        Mohamed_stage5_1: {
+            contents: ["The rain makes the soil soft, but it makes the soul quiet.", "Do you find peace in the rain, farmer?"],
+            options: [{
+                text: "Yes, I really love the rain.",
+                act: "Mohamed_stage5_rain"
+            }, {
+                text: "No, I prefer sunny days.",
+                act: "Mohamed_stage5_sun"
+            }]
+        },
+        Mohamed_stage5_rain: {
+            contents: ["Ah, a kindred spirit. The rain washes away the dust of the past."]
+        },
+        Mohamed_stage5_sun: {
+            contents: ["I understand. The sun brings energy and life back to the valley."]
+        },
+        Mohamed_stage6_1: {
+            contents: ["I walked by your farm the other day.", "You can really see the results of your hard work paying off."],
+            options: [{
+                text: "Thank you! I'm proud of it.",
+                act: "Mohamed_stage6_proud"
+            }, {
+                text: "Thanks, but it's exhausting though!",
+                act: "Mohamed_stage6_tired"
+            }]
+        },
+        Mohamed_stage6_proud: {
+            contents: ["As you should be. Pride in honest work is the best kind of pride."]
+        },
+        Mohamed_stage6_tired: {
+            contents: ["Rest is just as important as work. Even the soil needs time to recover."]
+        },
+        Mohamed_stage7_1: {
+            contents: ["Many years ago, the village used to host a great Harvest Festival.", "It brought everyone together. I hope we can revive that tradition."],
+            options: [{
+                text: "I'll do my best to bring it back!",
+                act: "Mohamed_stage7_eager"
+            }, {
+                text: "That sounds like a lot of pressure...",
+                act: "Mohamed_stage7_scared"
+            }]
+        },
+        Mohamed_stage7_eager: {
+            contents: ["I believe you will, farmer. The valley responds to your energy.", "Here's something for your journey."],
+            act: "$Mohamed_karma"
+        },
+        Mohamed_stage7_scared: {
+            contents: ["No pressure, friend. Traditions return when the time is right, not when forced."]
+        },
+        Mohamed_stage8_1: {
+            contents: ["Everyone chases money these days, running in circles.", "They miss out on the joy of the simple things right in front of them."],
+            options: [{
+                text: "Both are important in a balanced way.",
+                act: "Mohamed_stage8_balance"
+            }, {
+                text: "Happiness is definitely more important.",
+                act: "Mohamed_stage8_happy"
+            }]
+        },
+        Mohamed_stage8_balance: {
+            contents: ["A practical approach. You need gold for seeds, and joy for the harvest."]
+        },
+        Mohamed_stage8_happy: {
+            contents: ["A rich heart makes the simplest meal a feast. Keep that mindset, friend.", "Here's a small boost to your good vibes."],
+            act: "$Mohamed_karma"
         },
 
         Bar_TV1_1: {
@@ -410,7 +458,7 @@ class Dialogues {
             next: "Mimo_stage2_3"
         },
         Mimo_stage2_3: {
-            contents: ["And don't be shy with the other villagers!", "Medo at the bar is a bit of a philosopher, but he tells great stories."],
+            contents: ["And don't be shy with the other villagers!", "Mohamed at the bar is a bit of a philosopher, but he tells great stories."],
         },
         Mimo_stage3_1: {
             contents: ["Did you know that SunDew Valley has its little secrets?", "Always keep an eye on the weather report!"],
@@ -458,6 +506,55 @@ class Dialogues {
         Sebaey_interact3: {
             contents: ["Rules? What a boring place...", "Whatever, I'll just drink water."]
         },
+        Sebaey_stage2_1: {
+            contents: ["Man, I am craving some fast food.", "Where can a guy get a double cheeseburger around here?!"],
+            options: [{
+                text: "Healthy food comes from the farm!",
+                act: "Sebaey_stage2_healthy"
+            }, {
+                text: "Yeah, I really miss burgers too.",
+                act: "Sebaey_stage2_burger"
+            }]
+        },
+        Sebaey_stage2_healthy: {
+            contents: ["Ugh, grass and carrots. You sound just like Maryoma!"]
+        },
+        Sebaey_stage2_burger: {
+            contents: ["Right?! Finally, someone who understands me!", "Maybe I should open a burger stand myself."]
+        },
+        Sebaey_stage3_1: {
+            contents: ["It's so quiet here at night... too quiet.", "I feel like I'm going to fall asleep standing up."],
+            options: [{
+                text: "The peacefulness is the best part!",
+                act: "Sebaey_stage3_peace"
+            }, {
+                text: "It definitely needs more action.",
+                act: "Sebaey_stage3_action"
+            }]
+        },
+        Sebaey_stage3_peace: {
+            contents: ["Peaceful? More like a ghost town.", "I need loud music and neon lights!"]
+        },
+        Sebaey_stage3_action: {
+            contents: ["Exactly! We need some electric energy around here.", "I'm going crazy!"]
+        },
+        Sebaey_stage4_1: {
+            contents: ["I've got so much pent up energy.", "I think I might start lifting weights to pass the time."],
+            options: [{
+                text: "You should! Youssef is opening a gym.",
+                act: "Sebaey_stage4_gym"
+            }, {
+                text: "Try farming, it's a great workout!",
+                act: "Sebaey_stage4_farm"
+            }]
+        },
+        Sebaey_stage4_gym: {
+            contents: ["A gym? Really? Now you are talking!", "I'll go check it out right away!"]
+        },
+        Sebaey_stage4_farm: {
+            contents: ["Farming? Digging in the dirt?", "No thanks, I don't want to get my hands messy!"]
+        },
+
         Soso_interact1: {
             contents: ["Help me please, I am very sick and hungry."],
             next: "Soso_interact1_2"
@@ -589,13 +686,22 @@ class Dialogues {
         },
         Beko_choice_no: {
             contents: ["Haha, I like a challenge!", "Once people see my designs, they won't want to wear anything else!"],
+        },
+        Nader_interact1: {
+            contents: ["Hey, I'm Nader!", "I'm checking out the new gym that Youssef is building.", "It's going to be awesome!"]
+        },
+        Omar_interact1: {
+            contents: ["I can't wait for the gym to open.", "I need to get some gains!"]
+        },
+        Ramy_interact1: {
+            contents: ["Hello there! I love hanging around the crop shop.", "Maya always has the freshest seeds and vegetables."]
         }
     }
 
 
     static #PORTRAIT_CONFIG = {
         maya: { scale: 1.0, yOffset: 0.5 },
-        medo: { scale: 1.4, yOffset: 0.5 },
+        Mohamed: { scale: 1.4, yOffset: 0.5 },
         mimo: { scale: 1.0, yOffset: 0.5 },
         maryoma: { scale: 1.0, yOffset: 0.45 },
         zozo: { scale: 1.0, yOffset: 0.5 },
@@ -665,13 +771,14 @@ class Dialogues {
             const portraitX = boxX + portraitSize * 0.1;
             const portraitCenterY = boxY - portraitSize * 0.4; // Centered on the top edge (popping out)
             
-            if (Dialogues.#CURRENT_INIT_BY && Dialogues.#CURRENT_INIT_BY.getName) {
-                const charName = Dialogues.#CURRENT_INIT_BY.getName().toLowerCase();
-                const config = Dialogues.#PORTRAIT_CONFIG[charName] || { scale: 1.1, yOffset: 0.5 };
+            if (Dialogues.#CURRENT_INIT_BY && (Dialogues.#CURRENT_INIT_BY.getName || Dialogues.#CURRENT_INIT_BY.getType)) {
+                // Use visual type for assets (like portraits), identity name for labels
+                const charVisualType = Dialogues.#CURRENT_INIT_BY.getType ? Dialogues.#CURRENT_INIT_BY.getType() : Dialogues.#CURRENT_INIT_BY.getName().toLowerCase();
+                const config = Dialogues.#PORTRAIT_CONFIG[charVisualType] || { scale: 1.1, yOffset: 0.5 };
                 
                 // Prioritize HD portrait, fallback to standard spritesheet
-                const hdImg = ASSET_MANAGER.getImage("characters", "portraits", charName + "_hd.png");
-                const charImg = hdImg || ASSET_MANAGER.getImage("characters", charName + ".png");
+                const hdImg = ASSET_MANAGER.getImage("characters", "portraits", charVisualType + "_hd.png");
+                const charImg = hdImg || ASSET_MANAGER.getImage("characters", charVisualType + ".png");
                 
                 if (charImg) {
                     ctx.save();
@@ -748,9 +855,9 @@ class Dialogues {
 
             // Draw character name label
             if (Dialogues.#CURRENT_INIT_BY) {
-                const _DISPLAY_NAMES = { "medo": "Mohamed" };
+                const _DISPLAY_NAMES = { "Mohamed": "Mohamed", "mohamed": "Mohamed" };
                 const _rawName = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
-                const nameStr = _DISPLAY_NAMES[_rawName.toLowerCase()] || _rawName;
+                const nameStr = _DISPLAY_NAMES[_rawName] || _DISPLAY_NAMES[_rawName.toLowerCase()] || _rawName;
                 const namePx = boxX + contentOffsetX;
                 const namePy = boxY + textFontSize * 0.8;
                 
@@ -966,6 +1073,12 @@ class Dialogues {
 
                             Level.PLAYER.obtainItem("strawberry_seed", 5);
                             this.update("Soso_reward_success", this.#CURRENT_INIT_BY);
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$Mohamed_karma") === 0) {
+                            Level.PLAYER.addKarma(15);
+                            this.#CURRENT = null;
+                        } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$open_bar_shop") === 0) {
+                            GAME_ENGINE.addUI(new TradeUI(Level.PLAYER, this.#CURRENT_INIT_BY));
+                            this.#CURRENT = null;
                         }
 
                     } else {

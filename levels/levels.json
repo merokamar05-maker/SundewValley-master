@@ -87,15 +87,21 @@
         "height": 1,
         "destinationLevel": "bar",
         "destinationX": 19.5,
-        "destinationY": 25.9,
+        "destinationY": 25.5,
         "type": "teleportation"
       }
     ],
     "entities": [
       {
         "x": 44,
-        "y": 57,
+        "y": 58.0,
         "name": "Recycler",
+        "type": "npc"
+      },
+      {
+        "x": 35,
+        "y": 40,
+        "name": "Ramy",
         "type": "npc"
       },
       {
@@ -130,7 +136,7 @@
       },
       {
         "x": 75,
-        "y": 37,
+        "y": 38.5,
         "name": "Youssef",
         "type": "npc"
       },
@@ -138,6 +144,24 @@
         "x": 55,
         "y": 39,
         "name": "Beko",
+        "type": "npc"
+      },
+      {
+        "x": 73,
+        "y": 39,
+        "name": "Nader",
+        "type": "npc"
+      },
+      {
+        "x": 77,
+        "y": 39,
+        "name": "Omar",
+        "type": "npc"
+      },
+      {
+        "x": 30,
+        "y": 45,
+        "name": "Menna",
         "type": "npc"
       }
     ]
@@ -158,7 +182,7 @@
         "height": 1,
         "destinationLevel": "bedroom",
         "destinationX": 24.5,
-        "destinationY": 25.9,
+        "destinationY": 30.0,
         "key": "FarmHouse_Door",
         "type": "dialog"
       },
@@ -262,7 +286,7 @@
     "entities": [
       {
         "x": 22,
-        "y": 12,
+        "y": 13,
         "name": "Maya",
         "type": "npc"
       }
@@ -287,7 +311,7 @@
     "entities": [
       {
         "x": 9,
-        "y": 13,
+        "y": 14,
         "name": "Zozo",
         "type": "npc"
       },
@@ -357,26 +381,20 @@
     ],
     "entities": [
       {
-        "x": 20,
-        "y": 17,
+        "x": 21,
+        "y": 18,
         "name": "Maryoma",
         "type": "npc"
       },
       {
-        "x": 10,
-        "y": 21,
-        "name": "Adian",
+        "x": 26.5,
+        "y": 18.5,
+        "name": "Mohamed",
         "type": "npc"
       },
       {
-        "x": 26.25,
-        "y": 18,
-        "name": "Medo",
-        "type": "npc"
-      },
-      {
-        "x": 10,
-        "y": 21,
+        "x": 10.5,
+        "y": 21.5,
         "name": "Sebaey",
         "type": "npc"
       }

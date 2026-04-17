@@ -18,12 +18,30 @@ class AbstractTiledMap extends Abstract2dGameObject {
         this.#minX = 0
         this.#minY = 0
         let layers = Array.from(_data["layers"])
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        
         layers.forEach(_layer => {
-            this.#row = Math.max(this.#row, _layer.height)
-            this.#column = Math.max(this.#column, _layer.width)
-            this.#minX = _layer["startx"] != null ? Math.min(this.#minX, _layer["startx"]) : Math.min(this.#minX, _layer["x"])
-            this.#minY = _layer["starty"] != null ? Math.min(this.#minY, _layer["starty"]) : Math.min(this.#minX, _layer["y"])
-        })
+            if (_layer["chunks"] != null) {
+                _layer["chunks"].forEach(_chunk => {
+                    minX = Math.min(minX, _chunk.x);
+                    minY = Math.min(minY, _chunk.y);
+                    maxX = Math.max(maxX, _chunk.x + _chunk.width);
+                    maxY = Math.max(maxY, _chunk.y + _chunk.height);
+                });
+            } else {
+                const lx = _layer["x"] || 0;
+                const ly = _layer["y"] || 0;
+                minX = Math.min(minX, lx);
+                minY = Math.min(minY, ly);
+                maxX = Math.max(maxX, lx + _layer.width);
+                maxY = Math.max(maxY, ly + _layer.height);
+            }
+        });
+
+        this.#minX = minX === Infinity ? 0 : minX;
+        this.#minY = minY === Infinity ? 0 : minY;
+        this.#row = maxY === -Infinity ? 0 : maxY - this.#minY;
+        this.#column = maxX === -Infinity ? 0 : maxX - this.#minX;
         // pre-allocated space for map
         this.#map = new Array(this.#row).fill(undefined).map(() => new Array(this.#column).fill(undefined).map(() => new Array(layers.length).fill(0)))
         for (let i = 0; i < layers.length; i++) {
@@ -133,12 +151,15 @@ class AbstractTiledMap extends Abstract2dGameObject {
     }
 
     isCoordinateInRange(x, y) {
+        x = Math.floor(x);
+        y = Math.floor(y);
         return x >= 0 && y >= 0 && x < this.#column && y < this.#row
     }
 
     getTile(x, y) {
-        x = Math.floor(x)
-        y = Math.floor(y)
+        x = Math.floor(x);
+        y = Math.floor(y);
+        if (this.#map[y] == null || this.#map[y][x] == null) return new Array(this.getTileSets().length).fill(0);
         return this.#map[y][x]
     }
 
