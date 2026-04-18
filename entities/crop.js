@@ -21,6 +21,18 @@ class Crop extends Entity {
         }
     }
 
+    getTimePlanted() {
+        return this.#timePlanted
+    }
+
+    setTimePlanted(date) {
+        this.#timePlanted = date
+    }
+
+    setStage(stage) {
+        this.#stage = stage
+    }
+
     isMatured() {
         return this.#stage >= this.#growPeriods.length
     }

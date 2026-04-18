@@ -49,6 +49,8 @@
     "morning_music": "OST 1 - Good Morning.ogg",
     "night_music": "OST 3 - Village.ogg",
     "groupLevelEndAtIndex": 6,
+    "trash_regeneration": true,
+    "max_trash": 15,
     "triggers": [
       {
         "x": 43,
@@ -367,16 +369,14 @@
         "y": 15,
         "width": 3,
         "height": 3,
-        "type": "dialog",
-        "key": "Bar_TV1_1"
+        "type": "weather_forecast"
       },
       {
         "x": 29,
         "y": 15,
         "width": 3,
         "height": 3,
-        "type": "dialog",
-        "key": "Bar_TV2_1"
+        "type": "animated_tv"
       }
     ],
     "entities": [

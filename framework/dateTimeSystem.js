@@ -22,6 +22,10 @@ class DateTimeSystem {
         this.#data.setTime(this.#data.getTime() + time_in_seconds * this.#SCALE)
     }
 
+    static advanceTime(ms) {
+        this.#data.setTime(this.#data.getTime() + ms);
+    }
+
     static getHour() {
         return this.#data.getHours() + this.#data.getMinutes() / 60
     }

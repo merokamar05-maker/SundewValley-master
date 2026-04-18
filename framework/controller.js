@@ -75,6 +75,9 @@ class Controller {
                 case "KeyS":
                     Controller.down = true;
                     break;
+                case "Escape":
+                    GAME_ENGINE.togglePause();
+                    break;
                 default:
                     Controller.keys[e.code] = true;
             }

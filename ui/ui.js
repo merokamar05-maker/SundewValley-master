@@ -6,6 +6,8 @@ class UserInterfaces {
     constructor() {
         GUI.init()
         this.#UI.chest = null
+        this.#UI.weather = null
+        this.#UI.animatedTV = null
         this.#UI.itemBar = new ItemBarUI(Level.PLAYER)
         this.#UI.inventory = new InventoryUI(Level.PLAYER)
         this.#CURRENT = this.#UI.itemBar
@@ -15,12 +17,20 @@ class UserInterfaces {
         this.#UI.chest = new ChestUI(Level.PLAYER, chestRef)
     }
 
+    openWeather() {
+        this.#UI.weather = new WeatherForecastUI();
+    }
+
+    openAnimatedTV(gifPath) {
+        this.#UI.animatedTV = new AnimatedTVUI(gifPath);
+    }
+
     startATrade(targetUI) {
         this.#UI.trade = new TradeUI(Level.PLAYER, targetUI)
     }
 
     noUiIsOpening() {
-        return this.#UI.chest == null && this.#UI.trade == null
+        return this.#UI.chest == null && this.#UI.trade == null && this.#UI.weather == null && this.#UI.animatedTV == null
     }
 
     closeChest() {
@@ -31,6 +41,20 @@ class UserInterfaces {
         if (UserInterfaces.displayTitle === true) return
         if (this.#UI.chest != null) {
             this.#CURRENT = this.#UI.chest
+        } else if (this.#UI.animatedTV != null) {
+            if (this.#UI.animatedTV.isOpening) {
+                this.#CURRENT = this.#UI.animatedTV
+            } else {
+                this.#UI.animatedTV = null
+                Controller.mouse.leftClick = false;
+            }
+        } else if (this.#UI.weather != null) {
+            if (this.#UI.weather.isOpening) {
+                this.#CURRENT = this.#UI.weather
+            } else {
+                this.#UI.weather = null
+                Controller.mouse.leftClick = false; // Prevent re-triggering the TV in the same frame
+            }
         } else if (this.#UI.trade != null) {
             if (this.#UI.trade.isOpening) {
                 this.#CURRENT = this.#UI.trade
@@ -45,6 +69,10 @@ class UserInterfaces {
                 this.#CURRENT = this.#UI.itemBar
             }
         }
+
+        if (this.#CURRENT && this.#CURRENT.update) {
+            this.#CURRENT.update();
+        }
     }
 
     draw(ctx) {
@@ -54,9 +82,13 @@ class UserInterfaces {
             ctx.drawImage(ASSET_MANAGER.getImage("ui", "title.png"), (ctx.canvas.width - _width) / 2, ctx.canvas.height * 0.2, _width, _height)
             if (MessageButton.draw(ctx, "Start", ctx.canvas.height * 0.05, ctx.canvas.width * 0.425, ctx.canvas.height * 0.6, undefined, undefined, true) && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                 Transition.start(() => {
-                    GAME_ENGINE.enterLevel("farm")
-                    Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
-                    GAME_ENGINE.getCurrentLevel().goToSpawn()
+                    if (GAME_ENGINE.saveData && GAME_ENGINE.saveData.player) {
+                        GAME_ENGINE.enterLevel(GAME_ENGINE.saveData.player.level)
+                    } else {
+                        GAME_ENGINE.enterLevel("farm")
+                        Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
+                        GAME_ENGINE.getCurrentLevel().goToSpawn()
+                    }
                     UserInterfaces.displayTitle = false
                 })
             }

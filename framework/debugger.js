@@ -6,6 +6,8 @@ class Debugger {
 
     static switchDebugMode() {
         this.isDebugging = document.getElementById("debug").checked;
+        this.#ensureDebugDashboard();
+        this.debugDashboard.style.display = this.isDebugging ? "block" : "none";
         this.update();
     }
 

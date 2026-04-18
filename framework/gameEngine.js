@@ -5,6 +5,7 @@ class GameEngine {
     #levels
     #currentLevelName
     #ui
+    paused = false
 
     constructor() {
         // What you will use to draw
@@ -12,6 +13,7 @@ class GameEngine {
         this.ctx = null;
         this.#ui = null;
         this.#levels = {}
+        this.saveData = null;
     };
 
     getCurrentLevel() {
@@ -20,6 +22,10 @@ class GameEngine {
 
     getPlayerUi() {
         return this.#ui
+    }
+
+    getCurrentLevelName() {
+        return this.#currentLevelName
     }
 
     enterLevel(name) {
@@ -32,8 +38,37 @@ class GameEngine {
             this.#levels[this.#currentLevelName] = this.#currentLevelName.startsWith("farm_") ? new FarmLevel(levelPath) : this.#currentLevelName.startsWith("bedroom") ? new Bedroom(levelPath) : new Level(levelPath)
             this.getCurrentLevel().initEntities()
         }
+        
+        // Apply save data if it exists for this level
+        if (this.saveData && this.saveData.world && this.saveData.world.farmModifications && this.#currentLevelName.startsWith("farm_")) {
+            SaveManager.applyModifications(this.getCurrentLevel(), this.saveData.world.farmModifications);
+        }
+
         this.getCurrentLevel().onEnter()
         this.getCurrentLevel().updateLevelMusic()
+        
+        // Restore player position and stats if this is the initial load
+        if (this.saveData && this.saveData.player && Level.PLAYER && name !== "main_menu") {
+            const p = this.saveData.player;
+            Level.PLAYER.setMoney(p.money);
+            if (Level.PLAYER.addKarma) Level.PLAYER.addKarma(p.karma - Level.PLAYER.getKarma());
+            
+            // Restore inventory and itemBar safely
+            if (p.inventory) {
+                const currentInv = Level.PLAYER.getInventory();
+                Object.keys(p.inventory).forEach(key => currentInv[key] = p.inventory[key]);
+            }
+            if (p.itemBar) {
+                const currentBar = Level.PLAYER.getItemBar();
+                Object.keys(p.itemBar).forEach(key => currentBar[key] = p.itemBar[key]);
+            }
+
+            if (name === p.level || (name.startsWith("farm_") && p.level.startsWith("farm_"))) {
+                Level.teleportPlayer(p.pos.x, p.pos.y);
+            }
+            this.saveData.player = null; // Clear so it only happens once
+        }
+
         this.#ui = new UserInterfaces();
     }
 
@@ -42,7 +77,28 @@ class GameEngine {
         DateTimeSystem.init(2023);
         InventoryItems.init()
         LevelData.init()
-        this.enterLevel("main_menu")
+        
+        this.saveData = SaveManager.load();
+        
+        if (this.saveData) {
+            // Restore Time and handle Offline Progress
+            const savedRealTime = this.saveData.time.realTime;
+            const elapsedRealTimeMs = Date.now() - savedRealTime;
+            
+            // Game progresses at 2 minutes per real second = 120 times faster
+            const catchUpGameMs = elapsedRealTimeMs * 120;
+            
+            DateTimeSystem.getDateObject().setTime(this.saveData.time.timestamp);
+            DateTimeSystem.advanceTime(catchUpGameMs);
+
+            // Restore Chests
+            Chest.CHESTS = this.saveData.world.chests;
+        }
+
+        this.enterLevel("main_menu");
+        UserInterfaces.displayTitle = true; 
+
+
         Controller.startInput(this.ctx)
         this.timer = new Timer();
         Debugger.switchDebugMode();
@@ -82,9 +138,19 @@ class GameEngine {
         this.#ui.update()
     };
 
+    togglePause() {
+        this.paused = !this.paused;
+        const pauseMenu = document.getElementById("pauseMenu");
+        if (pauseMenu) {
+            pauseMenu.style.display = this.paused ? "flex" : "none";
+        }
+    }
+
     loop() {
         this.clockTick = this.timer.tick();
-        this.update();
+        if (!this.paused) {
+            this.update();
+        }
         this.draw();
         //Controller needs to be updated at the very end!
         Controller.update();

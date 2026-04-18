@@ -5,6 +5,10 @@ class Level extends AbstractTiledMap {
     #entities = []
     #automapTilesFirstGid = -1
 
+    getEntities() {
+        return this.#entities
+    }
+
     constructor(_path) {
         super(_path)
         // if automap-tiles are used for rules, then cache its first gid id
@@ -18,6 +22,7 @@ class Level extends AbstractTiledMap {
             this.setParameter("triggers", [])
         }
         this.updateLevelMusic()
+        this.trashRegenTimer = 0;
     }
 
     static #setPlayerCoordinate(x, y) {
@@ -33,7 +38,7 @@ class Level extends AbstractTiledMap {
     }
 
     static teleportPlayer(x, y) {
-        this.#setPlayerCoordinate(x, y)
+        if (this.PLAYER) this.#setPlayerCoordinate(x, y)
     }
 
     #getBgm() {
@@ -152,14 +157,21 @@ class Level extends AbstractTiledMap {
         }
 
         // Spawn trash in Town
-        // Detect town by its specific music or triggers
         const isTown = this.getParameter("morning_music") === "OST 1 - Good Morning.ogg";
+        const townTrashSpots = [
+            [35, 65], [40, 60], [38, 55], [42, 68], [32, 58]
+        ];
         if (isTown && !(this instanceof FarmLevel || this instanceof Bedroom)) {
-            const townTrashSpots = [
-                [35, 65], [40, 60], [38, 55], [42, 68], [32, 58]
-            ];
             townTrashSpots.forEach((pos, i) => {
-                this.addEntity(new Trash("town_trash_" + i, pos[0], pos[1], this));
+                // Add initial randomness (+/- 2 tiles)
+                const randomX = pos[0] + getRandomIntInclusive(-2, 2);
+                const randomY = pos[1] + getRandomIntInclusive(-2, 2);
+                
+                // Ensure it's walkable
+                const spawnX = this.canEnterTile(randomX, randomY) ? randomX : pos[0];
+                const spawnY = this.canEnterTile(randomX, randomY) ? randomY : pos[1];
+
+                this.addEntity(new Trash("town_trash_" + i, spawnX, spawnY, this));
             });
         }
 
@@ -173,6 +185,24 @@ class Level extends AbstractTiledMap {
             });
         }
     };
+
+    spawnRandomTrash() {
+        const townTrashSpots = [
+            [35, 65], [40, 60], [38, 55], [42, 68], [32, 58]
+        ];
+        const randomBase = townTrashSpots[getRandomIntInclusive(0, townTrashSpots.length - 1)];
+        const randomX = randomBase[0] + getRandomIntInclusive(-3, 3);
+        const randomY = randomBase[1] + getRandomIntInclusive(-3, 3);
+
+        if (this.canEnterTile(randomX, randomY)) {
+            const existing = this.getEntityUsingFilter(e => e instanceof Trash && e.getBlockX() === randomX && e.getBlockY() === randomY);
+            if (!existing) {
+                this.addEntity(new Trash("dynamic_trash_" + Date.now(), randomX, randomY, this));
+                return true;
+            }
+        }
+        return false;
+    }
 
     onEnter() {
         // Default onEnter does nothing
@@ -255,6 +285,21 @@ class Level extends AbstractTiledMap {
         if (Debugger.isDebugging) {
             this.logDebugInfo()
         }
+
+        // Trash Regeneration Logic
+        if (this.getParameter("trash_regeneration")) {
+            this.trashRegenTimer += GAME_ENGINE.clockTick;
+            // 3 real minutes = 180 seconds
+            if (this.trashRegenTimer > 180) {
+                const currentTrashCount = this.#entities.filter(e => e instanceof Trash).length;
+                const maxTrash = this.getParameter("max_trash") || 15;
+
+                if (currentTrashCount < maxTrash) {
+                    this.spawnRandomTrash();
+                }
+                this.trashRegenTimer = 0; // Reset even if spawn fails or is full
+            }
+        }
     }
 
     processTriggers(_data) {
@@ -264,6 +309,28 @@ class Level extends AbstractTiledMap {
                 Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
                 Level.#setPlayerCoordinate(_data["destinationX"], _data["destinationY"])
             })
+        } else if (_data.type.localeCompare("weather_forecast") === 0) {
+            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+            if (MessageButton.draw(
+                GAME_ENGINE.ctx, "Watch TV", _fontSize,
+                Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+            )) {
+                if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
+                    GAME_ENGINE.getPlayerUi().openWeather();
+                    Controller.mouse.leftClick = false
+                }
+            }
+        } else if (_data.type.localeCompare("animated_tv") === 0) {
+            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+            if (MessageButton.draw(
+                GAME_ENGINE.ctx, "Watch TV", _fontSize,
+                Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+            )) {
+                if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
+                    GAME_ENGINE.getPlayerUi().openAnimatedTV("./images/ui/farming.gif");
+                    Controller.mouse.leftClick = false
+                }
+            }
         } else if (_data.type.localeCompare("dialog") === 0) {
             const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
             if (MessageButton.draw(
