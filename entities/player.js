@@ -3,6 +3,8 @@ class Player extends Character {
     #isIdle
     #itemBar
     #karma
+    #arrowVisible
+    #idleTimer
 
     constructor(name, x, y, mapRef) {
         super(name, "player", x, y, mapRef)
@@ -13,6 +15,8 @@ class Player extends Character {
         this.ishidden = false
         this.#itemBar = {}
         this.#karma = 0
+        this.#arrowVisible = true // Show arrow at start
+        this.#idleTimer = 0
     }
 
     getKarma() {
@@ -175,11 +179,41 @@ class Player extends Character {
         }
         if (this.#isIdle) {
             this.setCurrentAction("idle")
+            this.#idleTimer += GAME_ENGINE.clockTick;
+            if (this.#idleTimer > 3.0) { // Delay appearance by 3 seconds
+                this.#arrowVisible = true;
+            }
+        } else {
+            this.#idleTimer = 0;
+            this.#arrowVisible = false;
         }
+
         super.update()
     };
 
     display(ctx, offsetX, offsetY) {
-        if (!this.ishidden) super.display(ctx, offsetX, offsetY);
+        if (this.ishidden) return;
+        super.display(ctx, offsetX, offsetY);
+
+        if (this.#arrowVisible) {
+            const bounce = Math.sin(Date.now() / 200) * 10;
+            const arrowX = this.getPixelX() + offsetX + this.getWidth() / 2;
+            const arrowY = this.getPixelY() + offsetY - 20 + bounce;
+
+            ctx.save();
+            ctx.fillStyle = "#FFD700"; // Gold color
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(arrowX - 15, arrowY - 20);
+            ctx.lineTo(arrowX + 15, arrowY - 20);
+            ctx.lineTo(arrowX, arrowY + 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
     }
 }
