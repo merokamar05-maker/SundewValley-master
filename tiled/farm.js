@@ -8,13 +8,28 @@ class FarmLevel extends Level {
         const inventory = Level.PLAYER.getInventory();
         const itemBar = Level.PLAYER.getItemBar();
         
-        // Map item keys to their respective classes and a default valid variant
+        // Map item keys to their respective classes and all available adult variants
         const animalMapping = {
-            "chicken": { class: Chicken, variant: "black_chicken" },
-            "cow": { class: Cow, variant: "strawberry_cow" },
-            "goat": { class: Goat, variant: "brown_goat" },
-            "pig": { class: Pig, variant: "pink_pig" },
-            "sheep": { class: Sheep, variant: "fluffy_white_sheep_sheet" }
+            "chicken": { 
+                class: Chicken, 
+                variants: ["black_chicken", "brown_and_white_chicken", "brown_chicken", "white_chicken"] 
+            },
+            "cow": { 
+                class: Cow, 
+                variants: ["black_cow", "brown_cow", "strawberry_cow"] 
+            },
+            "goat": { 
+                class: Goat, 
+                variants: ["blackberry_goat", "black_goat", "brown_goat", "white_goat"] 
+            },
+            "pig": { 
+                class: Pig, 
+                variants: ["pink_pig", "spotted_pig"] 
+            },
+            "sheep": { 
+                class: Sheep, 
+                variants: ["fluffy_white_sheep_sheet", "white_sheep_sheet"] 
+            }
         };
 
         const processContainer = (container) => {
@@ -36,7 +51,9 @@ class FarmLevel extends Level {
                                 spawnY = 16 + Math.random() * 4;
                             }
                             try {
-                                this.addEntity(new config.class(config.variant, spawnX, spawnY, this));
+                                // Pick a random variant from the list
+                                const variant = config.variants[Math.floor(Math.random() * config.variants.length)];
+                                this.addEntity(new config.class(variant, spawnX, spawnY, this));
                             } catch (e) {
                                 console.error(`Failed to spawn animal ${key}:`, e);
                             }

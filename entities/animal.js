@@ -88,7 +88,7 @@ class Animal extends Creature {
                 const dy = this.getPixelY() - Level.PLAYER.getPixelY();
                 const angle = Math.atan2(dy, dx);
                 
-                const fleeSpeed = 5; // Fast flee speed
+                const fleeSpeed = 4; // Slightly faster flee speed
                 this.setCurrentMovingSpeedX(Math.cos(angle) * fleeSpeed);
                 this.setCurrentMovingSpeedY(Math.sin(angle) * fleeSpeed);
                 this.setCurrentAction("move");

@@ -191,37 +191,50 @@ class Level extends AbstractTiledMap {
             // Trigger if never spawned (-1) OR if 7 days have passed
             if (this.lastAnimalSpawnDay === -1 || currentDay >= this.lastAnimalSpawnDay + 7) {
                 // Only spawn if we haven't already spawned for this cycle
-                // We check if there are already escaped animals to avoid double-spawning on same day
                 const existingEscaped = this.getEntities().filter(e => e instanceof Animal && e.isEscaped()).length;
                 
                 if (existingEscaped === 0) {
+                    const isFirstSpawn = this.lastAnimalSpawnDay === -1;
                     this.lastAnimalSpawnDay = currentDay;
                     this.townAnimalsCaughtCount = 0;
 
-                    // Random quantity between 2 and 6 as requested
-                    const quantity = getRandomIntInclusive(2, 6);
+                    // First time = 5 animals. Subsequent times = 2-4 animals (decreased).
+                    const quantity = isFirstSpawn ? 5 : getRandomIntInclusive(2, 4);
                     const youssefPos = [75, 38.5];
                     const shopsPos = [33, 39];
 
-                    const animalClasses = { "sheep": Sheep, "pig": Pig };
-                    const animalSubTypes = { "sheep": "fluffy_white_sheep_sheet", "pig": "pink_pig" };
+                    const animalVarieties = [
+                        { class: Chicken, variants: ["black_chicken", "brown_and_white_chicken", "brown_chicken", "white_chicken"] },
+                        { class: Cow, variants: ["black_cow", "brown_cow", "strawberry_cow"] },
+                        { class: Goat, variants: ["blackberry_goat", "black_goat", "brown_goat", "white_goat"] },
+                        { class: Pig, variants: ["pink_pig", "spotted_pig"] },
+                        { class: Sheep, variants: ["fluffy_white_sheep_sheet", "white_sheep_sheet"] }
+                    ];
 
                     for (let i = 0; i < quantity; i++) {
                         // Alternate between Youssef and Shops locations
                         const basePos = (i % 2 === 0) ? youssefPos : shopsPos;
-                        const rx = basePos[0] + getRandomIntInclusive(-4, 4);
-                        const ry = basePos[1] + getRandomIntInclusive(-4, 4);
                         
-                        const type = (i % 2 === 0) ? "sheep" : "pig";
-                        const AnimalClass = animalClasses[type];
+                        // Pick a random animal type and a random variant
+                        const variety = animalVarieties[getRandomIntInclusive(0, animalVarieties.length - 1)];
+                        const AnimalClass = variety.class;
+                        const subType = variety.variants[getRandomIntInclusive(0, variety.variants.length - 1)];
                         
-                        if (this.canEnterTile(rx, ry)) {
-                            const animal = new AnimalClass(animalSubTypes[type], rx, ry, this);
-                            animal.setIsEscaped(true);
-                            this.addEntity(animal);
+                        // Retry logic to ensure the animal actually spawns
+                        let spawned = false;
+                        for (let attempt = 0; attempt < 20 && !spawned; attempt++) {
+                            const rx = basePos[0] + getRandomIntInclusive(-6, 6);
+                            const ry = basePos[1] + getRandomIntInclusive(-6, 6);
+                            
+                            if (this.canEnterTile(rx, ry)) {
+                                const animal = new AnimalClass(subType, rx, ry, this);
+                                animal.setIsEscaped(true);
+                                this.addEntity(animal);
+                                spawned = true;
+                            }
                         }
                     }
-                    console.log(`Spawned ${quantity} escaped animals in Town for day ${currentDay}`);
+                    console.log(`Spawned ${quantity} escaped animals in Town for day ${currentDay} (First spawn: ${isFirstSpawn})`);
                     
                     // Update global state
                     SaveManager.townEvent = {
