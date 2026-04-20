@@ -7,7 +7,7 @@ class ItemBarUI extends GameObjectsMapContainer {
 
     constructor(characterRef) {
         super(characterRef.getItemBar())
-        this.#boxSize = Math.floor(GAME_ENGINE.ctx.canvas.width / 20)
+        this.#boxSize = Math.floor(GAME_ENGINE.ctx.canvas.width / 25)
         this.#selected = -1
         this.#latestHovered = null
         if (ItemBarUI.#itemsBarTiledStaticImage == null) ItemBarUI.#itemsBarTiledStaticImage = new TiledStaticImage("./ui/itemsBar.json")
