@@ -28,12 +28,11 @@ class Animator {
         if (this.isDone()) {
             if (this.loop) {
                 this.elapsedTime -= this.totalTime;
-            } else {
-                return;
             }
         }
 
         let frame = this.currentFrame();
+        if (frame >= this.frameCount) frame = this.frameCount - 1;
         if (this.reverse) frame = this.frameCount - frame - 1;
 
         ctx.drawImage(this.sprite_sheet,

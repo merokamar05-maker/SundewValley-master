@@ -152,11 +152,12 @@ class Creature extends Entity {
     }
 
     display(ctx, offsetX, offsetY) {
-        const currentAnim = this.getCurrentAnimation();
+        let currentAnim = this.getCurrentAnimation();
         if (!currentAnim) return;
 
         if (currentAnim.isDone()) {
             this.setCurrentAction("idle")
+            currentAnim = this.getCurrentAnimation();
         }
         currentAnim.drawFrame(GAME_ENGINE.clockTick, ctx, Math.round(this.getPixelX() + offsetX), Math.round(this.getPixelY() + offsetY), this.getWidth(), this.getHeight())
     };
