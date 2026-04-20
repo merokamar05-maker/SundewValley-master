@@ -46,7 +46,7 @@ class Npc extends Character {
         }
 
         this.#isSoso = name === "Soso"
-        this.#isMovingNpc = ["7azo", "Ganna", "Kinzy", "Mario", "Nader", "Omar", "Ramy", "Menna"].includes(name) || this.#isSoso
+        this.#isMovingNpc = ["7azo", "Jannah", "Kinzy", "Mario", "Nader", "Omar", "Ramy", "Menna"].includes(name) || this.#isSoso
         if (this.#isMovingNpc) {
             let baseWaypoints = this.#isSoso ? [[20, 45], [40, 45], [40, 60], [20, 60]] : [[15, 42], [45, 42], [45, 63], [15, 63]];
             
@@ -62,7 +62,7 @@ class Npc extends Character {
             
             // Set initial target waypoint based on starting position to ensure they don't all cluster at one point
             if (name === "7azo" || this.#isSoso) this.#target_waypoint_idx = 1;      // Moving from NW to NE
-            else if (name === "Ganna") this.#target_waypoint_idx = 2;           // Moving from NE to SE
+            else if (name === "Jannah") this.#target_waypoint_idx = 2;           // Moving from NE to SE
             else if (name === "Kinzy") this.#target_waypoint_idx = 3;           // Moving from SE to NE (Reversed)
             else if (name === "Mario") this.#target_waypoint_idx = 2;           // Moving from SW to SE (Reversed)
             else if (["Nader", "Omar", "Ramy", "Menna"].includes(name)) this.#target_waypoint_idx = 1; // start by moving right

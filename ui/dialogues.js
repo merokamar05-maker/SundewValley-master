@@ -622,15 +622,15 @@ class Dialogues {
         },
         "7azo_yes": { contents: ["Awesome! Let me know when you are fully ready!"] },
         "7azo_no": { contents: ["Ah, maybe next time then. Take care!"] },
-        Ganna_interact1: {
+        Jannah_interact1: {
             contents: ["Hi there! Have you seen my friends around?"],
             options: [
-                { text: "No, I haven't seen them.", act: "Ganna_no" },
-                { text: "I think they are at the farm.", act: "Ganna_yes" }
+                { text: "No, I haven't seen them.", act: "Jannah_no" },
+                { text: "I think they are at the farm.", act: "Jannah_yes" }
             ]
         },
-        Ganna_no: { contents: ["Oh okay, let me know if you do!"] },
-        Ganna_yes: { contents: ["Really? I'll go check there! Thank you so much!"] },
+        Jannah_no: { contents: ["Oh okay, let me know if you do!"] },
+        Jannah_yes: { contents: ["Really? I'll go check there! Thank you so much!"] },
         Kinzy_interact1: {
             contents: ["Hello! What a beautiful day to be in the town square!"],
             options: [
@@ -710,7 +710,7 @@ class Dialogues {
         soso: { scale: 1.0, yOffset: 0.3 },
         grandmother: { scale: 1.0, yOffset: 0.25 },
         "7azo": { scale: 1.0, yOffset: 0.4 },
-        ganna: { scale: 1.0, yOffset: 0.45 },
+        jannah: { scale: 1.0, yOffset: 0.45 },
         kinzy: { scale: 1.0, yOffset: 0.5 },
         mario: { scale: 1.0, yOffset: 0.5 },
         youssef: { scale: 1.0, yOffset: 0.4 },
