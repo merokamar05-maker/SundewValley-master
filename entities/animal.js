@@ -3,6 +3,7 @@ class Animal extends Creature {
     #current_action_count_down
     #spawnBlockX
     #spawnBlockY
+    #isEscaped = false
     static #SHOP_WANDER_RADIUS = 3
 
     constructor(type, subType, x, y, mapRef) {
@@ -10,6 +11,30 @@ class Animal extends Creature {
         this.#current_action_count_down = 0
         this.#spawnBlockX = x
         this.#spawnBlockY = y
+        this.#isEscaped = false
+    }
+
+    setIsEscaped(val) {
+        this.#isEscaped = val;
+    }
+
+    isEscaped() {
+        return this.#isEscaped;
+    }
+
+    interact(playerRef) {
+        if (!this.#isEscaped) return;
+        
+        // Catch the animal
+        playerRef.obtainItem(this.getType(), 1);
+        this.removeFromWorld = true;
+        ASSET_MANAGER.playSound("Gravel_hit1.ogg");
+        
+        // Mark as caught for the current period (the level-spawning logic will check save data)
+        const currentLevel = this.getMapReference();
+        if (currentLevel.onAnimalCaught) {
+            currentLevel.onAnimalCaught(this);
+        }
     }
 
     update() {
@@ -51,6 +76,29 @@ class Animal extends Creature {
                     break
             }
         }
+
+        // Flee behavior for escaped animals
+        if (this.#isEscaped && Level.PLAYER) {
+            const playerDist = Math.sqrt(Math.pow(this.getPixelX() - Level.PLAYER.getPixelX(), 2) + Math.pow(this.getPixelY() - Level.PLAYER.getPixelY(), 2));
+            const fleeDistance = this.getMapReference().getTileSize() * 4;
+            
+            if (playerDist < fleeDistance) {
+                // Move away from player
+                const dx = this.getPixelX() - Level.PLAYER.getPixelX();
+                const dy = this.getPixelY() - Level.PLAYER.getPixelY();
+                const angle = Math.atan2(dy, dx);
+                
+                const fleeSpeed = 2.5; // Faster than normal wandering
+                this.setCurrentMovingSpeedX(Math.cos(angle) * fleeSpeed);
+                this.setCurrentMovingSpeedY(Math.sin(angle) * fleeSpeed);
+                this.setCurrentAction("move");
+                this.setDirectionFacing(this.getCurrentMovingSpeedX() < 0 ? "l" : "r");
+                
+                // Override the wandering countdown since we are fleeing
+                this.#current_action_count_down = 10; 
+            }
+        }
+
         super.update()
         // Clamp movement to stay within a circular radius of spawn position
         const isFarm = this.getMapReference() instanceof FarmLevel

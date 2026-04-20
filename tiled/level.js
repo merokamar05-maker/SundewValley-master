@@ -23,6 +23,8 @@ class Level extends AbstractTiledMap {
         }
         this.updateLevelMusic()
         this.trashRegenTimer = 0;
+        this.lastAnimalSpawnDay = -1;
+        this.townAnimalsCaughtCount = 0;
     }
 
     static #setPlayerCoordinate(x, y) {
@@ -177,6 +179,57 @@ class Level extends AbstractTiledMap {
 
                 this.addEntity(new Trash("town_trash_" + i, spawnX, spawnY, this));
             });
+
+            // Restore town event state from SaveManager if available
+            if (SaveManager.townEvent) {
+                this.lastAnimalSpawnDay = SaveManager.townEvent.lastSpawnDay !== undefined ? SaveManager.townEvent.lastSpawnDay : -1;
+                this.townAnimalsCaughtCount = SaveManager.townEvent.caughtCount || 0;
+            }
+
+            // Periodic Animal Spawning Logic
+            const currentDay = DateTimeSystem.getTotalDays();
+            // Trigger if never spawned (-1) OR if 7 days have passed
+            if (this.lastAnimalSpawnDay === -1 || currentDay >= this.lastAnimalSpawnDay + 7) {
+                // Only spawn if we haven't already spawned for this cycle
+                // We check if there are already escaped animals to avoid double-spawning on same day
+                const existingEscaped = this.getEntities().filter(e => e instanceof Animal && e.isEscaped()).length;
+                
+                if (existingEscaped === 0) {
+                    this.lastAnimalSpawnDay = currentDay;
+                    this.townAnimalsCaughtCount = 0;
+
+                    // Random quantity between 2 and 6 as requested
+                    const quantity = getRandomIntInclusive(2, 6);
+                    const youssefPos = [75, 38.5];
+                    const shopsPos = [33, 39];
+
+                    const animalClasses = { "sheep": Sheep, "pig": Pig };
+                    const animalSubTypes = { "sheep": "fluffy_white_sheep_sheet", "pig": "pink_pig" };
+
+                    for (let i = 0; i < quantity; i++) {
+                        // Alternate between Youssef and Shops locations
+                        const basePos = (i % 2 === 0) ? youssefPos : shopsPos;
+                        const rx = basePos[0] + getRandomIntInclusive(-4, 4);
+                        const ry = basePos[1] + getRandomIntInclusive(-4, 4);
+                        
+                        const type = (i % 2 === 0) ? "sheep" : "pig";
+                        const AnimalClass = animalClasses[type];
+                        
+                        if (this.canEnterTile(rx, ry)) {
+                            const animal = new AnimalClass(animalSubTypes[type], rx, ry, this);
+                            animal.setIsEscaped(true);
+                            this.addEntity(animal);
+                        }
+                    }
+                    console.log(`Spawned ${quantity} escaped animals in Town for day ${currentDay}`);
+                    
+                    // Update global state
+                    SaveManager.townEvent = {
+                        lastSpawnDay: this.lastAnimalSpawnDay,
+                        caughtCount: this.townAnimalsCaughtCount
+                    };
+                }
+            }
         }
 
         // Spawn trash in the bedroom
@@ -210,6 +263,15 @@ class Level extends AbstractTiledMap {
 
     onEnter() {
         // Default onEnter does nothing
+    }
+
+    onAnimalCaught(animal) {
+        this.townAnimalsCaughtCount++;
+        // Update global state immediately
+        SaveManager.townEvent = {
+            lastSpawnDay: this.lastAnimalSpawnDay,
+            caughtCount: this.townAnimalsCaughtCount
+        };
     }
 
     getEntityUsingFilter(_filter) {
@@ -479,6 +541,16 @@ class Level extends AbstractTiledMap {
                 const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
                 MessageButton.draw(
                     GAME_ENGINE.ctx, "Pick up (F)", _fontSize,
+                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                );
+                if (Level.PLAYER.notDisablePlayerController() && Controller.keys["KeyF"]) {
+                    entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
+                    Controller.keys["KeyF"] = false; // consume input
+                }
+            } else if (entitiesThatCollideWithPlayer[0] instanceof Animal && entitiesThatCollideWithPlayer[0].isEscaped()) {
+                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                MessageButton.draw(
+                    GAME_ENGINE.ctx, "Catch (F)", _fontSize,
                     Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
                 );
                 if (Level.PLAYER.notDisablePlayerController() && Controller.keys["KeyF"]) {

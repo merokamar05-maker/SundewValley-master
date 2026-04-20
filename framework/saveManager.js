@@ -20,7 +20,8 @@ class SaveManager {
             },
             world: {
                 chests: Chest.CHESTS,
-                farmModifications: this.#getFarmModifications()
+                farmModifications: this.#getFarmModifications(),
+                townEvent: SaveManager.townEvent || { lastSpawnDay: 0, caughtCount: 0 }
             }
         };
 
@@ -39,6 +40,12 @@ class SaveManager {
             if (!Chest.CHESTS.TradingBox) Chest.CHESTS.TradingBox = {};
 
             console.log("Game Loaded successfully!");
+            
+            // Restore town event state globally so Level can access it
+            if (data.world && data.world.townEvent) {
+                SaveManager.townEvent = data.world.townEvent;
+            }
+
             return data;
         } catch (e) {
             console.error("Failed to load save:", e);
@@ -60,7 +67,8 @@ class SaveManager {
 
         const modifications = {
             tiles: [],
-            crops: []
+            crops: [],
+            animals: []
         };
 
         // Save crops
@@ -72,6 +80,13 @@ class SaveManager {
                     y: e.getBlockY(),
                     stage: e.getStage(),
                     timePlanted: e.getTimePlanted().getTime()
+                });
+            } else if (e instanceof Animal && !(e instanceof Player)) {
+                modifications.animals.push({
+                    type: e.getType(),
+                    subType: e.getSubType(),
+                    x: e.getBlockX(),
+                    y: e.getBlockY()
                 });
             }
         });
@@ -108,6 +123,22 @@ class SaveManager {
                 crop.setStage(c.stage);
                 crop.setTimePlanted(new Date(c.timePlanted));
                 level.addEntity(crop);
+            });
+            // Apply animals
+            modifications.animals.forEach(a => {
+                // Map the animal type to the correct class
+                const animalClasses = {
+                    "chicken": Chicken,
+                    "cow": Cow,
+                    "goat": Goat,
+                    "pig": Pig,
+                    "sheep": Sheep
+                };
+                const AnimalClass = animalClasses[a.type];
+                if (AnimalClass) {
+                    const animal = new AnimalClass(a.subType, a.x, a.y, level);
+                    level.addEntity(animal);
+                }
             });
         }
     }
