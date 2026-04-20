@@ -10,9 +10,18 @@ class Transition {
     }
 
     static start(job = null) {
+        if (!this.isNotActivated()) {
+            console.warn("Transition already in progress. Ignoring start call.");
+            return;
+        }
         this.#stage = 1;
         this.#currentRadius = 0
         this.#job = job
+    }
+
+    static forceFinish() {
+        this.#stage = 0;
+        this.#job = null;
     }
 
     static draw(ctx) {

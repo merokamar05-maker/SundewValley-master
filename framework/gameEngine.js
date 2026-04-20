@@ -44,9 +44,17 @@ class GameEngine {
             SaveManager.applyModifications(this.getCurrentLevel(), this.saveData.world.farmModifications);
         }
 
+        console.log(`Entering level: ${this.#currentLevelName}`);
         this.getCurrentLevel().onEnter()
+        console.log(`Level ${this.#currentLevelName} onEnter() finished.`);
         this.getCurrentLevel().updateLevelMusic()
         
+        // Ensure player is added to the current level's entity list (especially for cached levels)
+        if (Level.PLAYER) {
+            Level.PLAYER.setMapReference(this.getCurrentLevel());
+            this.getCurrentLevel().addEntity(Level.PLAYER);
+        }
+
         // Restore player position and stats if this is the initial load
         if (this.saveData && this.saveData.player && Level.PLAYER && name !== "main_menu") {
             const p = this.saveData.player;
@@ -80,19 +88,36 @@ class GameEngine {
         
         this.saveData = SaveManager.load();
         
-        if (this.saveData) {
+        if (this.saveData && this.saveData.time) {
             // Restore Time and handle Offline Progress
             const savedRealTime = this.saveData.time.realTime;
-            const elapsedRealTimeMs = Date.now() - savedRealTime;
-            
-            // Game progresses at 2 minutes per real second = 120 times faster
-            const catchUpGameMs = elapsedRealTimeMs * 120;
-            
-            DateTimeSystem.getDateObject().setTime(this.saveData.time.timestamp);
-            DateTimeSystem.advanceTime(catchUpGameMs);
+            const savedTimestamp = this.saveData.time.timestamp;
+
+            if (Number.isFinite(savedTimestamp)) {
+                DateTimeSystem.getDateObject().setTime(savedTimestamp);
+            }
+
+            if (Number.isFinite(savedRealTime)) {
+                const elapsedRealTimeMs = Date.now() - savedRealTime;
+                if (elapsedRealTimeMs > 0) {
+                    // Game progresses at 2 minutes per real second = 120 times faster
+                    let catchUpGameMs = elapsedRealTimeMs * 120;
+                    
+                    // Cap offline progress to 30 in-game days to prevent excessive state changes or hangs
+                    const maxCatchUpMs = 30 * 24 * 60 * 60 * 1000; 
+                    if (catchUpGameMs > maxCatchUpMs) {
+                        console.warn(`Offline progress capped from ${Math.round(catchUpGameMs/3600000)}h to 720h (30 days).`);
+                        catchUpGameMs = maxCatchUpMs;
+                    }
+                    
+                    DateTimeSystem.advanceTime(catchUpGameMs);
+                }
+            }
 
             // Restore Chests
-            Chest.CHESTS = this.saveData.world.chests;
+            if (this.saveData.world && this.saveData.world.chests) {
+                Chest.CHESTS = this.saveData.world.chests;
+            }
         }
 
         this.enterLevel("main_menu");
@@ -114,28 +139,36 @@ class GameEngine {
 
 
     draw() {
-        // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        // Draw the latest things first
-        this.getCurrentLevel().draw(this.ctx)
-        // Draw all the ui onto screen
-        this.#ui.draw(this.ctx)
-        // draw dialogue ui
-        Dialogues.draw(this.ctx)
-        // Draw transition animation is it is activated
-        Transition.draw(this.ctx)
+        try {
+            // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
+            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            // Draw the latest things first
+            if (this.getCurrentLevel()) this.getCurrentLevel().draw(this.ctx)
+            // Draw all the ui onto screen
+            if (this.#ui) this.#ui.draw(this.ctx)
+            // draw dialogue ui
+            Dialogues.draw(this.ctx)
+            // Draw transition animation is it is activated
+            Transition.draw(this.ctx)
+        } catch (error) {
+            console.error("Game engine draw error:", error);
+        }
     };
 
     update() {
-        Debugger.update()
-        DateTimeSystem.update(this.clockTick)
-        if (Debugger.isDebugging) {
-            Debugger.pushInfo(`current in game time: ${Math.round(this.timer.gameTime)}s`)
-            Debugger.pushInfo(`Date: ${DateTimeSystem.toLocaleString()} ${DateTimeSystem.getSeason()}`)
-            Debugger.pushInfo(`In Transition: ${!Transition.isNotActivated()}`)
+        try {
+            Debugger.update()
+            DateTimeSystem.update(this.clockTick)
+            if (Debugger.isDebugging) {
+                Debugger.pushInfo(`current in game time: ${Math.round(this.timer.gameTime)}s`)
+                Debugger.pushInfo(`Date: ${DateTimeSystem.toLocaleString()} ${DateTimeSystem.getSeason()}`)
+                Debugger.pushInfo(`In Transition: ${!Transition.isNotActivated()}`)
+            }
+            if (this.getCurrentLevel()) this.getCurrentLevel().update()
+            if (this.#ui) this.#ui.update()
+        } catch (error) {
+            console.error("Game engine update error:", error);
         }
-        this.getCurrentLevel().update()
-        this.#ui.update()
     };
 
     togglePause() {
@@ -147,13 +180,19 @@ class GameEngine {
     }
 
     loop() {
-        this.clockTick = this.timer.tick();
-        if (!this.paused) {
-            this.update();
+        try {
+            this.clockTick = this.timer.tick();
+            if (!this.paused) {
+                this.update();
+            }
+            this.draw();
+            //Controller needs to be updated at the very end!
+            Controller.update();
+        } catch (error) {
+            console.error("Critical game loop error:", error);
+            // Attempt to keep the loop going even if a frame fails
+            requestAnimFrame(() => this.loop(), this.ctx.canvas);
         }
-        this.draw();
-        //Controller needs to be updated at the very end!
-        Controller.update();
     };
 
 }

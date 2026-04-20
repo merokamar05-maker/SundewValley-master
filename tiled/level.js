@@ -77,8 +77,12 @@ class Level extends AbstractTiledMap {
     }
 
     addEntity(entity) {
-        Level.#ALL_ENTITIES.push(entity)
-        this.#entities.push(entity);
+        if (!this.#entities.includes(entity)) {
+            this.#entities.push(entity);
+        }
+        if (!Level.#ALL_ENTITIES.includes(entity)) {
+            Level.#ALL_ENTITIES.push(entity)
+        }
     };
 
     goToSpawn() {
@@ -303,11 +307,21 @@ class Level extends AbstractTiledMap {
     }
 
     processTriggers(_data) {
-        if (_data.type.localeCompare("teleportation") === 0) {
+        if (_data.type.localeCompare("teleportation") === 0 && Transition.isNotActivated()) {
             Transition.start(() => {
-                GAME_ENGINE.enterLevel(_data["destinationLevel"])
-                Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
-                Level.#setPlayerCoordinate(_data["destinationX"], _data["destinationY"])
+                try {
+                    console.log(`Teleporting to: ${_data["destinationLevel"]} at ${_data["destinationX"]}, ${_data["destinationY"]}`);
+                    GAME_ENGINE.enterLevel(_data["destinationLevel"])
+                    const currentLevel = GAME_ENGINE.getCurrentLevel();
+                    if (!currentLevel) throw new Error(`Level ${_data["destinationLevel"]} failed to load.`);
+                    
+                    Level.PLAYER.setMapReference(currentLevel)
+                    Level.#setPlayerCoordinate(_data["destinationX"], _data["destinationY"])
+                } catch (error) {
+                    console.error("Critical transition error:", error);
+                    // Force the screen to open so the player isn't stuck back-stage
+                    Transition.forceFinish();
+                }
             })
         } else if (_data.type.localeCompare("weather_forecast") === 0) {
             const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2

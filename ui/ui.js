@@ -101,6 +101,7 @@ class UserInterfaces {
     }
 
     drawMoney(ctx) {
+        if (!Level.PLAYER) return;
         const money = Level.PLAYER.getMoney();
         const moneyStr = `${money}`;
         const padding = 20;
@@ -207,6 +208,7 @@ class UserInterfaces {
     }
 
     drawKarmaBar(ctx) {
+        if (!Level.PLAYER) return;
         const karma = Level.PLAYER.getKarma();
         const maxKarma = 100;
         const progress = Math.min(karma / maxKarma, 1);

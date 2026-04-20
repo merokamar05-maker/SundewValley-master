@@ -14,10 +14,13 @@ class Crop extends Entity {
 
     update() {
         let timeUntilNextStage = this.getTimeUntilNextStageInMs()
-        while (timeUntilNextStage <= 0) {
+        let iterations = 0;
+        const maxIterations = 10; // Safety cap to prevent infinite loops from corrupted time data
+        while (timeUntilNextStage <= 0 && iterations < maxIterations) {
             this.#stage++;
             this.#timePlanted.setTime(DateTimeSystem.getDateObject().getTime() - timeUntilNextStage)
             timeUntilNextStage = this.getTimeUntilNextStageInMs()
+            iterations++;
         }
     }
 

@@ -18,25 +18,34 @@ class FarmLevel extends Level {
         };
 
         const processContainer = (container) => {
+            if (!container) return;
             Object.keys(animalMapping).forEach(key => {
                 if (container[key] && container[key].amount > 0) {
                     const count = container[key].amount;
                     const config = animalMapping[key];
-                    for (let i = 0; i < count; i++) {
-                        let spawnX, spawnY;
-                        if (key === "chicken") {
-                            // Moved 2 steps up from [7, 45]
-                            spawnX = 7 + Math.random() * 2;
-                            spawnY = 43 + Math.random() * 2;
-                        } else {
-                            // Moved 2 steps up and 5 steps right from [5, 18]
-                            spawnX = 10 + Math.random() * 4;
-                            spawnY = 16 + Math.random() * 4;
+                    if (config && typeof config.class === 'function') {
+                        for (let i = 0; i < count; i++) {
+                            let spawnX, spawnY;
+                            if (key === "chicken") {
+                                // Moved 2 steps up from [7, 45]
+                                spawnX = 7 + Math.random() * 2;
+                                spawnY = 43 + Math.random() * 2;
+                            } else {
+                                // Moved 2 steps up and 5 steps right from [5, 18]
+                                spawnX = 10 + Math.random() * 4;
+                                spawnY = 16 + Math.random() * 4;
+                            }
+                            try {
+                                this.addEntity(new config.class(config.variant, spawnX, spawnY, this));
+                            } catch (e) {
+                                console.error(`Failed to spawn animal ${key}:`, e);
+                            }
                         }
-                        this.addEntity(new config.class(config.variant, spawnX, spawnY, this));
+                        // Remove the animal items as they are now on the farm
+                        delete container[key];
+                    } else {
+                        console.warn(`Missing class for animal type: ${key}`);
                     }
-                    // Remove the animal items as they are now on the farm
-                    delete container[key];
                 }
             });
         };
