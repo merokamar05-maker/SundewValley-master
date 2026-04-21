@@ -1,5 +1,5 @@
 class StoryIntroUI {
-    static play(onComplete) {
+    static play(videoPath, onComplete) {
         const overlay = document.createElement('div');
         overlay.id = 'story-intro-overlay';
         overlay.style.position = 'fixed';
@@ -14,7 +14,7 @@ class StoryIntroUI {
         overlay.style.justifyContent = 'center';
 
         const video = document.createElement('video');
-        video.src = './images/story/story_time.mp4';
+        video.src = videoPath;
         video.style.maxWidth = '100%';
         video.style.maxHeight = '100%';
         video.autoplay = true;

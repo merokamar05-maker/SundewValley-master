@@ -78,6 +78,12 @@ class GameEngine {
         }
 
         this.#ui = new UserInterfaces();
+
+        // Story Intro for Town - Plays only once per playthrough
+        if (name === "town" && !SaveManager.hasSeenVideo("town")) {
+            StoryIntroUI.play('./images/story/story_time2.mp4');
+            SaveManager.markVideoAsSeen("town");
+        }
     }
 
     init(ctx) {

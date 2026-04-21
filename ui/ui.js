@@ -88,7 +88,8 @@ class UserInterfaces {
                         GAME_ENGINE.enterLevel("farm")
                         Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
                         GAME_ENGINE.getCurrentLevel().goToSpawn()
-                        StoryIntroUI.play();
+                        StoryIntroUI.play('./images/story/story_time.mp4');
+                        SaveManager.markVideoAsSeen("intro");
                     }
                     UserInterfaces.displayTitle = false
                 })

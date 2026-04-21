@@ -21,7 +21,8 @@ class SaveManager {
             world: {
                 chests: Chest.CHESTS,
                 farmModifications: this.#getFarmModifications(),
-                townEvent: SaveManager.townEvent || { lastSpawnDay: 0, caughtCount: 0 }
+                townEvent: SaveManager.townEvent || { lastSpawnDay: 0, caughtCount: 0 },
+                seenVideos: SaveManager.seenVideos || []
             }
         };
 
@@ -35,15 +36,29 @@ class SaveManager {
 
         try {
             const data = JSON.parse(savedData);
-            // Restore Chests
-            Chest.CHESTS = data.world.chests || Chest.CHESTS;
-            if (!Chest.CHESTS.TradingBox) Chest.CHESTS.TradingBox = {};
+            // Restore world state safely
+            if (data.world) {
+                // Restore Chests
+                if (data.world.chests) {
+                    Chest.CHESTS = data.world.chests;
+                }
+                if (!Chest.CHESTS.TradingBox) Chest.CHESTS.TradingBox = {};
 
-            console.log("Game Loaded successfully!");
-            
-            // Restore town event state globally so Level can access it
-            if (data.world && data.world.townEvent) {
-                SaveManager.townEvent = data.world.townEvent;
+                // Restore town event state globally so Level can access it
+                if (data.world.townEvent) {
+                    SaveManager.townEvent = data.world.townEvent;
+                }
+
+                // Restore seen videos
+                if (data.world.seenVideos) {
+                    SaveManager.seenVideos = data.world.seenVideos;
+                } else {
+                    SaveManager.seenVideos = [];
+                }
+            } else {
+                // Default if world is completely missing
+                SaveManager.seenVideos = [];
+                if (!Chest.CHESTS.TradingBox) Chest.CHESTS.TradingBox = {};
             }
 
             return data;
@@ -141,5 +156,31 @@ class SaveManager {
                 }
             });
         }
+    }
+
+    static markVideoAsSeen(videoName) {
+        if (!SaveManager.seenVideos) SaveManager.seenVideos = [];
+        if (!SaveManager.seenVideos.includes(videoName)) {
+            SaveManager.seenVideos.push(videoName);
+            
+            // Partial Update: Only update seenVideos in localStorage to avoid saving 
+            // inconsistent player coordinates during level transitions.
+            const savedData = localStorage.getItem(this.SAVE_KEY);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (!data.world) data.world = {};
+                    data.world.seenVideos = SaveManager.seenVideos;
+                    localStorage.setItem(this.SAVE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.error("Failed to update seenVideos in localStorage:", e);
+                }
+            }
+        }
+    }
+
+    static hasSeenVideo(videoName) {
+        if (!SaveManager.seenVideos) return false;
+        return SaveManager.seenVideos.includes(videoName);
     }
 }
