@@ -88,6 +88,7 @@ class UserInterfaces {
                         GAME_ENGINE.enterLevel("farm")
                         Level.PLAYER.setMapReference(GAME_ENGINE.getCurrentLevel())
                         GAME_ENGINE.getCurrentLevel().goToSpawn()
+                        StoryIntroUI.play();
                     }
                     UserInterfaces.displayTitle = false
                 })
