@@ -86,11 +86,14 @@ class AnimatedTVUI {
         ctx.fillStyle = "black";
         ctx.fillRect(canvasX - 5, canvasY - 5, canvasSize + 10, canvasSize + 10);
 
-        // 3. Instruction text
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.font = "bold 18px Verdana";
-        ctx.textAlign = "center";
-        ctx.fillText("Click anywhere to close", ctx.canvas.width / 2, canvasY + canvasSize + 40);
+        // 3. Styled End Button
+        const btnFontSize = 18;
+        const btnPaddingX = btnFontSize * 1.5;
+        const btnPaddingY = btnFontSize * 0.6;
+        const btnX = ctx.canvas.width / 2 - btnFontSize * 2;
+        const btnY = canvasY + canvasSize + 30;
+
+        MessageButton.draw(ctx, "End", btnFontSize, btnX, btnY, btnPaddingX, btnPaddingY, true);
 
         ctx.restore();
     }

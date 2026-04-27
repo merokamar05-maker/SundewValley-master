@@ -399,36 +399,36 @@ class Level extends AbstractTiledMap {
                 }
             })
         } else if (_data.type.localeCompare("weather_forecast") === 0) {
-            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
             if (MessageButton.draw(
                 GAME_ENGINE.ctx, "Watch TV", _fontSize,
                 Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
             )) {
                 if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                     GAME_ENGINE.getPlayerUi().openWeather();
-                    Controller.mouse.leftClick = false
+                    Controller.mouse.leftClick = false;
                 }
             }
         } else if (_data.type.localeCompare("animated_tv") === 0) {
-            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
             if (MessageButton.draw(
                 GAME_ENGINE.ctx, "Watch TV", _fontSize,
                 Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
             )) {
                 if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
                     GAME_ENGINE.getPlayerUi().openAnimatedTV("./images/ui/farming.gif");
-                    Controller.mouse.leftClick = false
+                    Controller.mouse.leftClick = false;
                 }
             }
         } else if (_data.type.localeCompare("dialog") === 0) {
-            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+            const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
             if (MessageButton.draw(
                 GAME_ENGINE.ctx, "Interact", _fontSize,
                 Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
             )) {
                 if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                    Dialogues.update(_data.key)
-                    Controller.mouse.leftClick = false
+                    Dialogues.update(_data.key);
+                    Controller.mouse.leftClick = false;
                 }
             }
         }
@@ -529,25 +529,25 @@ class Level extends AbstractTiledMap {
         if (entitiesThatCollideWithPlayer.length > 0) {
             if (entitiesThatCollideWithPlayer[0] instanceof Npc) {
                 if (!["Nader", "Omar", "Ramy", "Menna"].includes(entitiesThatCollideWithPlayer[0].getName())) {
-                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
-                    if (Level.PLAYER.notDisablePlayerController() && MessageButton.draw(
-                        GAME_ENGINE.ctx, "Interact", _fontSize,
+                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
+                    const isHovered = MessageButton.draw(
+                        GAME_ENGINE.ctx, "Interact (V)", _fontSize,
                         Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                    )) {
-                        if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                            entitiesThatCollideWithPlayer[0].interact();
-                            Controller.mouse.leftClick = false
-                        }
+                    );
+                    if (Level.PLAYER.notDisablePlayerController() && ((isHovered && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) || Controller.keys["KeyV"])) {
+                        entitiesThatCollideWithPlayer[0].interact();
+                        Controller.mouse.leftClick = false;
+                        Controller.keys["KeyV"] = false;
                     }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Chest) {
-                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
                 if (Level.PLAYER.notDisablePlayerController() && MessageButton.draw(
                     GAME_ENGINE.ctx, "Open", _fontSize,
                     Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
                 )) {
                     if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                        GAME_ENGINE.getPlayerUi().openChest(entitiesThatCollideWithPlayer[0])
+                        GAME_ENGINE.getPlayerUi().openChest(entitiesThatCollideWithPlayer[0]);
                     }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Trash) {

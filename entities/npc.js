@@ -146,6 +146,13 @@ class Npc extends Character {
             } else {
                 Dialogues.update("Sebaey_stage4_1", this);
             }
+        } else if (name === "Zozo") {
+            Dialogues.ZOZO_INTERACTION_COUNT++;
+            if (Dialogues.ZOZO_INTERACTION_COUNT === 1) {
+                Dialogues.update("Zozo_escaped_animals", this);
+            } else {
+                Dialogues.update("Zozo_interact1", this);
+            }
         } else {
             Dialogues.update(name + "_interact1", this)
         }

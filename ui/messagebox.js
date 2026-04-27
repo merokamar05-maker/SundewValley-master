@@ -120,17 +120,7 @@ class MessageButton {
         else ctx.rect(dx, dy, dw, dh);
         ctx.fill();
 
-        // 3. Glossy Shine Overlay
-        if (isVibrant) {
-            const shine = ctx.createLinearGradient(dx, dy, dx, dy + dh * 0.45);
-            shine.addColorStop(0, "rgba(255, 255, 255, 0.2)");
-            shine.addColorStop(1, "rgba(255, 255, 255, 0)");
-            ctx.fillStyle = shine;
-            ctx.beginPath();
-            if (ctx.roundRect) ctx.roundRect(dx + 2, dy + 2, dw - 4, dh * 0.45, [10, 10, 0, 0]);
-            else ctx.rect(dx + 2, dy + 2, dw - 4, dh * 0.45);
-            ctx.fill();
-        }
+        // 3. (Glossy Shine Overlay Removed for cleaner look)
 
         // 4. Borders
         ctx.shadowBlur = 0;

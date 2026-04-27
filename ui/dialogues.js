@@ -7,6 +7,7 @@ class Dialogues {
     static SOSO_GENEROSITY_LEVEL = 0
     static Mohamed_INTERACTION_COUNT = 0
     static SEBAEY_INTERACTION_COUNT = 0
+    static ZOZO_INTERACTION_COUNT = 0
 
 
 
@@ -63,12 +64,6 @@ class Dialogues {
             contents: [
                 "Excellent! Thank you for cleaning up the whole town.", 
                 "Here is your reward for all the bags you brought!"
-            ]
-        },
-        Recycler_trash_fail: {
-            contents: [
-                "Hmm... I don't see any trash in your pockets.", 
-                "Come back when you find some green trash bags!"
             ]
         },
         Recycler_trash_fail: {
@@ -911,19 +906,17 @@ class Dialogues {
             let currentHover = -1;
             
             if (hasNoOption) {
-                // Calm Floating Arrow (No Shadow)
-                const indicatorX = boxX + boxWidth - textFontSize * 2;
-                const indicatorY = boxY + boxHeight - textFontSize;
-                const timeStr = Date.now() / 350;
-                const floatOffset = Math.sin(timeStr) * 4;
+                // Interactive Next/End Button
+                const isLastSegment = this.#CURRENT.next == null;
+                const buttonText = isLastSegment ? "End" : "Next";
+                const btnPaddingX = textFontSize * 1.5;
+                const btnPaddingY = textFontSize * 0.6;
+                const btnX = boxX + boxWidth - textFontSize * 6; // Sufficient width for text
+                const btnY = boxY + boxHeight - textFontSize * 2.6;
                 
-                ctx.fillStyle = "rgba(255, 160, 0, 0.8)";
-                ctx.beginPath();
-                ctx.moveTo(indicatorX - 8, indicatorY - 8 + floatOffset);
-                ctx.lineTo(indicatorX + 8, indicatorY - 8 + floatOffset);
-                ctx.lineTo(indicatorX, indicatorY + 4 + floatOffset);
-                ctx.closePath();
-                ctx.fill();
+                if (MessageButton.draw(ctx, buttonText, textFontSize, btnX, btnY, btnPaddingX, btnPaddingY, true)) {
+                    currentHover = 999; // Arbitrary ID for Next/End button
+                }
             } else {
                 // Draw Options
                 for (let i = 0, l = this.#CURRENT["options"].length; i < l; i++) {
@@ -946,7 +939,7 @@ class Dialogues {
                 if (hasNoOption) {
                     if (this.#CURRENT.next == null) {
                         this.#CURRENT = null;
-                        setTimeout(() => Controller.keys["KeyF"] = false, 50); // consume key buffer fast
+                        setTimeout(() => Controller.keys["KeyV"] = false, 50); // consume key buffer fast
                     } else {
                         this.update(this.#CURRENT.next, this.#CURRENT_INIT_BY)
                     }
