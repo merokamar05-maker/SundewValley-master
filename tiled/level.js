@@ -493,7 +493,7 @@ class Level extends AbstractTiledMap {
         // if this is an interior scene
         if (this.getParameter("interior") == null || this.getParameter("interior") === false) {
             // adding affect for day night cycle
-            if (!(DateTimeSystem.getHour() > 6 && DateTimeSystem.getHour() < 17)) {
+            if (!(DateTimeSystem.getHour() >= 6 && DateTimeSystem.getHour() < 18)) {
                 ctx.beginPath();
                 if (this.getParameter("light_sources") != null) {
                     this.getParameter("light_sources").forEach(_spot => {
@@ -501,10 +501,10 @@ class Level extends AbstractTiledMap {
                         ctx.closePath()
                     })
                 }
-                if (DateTimeSystem.getHour() >= 17 && DateTimeSystem.getHour() <= 21) {
-                    ctx.fillStyle = `rgba(5,18,45, ${(DateTimeSystem.getHour() - 17) * 0.225})`;
-                } else if (DateTimeSystem.getHour() >= 4 && DateTimeSystem.getHour() <= 6) {
-                    ctx.fillStyle = `rgba(5,18,45, ${0.9 - (DateTimeSystem.getHour() - 4) * 0.45})`;
+                if (DateTimeSystem.getHour() >= 18 && DateTimeSystem.getHour() <= 22) {
+                    ctx.fillStyle = `rgba(5,18,45, ${(DateTimeSystem.getHour() - 18) * 0.2})`;
+                } else if (DateTimeSystem.getHour() >= 2 && DateTimeSystem.getHour() <= 6) {
+                    ctx.fillStyle = `rgba(5,18,45, ${0.8 - (DateTimeSystem.getHour() - 2) * 0.2})`;
                 } else {
                     ctx.fillStyle = "rgba(5,18,45, 0.8)";
                 }

@@ -989,6 +989,9 @@ class Dialogues {
                                 this.update("Recycler_trash_fail", this.#CURRENT_INIT_BY);
                             }
                         } else if (this.#CURRENT["options"][currentHover].act.localeCompare("$knock_door") === 0) {
+                            ASSET_MANAGER.playSound("knock.mp3");
+                            ASSET_MANAGER.playSound("knock.mp3");
+                            ASSET_MANAGER.playSound("knock.mp3");
                             if (!Dialogues.HAS_KNOCKED_TODAY) {
                                 Dialogues.HAS_KNOCKED_TODAY = true;
                                 Level.PLAYER.earnMoney(20);

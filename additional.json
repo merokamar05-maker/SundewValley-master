@@ -11,7 +11,8 @@
     "./audios/sound/Gravel_hit1.ogg",
     "./audios/sound/Gravel_hit2.ogg",
     "./audios/sound/Gravel_hit3.ogg",
-    "./audios/sound/Gravel_hit4.ogg"
+    "./audios/sound/Gravel_hit4.ogg",
+    "./audios/sound/knock.mp3"
   ],
   "images": [
     "./images/animals/chicken/baby_chicken.png",
