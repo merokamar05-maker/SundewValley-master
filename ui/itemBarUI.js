@@ -29,6 +29,58 @@ class ItemBarUI extends GameObjectsMapContainer {
         return this.#boxSize
     }
 
+    update() {
+        super.update();
+        // Keyboard selection for item bar
+        for (let i = 0; i < ItemBarUI.ITEMS_PER_ROW; i++) {
+            if (Controller.keys[`Digit${i + 1}`]) {
+                this.#selected = i;
+            }
+        }
+    }
+
+    drawKeyLabel(ctx, x, y, width, keyName) {
+        const labelSize = Math.floor(width * 0.45);
+        const lx = x + (width - labelSize) / 2;
+        const ly = y + width - labelSize / 2;
+
+        ctx.save();
+        // Connector line
+        ctx.strokeStyle = "rgba(160, 130, 90, 0.8)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + width / 2, y + width);
+        ctx.lineTo(x + width / 2, ly);
+        ctx.stroke();
+
+        // Label box
+        const grad = ctx.createLinearGradient(lx, ly, lx, ly + labelSize);
+        grad.addColorStop(0, "#fdfcf0");
+        grad.addColorStop(1, "#e0dcc0");
+        ctx.fillStyle = grad;
+        
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(lx, ly, labelSize, labelSize, 4);
+        else ctx.rect(lx, ly, labelSize, labelSize);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = "rgba(100, 80, 50, 0.7)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Key text
+        ctx.fillStyle = "#5d4037";
+        ctx.font = `bold ${Math.floor(labelSize * 0.7)}px Verdana`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(keyName, lx + labelSize / 2, ly + labelSize / 2 + 1);
+        ctx.restore();
+    }
+
     drawTool(ctx, key, pixelX, pixelY, width, height, toolLevel = 0) {
         const boxWidth = this.#boxSize * 1.4;
         const boxHeight = this.#boxSize * 1.4;
@@ -36,7 +88,7 @@ class ItemBarUI extends GameObjectsMapContainer {
         const boxStartY = pixelY;
         
         ctx.save();
-        // Calm Dark Beige HUD Background (No Shadows inside for consistency, glowing drop shadow on container)
+        // Calm Dark Beige HUD Background
         ctx.shadowBlur = 6;
         ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
         
@@ -52,7 +104,7 @@ class ItemBarUI extends GameObjectsMapContainer {
 
         ctx.shadowBlur = 0;
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "rgba(160, 130, 90, 0.8)"; // Match dark organic border of Hotbar
+        ctx.strokeStyle = "rgba(160, 130, 90, 0.8)"; 
         ctx.stroke();
         
         // Inner depth highlight
@@ -61,12 +113,18 @@ class ItemBarUI extends GameObjectsMapContainer {
         ctx.stroke();
         ctx.restore();
 
-        // Draw icon cleanly centered inside the unified box
+        // Draw icon
         const iconSize = this.#boxSize * 0.85;
         const iconPx = boxStartX + (boxWidth - iconSize) / 2;
         const iconPy = boxStartY + (boxHeight - iconSize) / 2;
         
         InventoryItems.drawImage(ctx, key, iconPx, iconPy, iconSize, iconSize, toolLevel)
+
+        // Draw hotkey label
+        const toolKeys = { "pot": "Q", "axe": "C", "hoe": "E" };
+        if (toolKeys[key]) {
+            this.drawKeyLabel(ctx, boxStartX, boxStartY, boxWidth, toolKeys[key]);
+        }
     }
 
     //draw all the tools
@@ -190,6 +248,9 @@ class ItemBarUI extends GameObjectsMapContainer {
             ctx.fillText(value.amount, pixelX + this.#boxSize - ctx.measureText(value.amount).width - 4, pixelY + this.#boxSize - 4);
             ctx.restore();
         }
+
+        // Draw hotkey label for item slots
+        this.drawKeyLabel(ctx, pixelX, pixelY, width, index + 1);
     }
 
     drawInfo(ctx) {

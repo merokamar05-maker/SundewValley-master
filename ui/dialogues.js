@@ -712,7 +712,7 @@ class Dialogues {
         "7azo": { scale: 1.0, yOffset: 0.4 },
         jannah: { scale: 1.0, yOffset: 0.45 },
         kinzy: { scale: 1.0, yOffset: 0.5 },
-        mario: { scale: 1.0, yOffset: 0.5 },
+        mario: { scale: 1.2, yOffset: 0.45 },
         youssef: { scale: 1.0, yOffset: 0.4 },
         beko: { scale: 1.0, yOffset: 0.3 }
     }

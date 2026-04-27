@@ -59,8 +59,9 @@ class StoryIntroUI {
         video.src = videoPath;
         video.preload = 'auto'; // Optimize for buffering
         video.playsInline = true;
-        video.style.maxWidth = '100%';
-        video.style.maxHeight = '100%';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'contain';
         video.style.opacity = '0'; // Hide until ready
         video.style.transition = 'opacity 0.5s ease';
 

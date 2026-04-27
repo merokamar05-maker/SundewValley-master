@@ -84,6 +84,18 @@ class GameEngine {
             StoryIntroUI.play('./images/story/story_time2.mp4');
             SaveManager.markVideoAsSeen("town");
         }
+
+        // Story Intro for Farmhouse (Bedroom) - Plays only once per playthrough
+        if (name === "bedroom" && !SaveManager.hasSeenVideo("bedroom")) {
+            StoryIntroUI.play('./images/story/story_time3.mp4');
+            SaveManager.markVideoAsSeen("bedroom");
+        }
+
+        // Story Intro for Animal Shop - Plays only once per playthrough
+        if (name === "animal_shop" && !SaveManager.hasSeenVideo("animal_shop")) {
+            StoryIntroUI.play('./images/story/story_time4.mp4');
+            SaveManager.markVideoAsSeen("animal_shop");
+        }
     }
 
     init(ctx) {
