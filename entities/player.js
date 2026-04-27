@@ -103,6 +103,20 @@ class Player extends Character {
 
     #checkNotLoopAnimation(key, action) {
         if (Controller.keys[key] === true) {
+            // Check for tutorial video trigger on first press
+            const toolTutorials = {
+                "KeyQ": "./Game_Guide/Water.gif",
+                "KeyE": "./Game_Guide/Dig.gif",
+                "KeyC": "./Game_Guide/Harvest.gif"
+            };
+            
+            if (toolTutorials[key] && !SaveManager.hasSeenVideo(key)) {
+                GAME_ENGINE.getPlayerUi().openAnimatedTV(toolTutorials[key]);
+                SaveManager.markVideoAsSeen(key);
+                Controller.keys[key] = false; // Reset key to prevent immediate action after video
+                return false;
+            }
+
             this.setCurrentAction(action)
             this.#isIdle = false
             return true

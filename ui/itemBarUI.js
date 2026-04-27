@@ -33,7 +33,15 @@ class ItemBarUI extends GameObjectsMapContainer {
         super.update();
         // Keyboard selection for item bar
         for (let i = 0; i < ItemBarUI.ITEMS_PER_ROW; i++) {
-            if (Controller.keys[`Digit${i + 1}`]) {
+            const keyCode = `Digit${i + 1}`;
+            if (Controller.keys[keyCode]) {
+                // First time pressing '1' triggers the Plant tutorial using the TV-style popup
+                if (i === 0 && !SaveManager.hasSeenVideo("Tutorial_Plant")) {
+                    GAME_ENGINE.getPlayerUi().openAnimatedTV("./Game_Guide/Plant.gif");
+                    SaveManager.markVideoAsSeen("Tutorial_Plant");
+                    Controller.keys[keyCode] = false; // Prevent selection in same frame
+                    return;
+                }
                 this.#selected = i;
             }
         }
@@ -247,10 +255,8 @@ class ItemBarUI extends GameObjectsMapContainer {
             ctx.fillStyle = "#ffffff"; // Bright white for counts
             ctx.fillText(value.amount, pixelX + this.#boxSize - ctx.measureText(value.amount).width - 4, pixelY + this.#boxSize - 4);
             ctx.restore();
+            ctx.restore();
         }
-
-        // Draw hotkey label for item slots
-        this.drawKeyLabel(ctx, pixelX, pixelY, width, index + 1);
     }
 
     drawInfo(ctx) {
@@ -307,6 +313,35 @@ class ItemBarUI extends GameObjectsMapContainer {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "rgba(160, 130, 90, 0.6)"; // Darker organic border
         ctx.stroke();
+
+        // 3.5. Draw "1" Indicator next to the bar (Left side) - Only if tutorial not seen yet
+        if (!SaveManager.hasSeenVideo("Tutorial_Plant")) {
+            const indicatorSize = this.#boxSize * 0.8;
+            const ix = this.getPixelX() - indicatorSize - 10;
+            const iy = this.getPixelY() + (this.getHeight() - indicatorSize) / 2;
+            
+            ctx.save();
+            const grad = ctx.createLinearGradient(ix, iy, ix, iy + indicatorSize);
+            grad.addColorStop(0, "#fdfcf0");
+            grad.addColorStop(1, "#e0dcc0");
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = "rgba(0,0,0,0.3)";
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(ix, iy, indicatorSize, indicatorSize, 10);
+            else ctx.rect(ix, iy, indicatorSize, indicatorSize);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(160, 130, 90, 0.8)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = "#5d4037";
+            ctx.font = `bold ${Math.floor(indicatorSize * 0.7)}px Verdana`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("1", ix + indicatorSize / 2, iy + indicatorSize / 2 + 1);
+            ctx.restore();
+        }
         ctx.restore();
 
         const _pixelY = Math.floor(this.getPixelY() + padding)

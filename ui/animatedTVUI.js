@@ -90,7 +90,7 @@ class AnimatedTVUI {
         ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
         ctx.font = "bold 18px Verdana";
         ctx.textAlign = "center";
-        ctx.fillText("Click anywhere to close TV", ctx.canvas.width / 2, canvasY + canvasSize + 40);
+        ctx.fillText("Click anywhere to close", ctx.canvas.width / 2, canvasY + canvasSize + 40);
 
         ctx.restore();
     }

@@ -55,15 +55,20 @@ class StoryIntroUI {
         }
         overlay.appendChild(loadingIndicator);
 
-        const video = document.createElement('video');
-        video.src = videoPath;
-        video.preload = 'auto'; // Optimize for buffering
-        video.playsInline = true;
-        video.style.width = '100%';
-        video.style.height = '100%';
-        video.style.objectFit = 'contain';
-        video.style.opacity = '0'; // Hide until ready
-        video.style.transition = 'opacity 0.5s ease';
+        const isGif = videoPath.toLowerCase().endsWith('.gif');
+        const mediaElement = document.createElement(isGif ? 'img' : 'video');
+        mediaElement.src = videoPath;
+        
+        if (!isGif) {
+            mediaElement.preload = 'auto';
+            mediaElement.playsInline = true;
+        }
+        
+        mediaElement.style.width = '100%';
+        mediaElement.style.height = '100%';
+        mediaElement.style.objectFit = 'contain';
+        mediaElement.style.opacity = '0'; // Hide until ready
+        mediaElement.style.transition = 'opacity 0.5s ease';
 
         const skipBtn = document.createElement('button');
         skipBtn.innerText = 'Skip >>';
@@ -95,55 +100,64 @@ class StoryIntroUI {
             }, 1000);
         };
 
-        video.onended = finish;
+        if (!isGif) {
+            mediaElement.onended = finish;
+        }
         skipBtn.onclick = finish;
+        overlay.onclick = finish; // Close on click anywhere
 
-        overlay.appendChild(video);
+        overlay.appendChild(mediaElement);
         overlay.appendChild(skipBtn);
         document.body.appendChild(overlay);
 
         // 3. Logic to start and handle buffering mid-playback
         const startPlayback = () => {
             loadingIndicator.style.display = 'none';
-            video.style.opacity = '1';
-            video.play().catch(e => {
-                console.log("Autoplay blocked, waiting for interaction");
-                const playHint = document.createElement('div');
-                playHint.id = 'play-hint';
-                playHint.innerText = 'Click to Start Story';
-                playHint.style.color = 'white';
-                playHint.style.fontSize = '24px';
-                playHint.style.cursor = 'pointer';
-                overlay.appendChild(playHint);
-                playHint.onclick = () => {
-                    video.play();
-                    playHint.remove();
-                };
-            });
+            mediaElement.style.opacity = '1';
+            if (!isGif) {
+                mediaElement.play().catch(e => {
+                    console.log("Autoplay blocked, waiting for interaction");
+                    const playHint = document.createElement('div');
+                    playHint.id = 'play-hint';
+                    playHint.innerText = 'Click to Start Story';
+                    playHint.style.color = 'white';
+                    playHint.style.fontSize = '24px';
+                    playHint.style.cursor = 'pointer';
+                    overlay.appendChild(playHint);
+                    playHint.onclick = () => {
+                        mediaElement.play();
+                        playHint.remove();
+                    };
+                });
+            }
         };
 
-        // If the video stalls mid-way, show the loader again
-        video.onwaiting = () => {
-            loadingIndicator.style.display = 'block';
-        };
+        if (!isGif) {
+            // If the video stalls mid-way, show the loader again
+            mediaElement.onwaiting = () => {
+                loadingIndicator.style.display = 'block';
+            };
 
-        // When it resumes, hide the loader
-        video.onplaying = () => {
-            loadingIndicator.style.display = 'none';
-            const hint = document.getElementById('play-hint');
-            if (hint) hint.remove();
-        };
+            // When it resumes, hide the loader
+            mediaElement.onplaying = () => {
+                loadingIndicator.style.display = 'none';
+                const hint = document.getElementById('play-hint');
+                if (hint) hint.remove();
+            };
 
-        // Wait for enough data to play smoothly
-        video.oncanplaythrough = startPlayback;
+            // Wait for enough data to play smoothly
+            mediaElement.oncanplaythrough = startPlayback;
+        } else {
+            // For GIFs, wait for load
+            mediaElement.onload = startPlayback;
+        }
         
         // Fallback for slower connections
         setTimeout(() => {
-            if (video.readyState >= 3 && loadingIndicator.style.display !== 'none') {
+            if (mediaElement.readyState >= 3 && loadingIndicator.style.display !== 'none') {
                 startPlayback();
             }
         }, 5000);
 
     }
 }
-
