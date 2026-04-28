@@ -86,6 +86,14 @@ class StoryIntroUI {
         skipBtn.style.zIndex = '10000';
 
         const finish = () => {
+            // Stop video/audio immediately so it doesn't bleed into gameplay
+            if (!isGif) {
+                mediaElement.pause();
+                mediaElement.muted = true;
+                mediaElement.src = "";   // detach the media resource entirely
+                mediaElement.load();     // reset the element
+            }
+
             // Restore Game Engine and Music
             GAME_ENGINE.paused = previousPausedState;
             if (previousBGM && previousBGM !== "$NO_MUSIC$") {
