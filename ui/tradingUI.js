@@ -64,9 +64,20 @@ class TradeUI extends ItemBarUI {
                 const numOfItem = Controller.keys["AltLeft"] ? this.#toCharacterRef.getInventory()[key]["amount"] : 1
                 const moneyRequired = numOfItem * InventoryItems.PRICES[key]
                 if (this.#fromCharacterRef.getMoney() >= moneyRequired) {
-                    this.#fromCharacterRef.earnMoney(-moneyRequired)
-                    this.#toCharacterRef.earnMoney(moneyRequired)
-                    this.#fromCharacterRef.takeItemOutOfTargetInventory(key, this.#toCharacterRef, numOfItem)
+                    // Logic to drink immediately if energy is not full
+                    if (InventoryItems.isDrink(key) && EnergyManager.get() < 100) {
+                        this.#fromCharacterRef.earnMoney(-moneyRequired);
+                        this.#toCharacterRef.earnMoney(moneyRequired);
+                        // Restore energy instead of putting into inventory
+                        const energyGain = (EnergyManager.ENERGY_BY_ITEM[key] || 25) * numOfItem;
+                        EnergyManager.restore(energyGain);
+                        ASSET_MANAGER.playSound("Empty_water_bucket1.ogg");
+                    } else {
+                        // Usual purchase (goes to inventory)
+                        this.#fromCharacterRef.earnMoney(-moneyRequired)
+                        this.#toCharacterRef.earnMoney(moneyRequired)
+                        this.#fromCharacterRef.takeItemOutOfTargetInventory(key, this.#toCharacterRef, numOfItem)
+                    }
                 }
             }
         }

@@ -31,14 +31,12 @@ class QuestUI {
     static draw(ctx) {
         // ── Draw Quest Button below Money Bar ──
         const padding = 20;
-        const moneyBarHeight = 45;
-        const btnW = 140;
-        const btnH = 35;
-        const btnX = ctx.canvas.width - padding - btnW;
-        const btnY = padding + moneyBarHeight + 10;
+        const btnW = 165;
+        const btnX = ctx.canvas.width - 10 - btnW; // Reduced from padding (20) to 10
+        const btnY = 70; 
 
         // Use the MessageButton to handle drawing and click detection
-        if (MessageButton.draw(ctx, "📋 Quests [J]", 14, btnX, btnY, 20, 8, true)) {
+        if (MessageButton.draw(ctx, "📋 Quests [J]", 15, btnX, btnY, 22, 11, true)) {
             if (Controller.mouse.leftClick && !Controller.mouse_prev.leftClick) {
                 this.toggle();
             }

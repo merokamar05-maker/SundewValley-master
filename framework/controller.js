@@ -10,6 +10,7 @@ class Controller {
     static mouse_prev = structuredClone(this.mouse);
     static wheel = null;
     static keys = {};
+    static keys_prev = {};
 
     static keyboardActive = false;
 
@@ -131,5 +132,6 @@ class Controller {
 
     static update() {
         this.mouse_prev = structuredClone(this.mouse);
+        this.keys_prev  = {...this.keys};
     }
 }

@@ -24,7 +24,9 @@ class SaveManager {
                 townEvent: SaveManager.townEvent || { lastSpawnDay: 0, caughtCount: 0 },
                 seenVideos: SaveManager.seenVideos || [],
                 quests: (typeof QuestManager !== "undefined") ? QuestManager.getSaveData() : null,
-                friendship: (typeof FriendshipManager !== "undefined") ? FriendshipManager.getSaveData() : null
+                friendship: (typeof FriendshipManager !== "undefined") ? FriendshipManager.getSaveData() : null,
+                energy: (typeof EnergyManager !== "undefined") ? EnergyManager.getSaveData() : null,
+                achievements: (typeof AchievementManager !== "undefined") ? AchievementManager.getSaveData() : null
             }
         };
 
@@ -66,6 +68,16 @@ class SaveManager {
                 // Restore friendship points
                 if (data.world.friendship && typeof FriendshipManager !== "undefined") {
                     FriendshipManager.loadSaveData(data.world.friendship);
+                }
+
+                // Restore energy
+                if (data.world.energy && typeof EnergyManager !== "undefined") {
+                    EnergyManager.loadSaveData(data.world.energy);
+                }
+
+                // Restore achievements
+                if (data.world.achievements && typeof AchievementManager !== "undefined") {
+                    AchievementManager.loadSaveData(data.world.achievements);
                 }
             } else {
                 // Default if world is completely missing

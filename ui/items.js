@@ -73,7 +73,13 @@ class InventoryItems {
         "orange_juice": 15,
         "apple_juice": 15,
         "pineapple_juice": 15,
-        "trash": 5
+        "trash": 5,
+        // ── Cooked food (from kitchen) ──────────────────────────────────
+        "soup":        150,
+        "jam":         120,
+        "stew":        200,
+        "salad":       130,
+        "ratatouille": 175
     }
     static NAMES = {
         "pumpkin": "Pumpkin",
@@ -108,7 +114,13 @@ class InventoryItems {
         "orange_juice": "Orange Juice",
         "apple_juice": "Apple Juice",
         "pineapple_juice": "Pineapple Juice",
-        "trash": "Trash Bag"
+        "trash": "Trash Bag",
+        // ── Cooked food ─────────────────────────────────────────────────
+        "soup":        "Vegetable Soup",
+        "jam":         "Strawberry Jam",
+        "stew":        "Hearty Stew",
+        "salad":       "Garden Salad",
+        "ratatouille": "Ratatouille"
     }
 
     // Animals: map to their image path that is already loaded via additional.json
@@ -130,10 +142,19 @@ class InventoryItems {
         this.#PIXEL_SIZE = ASSET_MANAGER.getJson("images", "items", "items.json")["tilewidth"]
     }
 
-    // if an item can be used
+    // if an item can be used / eaten
     static isUsable(key) {
-        return key.endsWith("seed")
+        return key.endsWith("seed");
     }
+
+    // Categorization
+    static VEGGIES = new Set(["pumpkin", "cabbage", "carrot", "grain", "potato", "strawberry", "tomato", "eggplant", "lavender", "corn", "pea"]);
+    static DRINKS  = new Set(["medicinal_juice", "water", "orange_juice", "apple_juice", "pineapple_juice"]);
+    static FOOD_ITEMS = new Set(["soup", "jam", "stew", "salad", "ratatouille"]);
+
+    static isVegetable(key) { return this.VEGGIES.has(key); }
+    static isDrink(key)     { return this.DRINKS.has(key); }
+    static isFood(key)      { return this.FOOD_ITEMS.has(key); }
 
     static drawImage(ctx, key, pixelX, pixelY, width, height, offsetTileX = 0, offsetTileY = 0) {
         // If it's an animal, draw its sprite directly from the cached image
@@ -170,10 +191,33 @@ class InventoryItems {
             }
         }
         
+        // ── Canvas-drawn food items (no sprite sheet) ──────────────────
+        if (this.FOOD_ITEMS && this.FOOD_ITEMS.has(key)) {
+            this.#drawFoodCanvas(ctx, key, pixelX, pixelY, width, height);
+            return;
+        }
+
         // Default items drawing from sprite sheet
         const _loc = this.#LOCATIONS[key]
         if (_loc) {
             ctx.drawImage(this.#ITEMS_SPRITE_SHEET, (_loc[0] + offsetTileX) * this.#PIXEL_SIZE, (_loc[1] + offsetTileY) * this.#PIXEL_SIZE, this.#PIXEL_SIZE, this.#PIXEL_SIZE, pixelX, pixelY, width, height)
         }
+    }
+
+    // ── Cartoon food drawing (shared with RecipeUI) ────────────────────────
+    static #drawFoodCanvas(ctx, key, px, py, w, h) {
+        const cx = px + w / 2, cy = py + h / 2, r = Math.min(w, h) * 0.4;
+        ctx.save();
+        const colors = { soup:"#e67e22", jam:"#e74c3c", stew:"#8e5300", salad:"#27ae60", ratatouille:"#8e44ad" };
+        const icons  = { soup:"🍲", jam:"🍓", stew:"🥘", salad:"🥗", ratatouille:"🍆" };
+        // Filled circle base
+        ctx.fillStyle = colors[key] || "#888";
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+        // Emoji on top
+        ctx.font = `${Math.floor(r * 1.1)}px Segoe UI Emoji`;
+        ctx.textAlign    = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(icons[key] || "🍽", cx, cy + 1);
+        ctx.restore();
     }
 }

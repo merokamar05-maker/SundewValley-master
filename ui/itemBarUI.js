@@ -155,6 +155,15 @@ class ItemBarUI extends GameObjectsMapContainer {
     caseItemBeingHovered(currentIndex, key) {
         // if player left-click this item
         if (Controller.mouse.leftClick) {
+            // Click to drink logic
+            if (key != null && InventoryItems.isDrink(key)) {
+                if (Level.PLAYER.tryUseItem(key, 1)) {
+                    EnergyManager.restore(EnergyManager.ENERGY_BY_ITEM[key] || 25);
+                    ASSET_MANAGER.playSound("Empty_water_bucket1.ogg");
+                }
+                Controller.mouse.leftClick = false;
+                return true;
+            }
             // the item will be selected
             this.#selected = currentIndex
             return true
@@ -223,8 +232,11 @@ class ItemBarUI extends GameObjectsMapContainer {
                 if (onBlock != null) {
                     if (GAME_ENGINE.getCurrentLevel().canPlantOnTile(onBlock[0], onBlock[1])) {
                         ctx.fillStyle = 'rgba(127,255,0,0.5)';
-                        if (Controller.mouse.leftClick && Level.PLAYER.tryUseItem(key)) {
+                        if (Controller.mouse.leftClick && !Controller.mouse_prev.leftClick && Level.PLAYER.tryUseItem(key)) {
+                            EnergyManager.consume(2);
+                            ASSET_MANAGER.playSound("Empty_water_bucket1.ogg");
                             GAME_ENGINE.getCurrentLevel().addEntity(new Crop(key.replace('_seed', ''), onBlock[0], onBlock[1], GAME_ENGINE.getCurrentLevel()))
+                            Controller.mouse.leftClick = false;
                         }
                     } else {
                         ctx.fillStyle = 'rgba(255,0,0,0.5)';

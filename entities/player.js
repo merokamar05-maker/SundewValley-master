@@ -128,9 +128,30 @@ class Player extends Character {
     }
 
     #checkSpecialAction() {
-        return this.getMapReference() instanceof FarmLevel ? (!this.#checkNotLoopAnimation("KeyQ", "water")
+        // Block farm actions entirely when exhausted
+        if (this.getMapReference() instanceof FarmLevel && EnergyManager.isExhausted()) {
+            return true; // skip all special actions
+        }
+        // Consume energy on initial key press (rising edge)
+        if (this.notDisablePlayerController()) {
+            if (Controller.keys["KeyQ"] && !Controller.keys_prev["KeyQ"]) {
+                EnergyManager.consume(4);
+                ASSET_MANAGER.playSound("Empty_water_bucket1.ogg");
+            }
+            if (Controller.keys["KeyE"] && !Controller.keys_prev["KeyE"]) {
+                EnergyManager.consume(4);
+                ASSET_MANAGER.playSound("Gravel_hit1.ogg");
+            }
+            if (Controller.keys["KeyC"] && !Controller.keys_prev["KeyC"]) {
+                // Harvesting consumption handled in updateInteraction() frame 1
+            }
+        }
+
+        const res = !this.#checkNotLoopAnimation("KeyQ", "water")
             && !this.#checkNotLoopAnimation("KeyE", "dig")
-            && !this.#checkNotLoopAnimation("KeyC", "cut")) : true
+            && !this.#checkNotLoopAnimation("KeyC", "cut");
+            
+        return res;
     }
 
     notDisablePlayerController() {
@@ -145,12 +166,18 @@ class Player extends Character {
         // for dig action, try to convert grass to dirt
         if (this.isCurrentAction("dig") && this.getCurrentAnimation().currentFrame() === 1) {
             ASSET_MANAGER.playSound(`Gravel_hit${getRandomIntInclusive(1, 4)}.ogg`)
-            if (this.getMapReference() instanceof FarmLevel) this.getMapReference().tryConvertTileToDirt(this.getBlockX(), this.getBlockY())
+            if (this.getMapReference() instanceof FarmLevel) {
+                // Energy consumed in #checkSpecialAction for single-trigger
+                this.getMapReference().tryConvertTileToDirt(this.getBlockX(), this.getBlockY())
+            }
         }
         // for water action, try to water the ground
         else if (this.isCurrentAction("water") && this.getCurrentAnimation().currentFrame() === 1) {
             ASSET_MANAGER.playSound(`Empty_water_bucket${getRandomIntInclusive(1, 3)}.ogg`)
-            if (this.getMapReference() instanceof FarmLevel) this.getMapReference().tryConvertTileToWateredDirt(this.getBlockX(), this.getBlockY())
+            if (this.getMapReference() instanceof FarmLevel) {
+                // Energy consumed in #checkSpecialAction for single-trigger
+                this.getMapReference().tryConvertTileToWateredDirt(this.getBlockX(), this.getBlockY())
+            }
         }
         // for cut action, try to harvest the crop
         else if (this.isCurrentAction("cut") && this.getCurrentAnimation().currentFrame() === 1) {
@@ -158,6 +185,7 @@ class Player extends Character {
             if (this.getMapReference() instanceof FarmLevel) {
                 const _crop = this.getMapReference().getCrop(this.getBlockX(), this.getBlockY())
                 if (_crop != null && _crop.isMatured()) {
+                    EnergyManager.consume(4);
                     _crop.removeFromWorld = true
                     // obtain a random amount of crop
                     this.obtainItem(_crop.getType(), getRandomIntInclusive(1, 3))
@@ -165,6 +193,7 @@ class Player extends Character {
                     this.obtainItem(_crop.getType() + "_seed", getRandomIntInclusive(1, 2))
                     // notify quest system
                     QuestManager.notifyHarvest(_crop.getType())
+                    AchievementManager.notifyHarvest();
                 }
             }
         }
@@ -203,6 +232,22 @@ class Player extends Character {
             this.#idleTimer = 0;
             this.#arrowVisible = false;
         }
+
+        // Eat food/veggies with R key
+        if (this.notDisablePlayerController() && Controller.keys["KeyR"] && !Controller.keys_prev["KeyR"]) {
+            const consumeKeys = Object.keys(this.#itemBar).filter(k => InventoryItems.isFood(k) || InventoryItems.isVegetable(k));
+            if (consumeKeys.length > 0) {
+                const itemKey = consumeKeys[0];
+                const energyGain = EnergyManager.ENERGY_BY_ITEM[itemKey] || 15;
+                this.tryUseItem(itemKey, 1);
+                EnergyManager.restore(energyGain);
+                ASSET_MANAGER.playSound("Gravel_hit3.ogg");
+                Controller.keys["KeyR"] = false;
+            }
+        }
+
+        // Achievement: track money
+        AchievementManager.notifyMoney(this.getMoney());
 
         super.update()
     };

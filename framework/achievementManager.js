@@ -1,0 +1,192 @@
+class AchievementManager {
+    static #DEFS = {
+        first_harvest:  { title: "First Harvest!",     desc: "Harvested your first crop",          icon: "🌱", target: 1  },
+        green_thumb:    { title: "Green Thumb",        desc: "Harvested 50 crops",                 icon: "🌾", target: 50 },
+        master_farmer:  { title: "Master Farmer",      desc: "Harvested 200 crops",                icon: "🚜", target: 200},
+        friendly_face:  { title: "Friendly Face",      desc: "Reached 3 hearts with an NPC",       icon: "🤝", target: 1  },
+        best_friends:   { title: "Best Friends",       desc: "Reached 10 hearts with an NPC",      icon: "💕", target: 1  },
+        eco_warrior:    { title: "Eco Warrior",        desc: "Recycled 10 trash bags",             icon: "♻️", target: 10 },
+        rich_farmer:    { title: "Rich Farmer",        desc: "Accumulated 5,000 coins",            icon: "💰", target: 1  },
+        daily_hero:     { title: "Daily Hero",         desc: "Completed all 3 daily quests",       icon: "📋", target: 1  },
+        animal_lover:   { title: "Animal Lover",       desc: "Caught 3 escaped animals",           icon: "🐄", target: 3  },
+        early_bird:     { title: "Early Bird",         desc: "Went to sleep before 22:00",         icon: "😴", target: 1  },
+        legend:         { title: "Legend!",            desc: "Unlocked 10 other achievements",     icon: "⭐", target: 10 }
+    };
+
+    static #state = {};
+    static #queue = [];
+    static #showing = null;
+    static #timer = 0;
+    static isGalleryOpen = false;
+
+    static notify(id, amount = 1) {
+        const def = this.#DEFS[id];
+        if (!def) return;
+        const s = this.#state[id] || (this.#state[id] = { progress: 0, unlocked: false });
+        if (s.unlocked) return;
+        s.progress += amount;
+        if (s.progress >= def.target) {
+            s.unlocked = true;
+            s.progress = def.target;
+            this.#queue.push({ ...def, id });
+        }
+    }
+
+    static notifyHarvest()      { this.notify("first_harvest"); this.notify("green_thumb"); this.notify("master_farmer"); }
+    static notifyFriendship(h)  { if (h >= 3) this.notify("friendly_face"); if (h >= 10) this.notify("best_friends"); }
+    static notifyRecycle(n)     { this.notify("eco_warrior", n); }
+    static notifyMoney(c)       { if (c >= 5000) this.notify("rich_farmer"); }
+    static notifyQuestsAll()    { this.notify("daily_hero"); }
+    static notifyAnimalCaught() { this.notify("animal_lover"); }
+    static notifyEarlyBird()    { this.notify("early_bird"); }
+
+    static update(dt) {
+        if (!this.#showing && this.#queue.length > 0) {
+            this.#showing = this.#queue.shift();
+            this.#timer = 4.0;
+        }
+        if (this.#showing) {
+            this.#timer -= dt;
+            if (this.#timer <= 0) this.#showing = null;
+        }
+    }
+
+    static draw(ctx) {
+        if (!this.#showing) return;
+        const a = this.#showing;
+        const slide = Math.min(1, (4.0 - this.#timer) / 0.3);
+        const fade  = this.#timer < 0.5 ? this.#timer / 0.5 : 1;
+        const boxW = 340, boxH = 75;
+        const bx = ctx.canvas.width / 2 - boxW / 2;
+        const by = 16 - (1 - slide) * (boxH + 16);
+        ctx.save();
+        ctx.globalAlpha = fade;
+        ctx.fillStyle = "rgba(20,20,40,0.95)";
+        if (ctx.roundRect) ctx.roundRect(bx, by, boxW, boxH, 15); else ctx.rect(bx, by, boxW, boxH);
+        ctx.fill();
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = "28px Segoe UI Emoji";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(a.icon, bx + 15, by + boxH / 2);
+        ctx.font = "bold 11px Segoe UI";
+        ctx.fillStyle = "#ffd700";
+        ctx.fillText("🏆 ACHIEVEMENT UNLOCKED!", bx + 55, by + 18);
+        ctx.font = "bold 16px Segoe UI";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(a.title, bx + 55, by + 36);
+        ctx.font = "12px Segoe UI";
+        ctx.fillStyle = "#aaa";
+        ctx.fillText(a.desc, bx + 55, by + 54);
+        ctx.restore();
+    }
+
+    static drawGallery(ctx) {
+        const all = Object.entries(this.#DEFS);
+        const cols = 3;
+        const rows = Math.ceil(all.length / cols);
+        const cardW = 380, cardH = 110, gap = 15;
+        const totalW = cols * cardW + (cols - 1) * gap;
+        const totalH = rows * cardH + (rows - 1) * gap;
+        const startX = (ctx.canvas.width - totalW) / 2;
+        const startY = (ctx.canvas.height - totalH) / 2 + 30;
+
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,10,0.96)";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        ctx.font = "bold 42px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffd700";
+        ctx.shadowColor = "rgba(255,215,0,0.4)";
+        ctx.shadowBlur = 20;
+        ctx.fillText("🏆  ACHIEVEMENTS  🏆", ctx.canvas.width / 2, startY - 80);
+        ctx.shadowBlur = 0;
+
+        all.forEach(([id, def], i) => {
+            const s = this.#state[id] || { progress: 0, unlocked: false };
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const cx = startX + col * (cardW + gap);
+            const cy = startY + row * (cardH + gap);
+            const unlocked = s.unlocked;
+
+            ctx.save();
+            const bg = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
+            if (unlocked) {
+                bg.addColorStop(0, "#2d3a1a"); bg.addColorStop(1, "#1a2510");
+                ctx.shadowBlur = 15; ctx.shadowColor = "rgba(255,215,0,0.2)";
+            } else {
+                bg.addColorStop(0, "#1a1a2e"); bg.addColorStop(1, "#12121f");
+            }
+            ctx.fillStyle = bg;
+            ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(cx, cy, cardW, cardH, 15); else ctx.rect(cx, cy, cardW, cardH);
+            ctx.fill();
+            ctx.strokeStyle = unlocked ? "#ffd700" : "rgba(255,255,255,0.1)";
+            ctx.lineWidth = unlocked ? 2.5 : 1;
+            ctx.stroke();
+
+            ctx.font = "32px Segoe UI Emoji";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.globalAlpha = unlocked ? 1 : 0.2;
+            ctx.fillText(def.icon, cx + 45, cy + cardH / 2);
+
+            ctx.globalAlpha = 1;
+            ctx.textAlign = "left";
+            ctx.font = "bold 16px Segoe UI";
+            ctx.fillStyle = unlocked ? "#ffd700" : "#888";
+            ctx.fillText(def.title, cx + 85, cy + 35);
+            ctx.font = "13px Segoe UI";
+            ctx.fillStyle = unlocked ? "#fff" : "#555";
+            ctx.fillText(def.desc, cx + 85, cy + 58);
+
+            if (unlocked) {
+                ctx.font = "bold 11px Segoe UI";
+                ctx.fillStyle = "#00ff88";
+                ctx.textAlign = "right";
+                ctx.fillText("UNLOCKED ✓", cx + cardW - 15, cy + cardH - 15);
+            } else if (def.target > 1) {
+                const frac = Math.min(s.progress / def.target, 1);
+                ctx.fillStyle = "rgba(255,255,255,0.05)";
+                ctx.fillRect(cx + 85, cy + 75, cardW - 105, 5);
+                ctx.fillStyle = "#ffd700";
+                ctx.fillRect(cx + 85, cy + 75, (cardW - 105) * frac, 5);
+            }
+            ctx.restore();
+        });
+
+        // Close Text-only Button
+        const btnText = "CLOSE GALLERY [X]";
+        ctx.font = "bold 16px Segoe UI";
+        const tw = ctx.measureText(btnText).width;
+        const tx = (ctx.canvas.width - tw) / 2;
+        const ty = ctx.canvas.height - 70;
+        
+        const isHover = Controller.mouse.x > tx - 10 && Controller.mouse.x < tx + tw + 10 &&
+                        Controller.mouse.y > ty - 20 && Controller.mouse.y < ty + 10;
+        
+        ctx.fillStyle = isHover ? "#fff" : "rgba(255,215,0,0.7)";
+        ctx.textAlign = "left";
+        ctx.fillText(btnText, tx, ty);
+        
+        // Underline on hover
+        if (isHover) {
+            ctx.fillRect(tx, ty + 4, tw, 2);
+            if (Controller.mouse.leftClick && !Controller.mouse_prev.leftClick) {
+                this.isGalleryOpen = false;
+                Controller.mouse.leftClick = false;
+            }
+        }
+        ctx.restore();
+    }
+
+    static getSaveData()   { return JSON.parse(JSON.stringify(this.#state)); }
+    static loadSaveData(d) {
+        if (!d) return;
+        this.#state = d;
+    }
+}

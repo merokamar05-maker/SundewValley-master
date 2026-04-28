@@ -30,7 +30,7 @@ class UserInterfaces {
     }
 
     noUiIsOpening() {
-        return this.#UI.chest == null && this.#UI.trade == null && this.#UI.weather == null && this.#UI.animatedTV == null
+        return this.#UI.chest == null && this.#UI.trade == null && this.#UI.weather == null && this.#UI.animatedTV == null && !AchievementManager.isGalleryOpen
     }
 
     closeChest() {
@@ -40,6 +40,18 @@ class UserInterfaces {
     update() {
         if (UserInterfaces.displayTitle === true) return
         QuestUI.update(GAME_ENGINE.clockTick)
+        AchievementManager.update(GAME_ENGINE.clockTick)
+        LetterUI.update(GAME_ENGINE.clockTick)
+
+        // Toggle achievement gallery with X key
+        if (Controller.keys["KeyX"] && Level.PLAYER) {
+            // Only allow opening if no other UI is open, but ALWAYS allow closing
+            if (AchievementManager.isGalleryOpen || Level.PLAYER.notDisablePlayerController()) {
+                AchievementManager.isGalleryOpen = !AchievementManager.isGalleryOpen;
+                Controller.keys["KeyX"] = false;
+            }
+        }
+
         if (this.#UI.chest != null) {
             this.#CURRENT = this.#UI.chest
         } else if (this.#UI.animatedTV != null) {
@@ -99,7 +111,26 @@ class UserInterfaces {
             this.#CURRENT.draw(ctx)
             this.drawMoney(ctx)
             this.drawKarmaBar(ctx)
+            EnergyManager.draw(ctx)
             QuestUI.draw(ctx)
+
+            // Achievement Button below Quests
+            const btnText = "🏆 Awards [X]";
+            ctx.font = "bold 15px 'Outfit', 'Inter', 'Segoe UI', sans-serif";
+            const btnW = ctx.measureText(btnText).width + 44; // 22*2 padding
+            const btnX = ctx.canvas.width - 5 - btnW; // Align with Quests (5 padding)
+            const btnY = 118; 
+            if (MessageButton.draw(ctx, btnText, 15, btnX, btnY, 22, 11, true)) {
+                if (Controller.mouse.leftClick && !Controller.mouse_prev.leftClick) {
+                    if (AchievementManager.isGalleryOpen || Level.PLAYER.notDisablePlayerController()) {
+                        AchievementManager.isGalleryOpen = !AchievementManager.isGalleryOpen;
+                    }
+                }
+            }
+
+            AchievementManager.draw(ctx)
+            LetterUI.draw(ctx)
+            if (AchievementManager.isGalleryOpen) AchievementManager.drawGallery(ctx)
         }
 
     }
