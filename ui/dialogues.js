@@ -849,6 +849,30 @@ class Dialogues {
     }
 
     static update(key, initBy) {
+        // ── Stage routing for multi-stage NPCs ──────────────────────
+        if (key === "7azo_interact1") {
+            Dialogues.HAZO_INTERACTION_COUNT++;
+            const s = Math.floor((Dialogues.HAZO_INTERACTION_COUNT - 1) / 2);
+            key = s === 0 ? "7azo_interact1" :
+                  s === 1 ? "7azo_stage2_1" :
+                  s === 2 ? "7azo_stage3_1" :
+                  s === 3 ? "7azo_stage4_1" : "7azo_stage5_1";
+        } else if (key === "Jannah_interact1") {
+            Dialogues.JANNAH_INTERACTION_COUNT++;
+            const s = Math.floor((Dialogues.JANNAH_INTERACTION_COUNT - 1) / 2);
+            key = s === 0 ? "Jannah_interact1" :
+                  s === 1 ? "Jannah_stage2_1" :
+                  s === 2 ? "Jannah_stage3_1" :
+                  s === 3 ? "Jannah_stage4_1" : "Jannah_stage5_1";
+        } else if (key === "Mario_interact1") {
+            Dialogues.MARIO_INTERACTION_COUNT++;
+            const s = Math.floor((Dialogues.MARIO_INTERACTION_COUNT - 1) / 2);
+            key = s === 0 ? "Mario_interact1" :
+                  s === 1 ? "Mario_stage2_1" :
+                  s === 2 ? "Mario_stage3_1" :
+                  s === 3 ? "Mario_stage4_1" : "Mario_stage5_1";
+        }
+        // ─────────────────────────────────────────────────────────────
         if (key === "Soso_interact1" && !this.SOSO_STORY_SEEN) {
             this.SOSO_STORY_SEEN = true;
             StoryIntroUI.play("./images/story/stoery_time5.mp4");
@@ -1175,6 +1199,7 @@ class Dialogues {
                                 Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 10);
                                 Dialogues.SOSO_GENEROSITY_LEVEL++;
                                 Level.PLAYER.addKarma(10);
+                                FriendshipManager.addPoints("Soso", 10);
                                 this.update("Soso_give_10_success", this.#CURRENT_INIT_BY);
 
 
@@ -1186,6 +1211,7 @@ class Dialogues {
                                 Level.PLAYER.setMoney(Level.PLAYER.getMoney() - 50);
                                 Dialogues.SOSO_GENEROSITY_LEVEL += 2; // Giving more builds trust faster
                                 Level.PLAYER.addKarma(35);
+                                FriendshipManager.addPoints("Soso", 20);
                                 this.update("Soso_give_50_success", this.#CURRENT_INIT_BY);
 
 
