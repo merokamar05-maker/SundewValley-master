@@ -39,6 +39,7 @@ class UserInterfaces {
 
     update() {
         if (UserInterfaces.displayTitle === true) return
+        QuestUI.update(GAME_ENGINE.clockTick)
         if (this.#UI.chest != null) {
             this.#CURRENT = this.#UI.chest
         } else if (this.#UI.animatedTV != null) {
@@ -98,6 +99,7 @@ class UserInterfaces {
             this.#CURRENT.draw(ctx)
             this.drawMoney(ctx)
             this.drawKarmaBar(ctx)
+            QuestUI.draw(ctx)
         }
 
     }

@@ -46,6 +46,7 @@ class TradeUI extends ItemBarUI {
                         this.#fromCharacterRef.earnMoney(moneyRequired)
                         this.#toCharacterRef.earnMoney(-moneyRequired)
                         this.#fromCharacterRef.putItemFromItemBarIntoTargetInventory(key, this.#toCharacterRef, numOfItem)
+                        QuestManager.notifySell(numOfItem)
                     }
                 } else {
                     const numOfItem = Controller.keys["AltLeft"] ? this.#fromCharacterRef.getInventory()[key]["amount"] : 1
@@ -54,6 +55,7 @@ class TradeUI extends ItemBarUI {
                         this.#fromCharacterRef.earnMoney(moneyRequired)
                         this.#toCharacterRef.earnMoney(-moneyRequired)
                         this.#fromCharacterRef.putItemFromInventoryIntoTargetInventory(key, this.#toCharacterRef, numOfItem)
+                        QuestManager.notifySell(numOfItem)
                     }
                 }
             }

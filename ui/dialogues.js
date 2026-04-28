@@ -9,6 +9,9 @@ class Dialogues {
     static Mohamed_INTERACTION_COUNT = 0
     static SEBAEY_INTERACTION_COUNT = 0
     static ZOZO_INTERACTION_COUNT = 0
+    static MARIO_INTERACTION_COUNT = 0
+    static JANNAH_INTERACTION_COUNT = 0
+    static HAZO_INTERACTION_COUNT = 0
 
 
 
@@ -609,24 +612,141 @@ class Dialogues {
             contents: ["The sunshine today reminds me of your kindness.", "May your crops grow tall and strong!"],
         },
 
+        // ── 7azo ──────────────────────────────────────────────────
         "7azo_interact1": {
-            contents: ["Yo! Ready for some action?"],
+            contents: ["Yo! Ready for some action?", "I've been walking around all day looking for something exciting to do!"],
             options: [
-                { text: "Yeah, let's go!", act: "7azo_yes" },
-                { text: "Not right now, sorry.", act: "7azo_no" }
+                { text: "What kind of action are you looking for?", act: "7azo_s1_curious" },
+                { text: "Come help me on the farm!", act: "7azo_s1_farm" }
             ]
         },
-        "7azo_yes": { contents: ["Awesome! Let me know when you are fully ready!"] },
-        "7azo_no": { contents: ["Ah, maybe next time then. Take care!"] },
+        "7azo_s1_curious": {
+            contents: ["I don't know, man... races? challenges? anything!", "This town is chill but I need some energy in my life!"]
+        },
+        "7azo_s1_farm": {
+            contents: ["The farm?! Digging and watering??", "...Actually, you know what, fine. Show me what you got!"]
+        },
+        "7azo_stage2_1": {
+            contents: ["Okay farmer, I've been watching you work.", "Let's settle this with a challenge — who can harvest more crops today?"],
+            options: [
+                { text: "You're on! I won't go easy on you.", act: "7azo_s2_accept" },
+                { text: "Haha I'm already ahead of you!", act: "7azo_s2_brag" }
+            ]
+        },
+        "7azo_s2_accept": { contents: ["THAT'S what I'm talking about!", "May the best farmer win!"] },
+        "7azo_s2_brag":   { contents: ["Pfft! That's big talk for someone with dirt on their shoes.", "Prove it, farmer!"] },
+        "7azo_stage3_1": {
+            contents: ["Bro, did you hear about the animals that escaped into town?", "I tried to catch one earlier... it was WAY faster than it looked."],
+            options: [
+                { text: "Ha! I've caught a few myself.", act: "7azo_s3_caught" },
+                { text: "Those things are slippery!", act: "7azo_s3_agree" }
+            ]
+        },
+        "7azo_s3_caught": { contents: ["No way! Teach me your ways!", "I'm going back out there, this time I'm ready."] },
+        "7azo_s3_agree":  { contents: ["RIGHT?! I thought it would be easy.", "Respect to you if you caught any."] },
+        "7azo_stage4_1": {
+            contents: ["You know what makes a perfect day?", "Waking up with a plan, crushing it, and ending with something to be proud of."],
+            options: [
+                { text: "That's actually a solid life motto.", act: "7azo_s4_agree" },
+                { text: "What if the plan fails?", act: "7azo_s4_fail" }
+            ]
+        },
+        "7azo_s4_agree": { contents: ["Exactly! That's why I love it here.", "This farm life is actually teaching me a lot."] },
+        "7azo_s4_fail":  { contents: ["Then you make a better plan tomorrow.", "Every failed harvest is just tomorrow's lesson."] },
+        "7azo_stage5_1": {
+            contents: ["Hey, real talk for a second.", "I came to Sundew Valley because I was tired of the noise back home."],
+            next: "7azo_stage5_2"
+        },
+        "7azo_stage5_2": {
+            contents: ["This place is different.", "People here actually care about what they build together.", "I think I found what I was looking for."]
+        },
+
+        // ── Jannah ────────────────────────────────────────────────
         Jannah_interact1: {
-            contents: ["Hi there! Have you seen my friends around?"],
+            contents: ["Hi there! Have you seen my friends around?", "I feel like everyone's always somewhere else in this big village!"],
             options: [
-                { text: "No, I haven't seen them.", act: "Jannah_no" },
-                { text: "I think they are at the farm.", act: "Jannah_yes" }
+                { text: "I think I saw them near the farm.", act: "Jannah_s1_farm" },
+                { text: "Maybe they're at the bar?", act: "Jannah_s1_bar" }
             ]
         },
-        Jannah_no: { contents: ["Oh okay, let me know if you do!"] },
-        Jannah_yes: { contents: ["Really? I'll go check there! Thank you so much!"] },
+        Jannah_s1_farm: { contents: ["Oh! I'll go check. Thank you so much!", "You're so helpful, I love that about you!"] },
+        Jannah_s1_bar:  { contents: ["Maryoma's place? Good idea!", "She probably gave them a free juice and now they won't leave."] },
+        Jannah_stage2_1: {
+            contents: ["You know, this village has such a warm spirit.", "Everyone looks out for each other here."],
+            options: [
+                { text: "I've noticed that too. It's special.", act: "Jannah_s2_agree" },
+                { text: "I'm still getting to know everyone.", act: "Jannah_s2_new" }
+            ]
+        },
+        Jannah_s2_agree: { contents: ["Right?! It's the people that make a place feel like home.", "I'm glad you feel it too!"] },
+        Jannah_s2_new:   { contents: ["That's okay, take your time!", "They'll all love you once they see how hard you work."] },
+        Jannah_stage3_1: {
+            contents: ["I've been helping Mimo coordinate a little community cleanup!", "If everyone picks up a little trash, the village stays beautiful."],
+            next: "Jannah_stage3_2"
+        },
+        Jannah_stage3_2: {
+            contents: ["Tawfiq the recycler was so happy to see us bring all those bags.", "It felt really good to do something together!"]
+        },
+        Jannah_stage4_1: {
+            contents: ["I heard you have daily tasks you try to finish?", "That's such a good habit! I should try that too."],
+            options: [
+                { text: "It keeps me productive!", act: "Jannah_s4_productive" },
+                { text: "It's hard to finish them all!", act: "Jannah_s4_hard" }
+            ]
+        },
+        Jannah_s4_productive: { contents: ["I knew it! You always seem so focused.", "I'm going to start writing my tasks down every morning."] },
+        Jannah_s4_hard:       { contents: ["Ha, even trying counts!", "Progress over perfection, that's what I always say."] },
+        Jannah_stage5_1: {
+            contents: ["You know, I didn't expect to feel this attached to Sundew Valley.", "But every person I meet here leaves a little mark on my heart."],
+            next: "Jannah_stage5_2"
+        },
+        Jannah_stage5_2: {
+            contents: ["I hope you know that includes you.", "Thank you for always being kind when we cross paths."]
+        },
+
+        // ── Mario ─────────────────────────────────────────────────
+        Mario_interact1: {
+            contents: ["Hey! I'm Mario. Nice to meet you!", "I've heard a lot about the farmer who's been reviving this valley!"],
+            options: [
+                { text: "Nice to meet you! Hope it's all good things.", act: "Mario_s1_good" },
+                { text: "Word travels fast around here!", act: "Mario_s1_fast" }
+            ]
+        },
+        Mario_s1_good: { contents: ["All good, I promise!", "I can already see the farm is in great hands."] },
+        Mario_s1_fast: { contents: ["Ha! In a small town? News flies!", "But seriously, the work you're doing is impressive."] },
+        Mario_stage2_1: {
+            contents: ["I went for a walk past your farm this morning.", "I could see new crops growing — what are you planting this season?"],
+            options: [
+                { text: "Lots of things! Come see for yourself.", act: "Mario_s2_invite" },
+                { text: "Still experimenting with the seasons.", act: "Mario_s2_season" }
+            ]
+        },
+        Mario_s2_invite: { contents: ["Really?! I'd love that!", "I'll stop by soon, just don't put me to work!"] },
+        Mario_s2_season: { contents: ["The seasons here are fascinating.", "Spring crops taste completely different from autumn ones, I'm told!"] },
+        Mario_stage3_1: {
+            contents: ["I explored the edge of town near the old fields earlier.", "There's so much of Sundew Valley still left to discover!"],
+            next: "Mario_stage3_2"
+        },
+        Mario_stage3_2: {
+            contents: ["I found a quiet little spot by some old fence posts.", "The view of your farm from there at sunset is honestly stunning."]
+        },
+        Mario_stage4_1: {
+            contents: ["Look at you now compared to when you first arrived!", "The farm, the animals, the crops... this place has truly come alive."],
+            options: [
+                { text: "It hasn't been easy, but it's worth it!", act: "Mario_s4_worth" },
+                { text: "There's still so much more to do.", act: "Mario_s4_more" }
+            ]
+        },
+        Mario_s4_worth: { contents: ["That's the spirit!", "Hard work and pride in what you build — that's everything."] },
+        Mario_s4_more:  { contents: ["I love that drive in you.", "Keep pushing. The best version of this farm is still ahead."] },
+        Mario_stage5_1: {
+            contents: ["You know, I've traveled to a lot of places.", "But nowhere felt quite like it needed me the way this valley does."],
+            next: "Mario_stage5_2"
+        },
+        Mario_stage5_2: {
+            contents: ["I think I'm going to stay here for a long, long time.", "And honestly? A big part of that is because of you, friend."]
+        },
+
         Kinzy_interact1: {
             contents: ["Hello! What a beautiful day to be in the town square!"],
             options: [
@@ -853,7 +973,7 @@ class Dialogues {
             const textFontSize = Math.floor(ctx.canvas.height / 28);
             const labelColor = "#5d4037"; // Warmer Rich Brown
 
-            // Draw character name label
+            // Draw character name label + friendship hearts
             if (Dialogues.#CURRENT_INIT_BY) {
                 const _DISPLAY_NAMES = { "Mohamed": "Mohamed", "mohamed": "Mohamed" };
                 const _rawName = typeof Dialogues.#CURRENT_INIT_BY === "string" ? Dialogues.#CURRENT_INIT_BY : Dialogues.#CURRENT_INIT_BY.getName();
@@ -862,6 +982,29 @@ class Dialogues {
                 const namePy = boxY + textFontSize * 0.8;
                 
                 Font.draw(ctx, nameStr, textFontSize * 1.0, namePx, namePy, labelColor, "rgba(0,0,0,0.05)", "Segoe UI", "bold", false);
+
+                // Draw friendship hearts (up to 5 shown, rest indicated by number)
+                if (typeof FriendshipManager !== "undefined") {
+                    const hearts = FriendshipManager.getHearts(nameStr);
+                    if (hearts > 0) {
+                        ctx.save();
+                        const hSize = textFontSize * 0.75;
+                        ctx.font = `${hSize}px serif`;
+                        const shown = Math.min(hearts, 5);
+                        const hStartX = namePx;
+                        const hStartY = namePy + textFontSize * 0.35;
+                        for (let h = 0; h < shown; h++) {
+                            ctx.fillStyle = "#ff5252";
+                            ctx.fillText("♥", hStartX + h * (hSize + 2), hStartY);
+                        }
+                        if (hearts > 5) {
+                            ctx.font = `bold ${hSize * 0.75}px Verdana`;
+                            ctx.fillStyle = "#ff5252";
+                            ctx.fillText(`+${hearts - 5}`, hStartX + shown * (hSize + 2) + 2, hStartY);
+                        }
+                        ctx.restore();
+                    }
+                }
             }
 
             // Draw dialogue lines with Auto-Wrap wrapping — clipped to box so text never overflows
@@ -966,6 +1109,7 @@ class Dialogues {
                             if (Level.PLAYER.tryUseItem("medicinal_juice", 1)) {
                                 this.LAST_CURED_DAY = DateTimeSystem.getTotalDays()
                                 Level.PLAYER.addKarma(40); // Large karma boost for helping Grandma
+                                FriendshipManager.addPoints("Grandmother", 15);
                                 this.update("Grandmother_juice_success", this.#CURRENT_INIT_BY);
 
                             } else {
@@ -987,7 +1131,9 @@ class Dialogues {
                                 
                                 // Each bag of trash recycled adds to the Good Deed bar
                                 Level.PLAYER.addKarma(totalTrash * 3);
-                                
+                                QuestManager.notifyTrash(totalTrash);
+                                FriendshipManager.addPoints("Recycler", Math.min(totalTrash * 3, 15));
+
                                 this.update("Recycler_trash_success", this.#CURRENT_INIT_BY);
 
                             } else {

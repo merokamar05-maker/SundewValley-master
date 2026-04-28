@@ -163,6 +163,8 @@ class Player extends Character {
                     this.obtainItem(_crop.getType(), getRandomIntInclusive(1, 3))
                     // obtain a random amount of seed for that crop
                     this.obtainItem(_crop.getType() + "_seed", getRandomIntInclusive(1, 2))
+                    // notify quest system
+                    QuestManager.notifyHarvest(_crop.getType())
                 }
             }
         }

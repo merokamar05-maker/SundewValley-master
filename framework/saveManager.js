@@ -22,7 +22,9 @@ class SaveManager {
                 chests: Chest.CHESTS,
                 farmModifications: this.#getFarmModifications(),
                 townEvent: SaveManager.townEvent || { lastSpawnDay: 0, caughtCount: 0 },
-                seenVideos: SaveManager.seenVideos || []
+                seenVideos: SaveManager.seenVideos || [],
+                quests: (typeof QuestManager !== "undefined") ? QuestManager.getSaveData() : null,
+                friendship: (typeof FriendshipManager !== "undefined") ? FriendshipManager.getSaveData() : null
             }
         };
 
@@ -54,6 +56,16 @@ class SaveManager {
                     SaveManager.seenVideos = data.world.seenVideos;
                 } else {
                     SaveManager.seenVideos = [];
+                }
+
+                // Restore quest progress
+                if (data.world.quests && typeof QuestManager !== "undefined") {
+                    QuestManager.loadSaveData(data.world.quests);
+                }
+
+                // Restore friendship points
+                if (data.world.friendship && typeof FriendshipManager !== "undefined") {
+                    FriendshipManager.loadSaveData(data.world.friendship);
                 }
             } else {
                 // Default if world is completely missing

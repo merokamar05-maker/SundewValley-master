@@ -81,6 +81,10 @@ class Npc extends Character {
     interact() {
         const name = this.getName();
         if (["Nader", "Omar", "Ramy", "Menna"].includes(name)) return;
+
+        // Track friendship & daily quest progress
+        FriendshipManager.addTalkPoints(name);
+        QuestManager.notifyTalk(name);
         
         if (name === "Grandmother") {
             if (Dialogues.isGrandmotherSick()) {
