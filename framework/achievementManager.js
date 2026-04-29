@@ -3,10 +3,10 @@ class AchievementManager {
         first_harvest:  { title: "First Harvest!",     desc: "Harvested your first crop",          icon: "🌱", target: 1,   reward: { money: 100 } },
         green_thumb:    { title: "Green Thumb",        desc: "Harvested 50 crops",                 icon: "🌾", target: 50,  reward: { money: 500, items: [{ key: "pumpkin_seed", count: 5 }] } },
         master_farmer:  { title: "Master Farmer",      desc: "Harvested 200 crops",                icon: "🚜", target: 200, reward: { money: 2000, items: [{ key: "carrot_seed", count: 10 }] } },
-        friendly_face:  { title: "Friendly Face",      desc: "Reached 3 hearts with an NPC",       icon: "🤝", target: 1,   reward: { money: 300 } },
-        best_friends:   { title: "Best Friends",       desc: "Reached 10 hearts with an NPC",      icon: "💕", target: 1,   reward: { money: 1000, items: [{ key: "medicinal_juice", count: 1 }] } },
+        friendly_face:  { title: "Friendly Face",      desc: "Reached 3 hearts with an NPC",       icon: "🤝", target: 3,   reward: { money: 300 } },
+        best_friends:   { title: "Best Friends",       desc: "Reached 10 hearts with an NPC",      icon: "💕", target: 10,  reward: { money: 1000, items: [{ key: "medicinal_juice", count: 1 }] } },
         eco_warrior:    { title: "Eco Warrior",        desc: "Recycled 10 trash bags",             icon: "♻️", target: 10,  reward: { money: 200, items: [{ key: "cabbage_seed", count: 5 }] } },
-        rich_farmer:    { title: "Rich Farmer",        desc: "Accumulated 5,000 coins",            icon: "💰", target: 1,   reward: { money: 500 } },
+        rich_farmer:    { title: "Rich Farmer",        desc: "Accumulated 5,000 coins",            icon: "💰", target: 5000, reward: { money: 500 } },
         daily_hero:     { title: "Daily Hero",         desc: "Completed all 3 daily quests",       icon: "📋", target: 1,   reward: { money: 400, items: [{ key: "apple_juice", count: 2 }] } },
         animal_lover:   { title: "Animal Lover",       desc: "Caught 3 escaped animals",           icon: "🐄", target: 3,   reward: { money: 600, items: [{ key: "chicken", count: 1 }] } },
         early_bird:     { title: "Early Bird",         desc: "Went to sleep before 22:00",         icon: "😴", target: 1,   reward: { money: 100 } },
@@ -14,19 +14,21 @@ class AchievementManager {
         legend:         { title: "Legend!",            desc: "Unlocked 10 other achievements",     icon: "⭐", target: 10,  reward: { money: 5000 } }
     };
 
-    static #state = {};
+    static #state = { lastResetTimestamp: Date.now() };
     static #queue = [];
     static #showing = null;
     static #timer = 0;
     static isGalleryOpen = false;
+    static RESET_INTERVAL_HOURS = 24; 
 
-    static notify(id, amount = 1) {
+    static notify(id, amount = 1, isAbsolute = false) {
         const def = this.#DEFS[id];
         if (!def) return;
         const s = this.#state[id] || (this.#state[id] = { progress: 0, unlocked: false });
         if (s.unlocked) return;
         
-        s.progress += amount;
+        if (isAbsolute) s.progress = amount;
+        else s.progress += amount;
         console.log(`[Achievement] ${id} progress: ${s.progress}/${def.target}`);
 
         if (s.progress >= def.target) {
@@ -72,15 +74,29 @@ class AchievementManager {
     }
 
     static notifyHarvest()      { this.notify("first_harvest"); this.notify("green_thumb"); this.notify("master_farmer"); }
-    static notifyFriendship(h)  { if (h >= 3) this.notify("friendly_face"); if (h >= 10) this.notify("best_friends"); }
+    static notifyFriendship(h)  { this.notify("friendly_face", h, true); this.notify("best_friends", h, true); }
     static notifyRecycle(n)     { this.notify("eco_warrior", n); }
-    static notifyMoney(c)       { if (c >= 5000) this.notify("rich_farmer"); }
+    static notifyMoney(c)       { this.notify("rich_farmer", c, true); }
     static notifyQuestsAll()    { this.notify("daily_hero"); }
     static notifyAnimalCaught() { this.notify("animal_lover"); }
     static notifyEarlyBird()    { this.notify("early_bird"); }
     static notifyDrink()        { this.notify("juice_lover"); }
 
+    static checkFriendshipAchievements() {
+        if (typeof FriendshipManager === "undefined") return;
+        const data = FriendshipManager.getSaveData();
+        const points = data.points || {};
+        let maxHearts = 0;
+        Object.keys(points).forEach(name => {
+            const h = Math.floor(points[name] / 10);
+            maxHearts = Math.max(maxHearts, h);
+        });
+        this.notifyFriendship(maxHearts);
+    }
+
     static update(dt) {
+        this.checkDailyReset(); 
+        this.checkFriendshipAchievements(); // Keep synced
         if (!this.#showing && this.#queue.length > 0) {
             this.#showing = this.#queue.shift();
             this.#timer = 4.0;
@@ -268,5 +284,29 @@ class AchievementManager {
     static loadSaveData(d) {
         if (!d) return;
         this.#state = d;
+        if (!this.#state.lastResetTimestamp) this.#state.lastResetTimestamp = Date.now();
+        this.checkDailyReset();
+    }
+
+    static getUnlockedCount() {
+        return Object.values(this.#state).filter(s => s && s.unlocked).length;
+    }
+
+    static checkDailyReset() {
+        const now = Date.now();
+        const diffMs = now - this.#state.lastResetTimestamp;
+        const diffHours = diffMs / (1000 * 60 * 60);
+        
+        if (diffHours >= this.RESET_INTERVAL_HOURS) {
+            console.log(`[Achievement] ${this.RESET_INTERVAL_HOURS}h passed. Resetting achievements!`);
+            this.resetAllAchievements();
+            this.#state.lastResetTimestamp = now;
+        }
+    }
+
+    static resetAllAchievements() {
+        const oldTimestamp = this.#state.lastResetTimestamp;
+        this.#state = { lastResetTimestamp: oldTimestamp };
+        // We could notify the user here if we wanted
     }
 }

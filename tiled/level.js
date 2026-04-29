@@ -156,7 +156,7 @@ class Level extends AbstractTiledMap {
 
         if (this instanceof FarmLevel) {
             const farmTrashSpots = [
-                [18, 15], [22, 18], [25, 12], [28, 20], [15, 25]
+                [18, 15], [22, 18], [25, 14], [28, 20], [15, 25]
             ];
             farmTrashSpots.forEach((pos, i) => {
                 this.addEntity(new Trash("farm_trash_" + i, pos[0], pos[1], this));

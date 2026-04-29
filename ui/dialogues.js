@@ -1064,20 +1064,29 @@ class Dialogues {
                 if (typeof FriendshipManager !== "undefined") {
                     const hearts = FriendshipManager.getHearts(nameStr);
                     if (hearts > 0) {
-                        ctx.save();
                         const hSize = textFontSize * 0.75;
-                        ctx.font = `${hSize}px serif`;
                         const shown = Math.min(hearts, 5);
-                        const hStartX = namePx;
-                        const hStartY = namePy + textFontSize * 0.35;
+                        const hasTrophy = hearts >= 5;
+                        
+                        // Calculate start X from the right edge
+                        const heartsTotalWidth = shown * (hSize + 2) + (hasTrophy ? textFontSize * 1.2 : 0);
+                        const hStartX = boxX + boxWidth - marginX * 1.5 - heartsTotalWidth;
+                        const hStartY = namePy; 
+                        
+                        ctx.font = `${hSize}px serif`;
+                        ctx.textBaseline = "middle";
                         for (let h = 0; h < shown; h++) {
                             ctx.fillStyle = "#ff5252";
                             ctx.fillText("♥", hStartX + h * (hSize + 2), hStartY);
                         }
-                        if (hearts > 5) {
-                            ctx.font = `bold ${hSize * 0.75}px Verdana`;
-                            ctx.fillStyle = "#ff5252";
-                            ctx.fillText(`+${hearts - 5}`, hStartX + shown * (hSize + 2) + 2, hStartY);
+                        
+                        // Show Trophy for Max Friendship (5+ hearts)
+                        if (hasTrophy) {
+                            const iconSize = textFontSize * 0.8;
+                            const tx = hStartX + shown * (hSize + 2) + 5;
+                            ctx.font = `${iconSize}px Segoe UI Emoji`;
+                            ctx.fillStyle = "#ffd700";
+                            ctx.fillText("🏆", tx, hStartY);
                         }
                         ctx.restore();
                     }
