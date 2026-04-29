@@ -918,7 +918,17 @@ class Dialogues {
         // ─────────────────────────────────────────────────────────────
         if (key === "Soso_interact1" && !this.SOSO_STORY_SEEN) {
             this.SOSO_STORY_SEEN = true;
-            StoryIntroUI.play("./images/story/stoery_time5.mp4");
+            StoryIntroUI.play("./images/story/stoery_time5.mp4", () => {
+                Dialogues.update(key, initBy);
+            });
+            return;
+        }
+        if (key === "Recycler_interact1" && !SaveManager.hasSeenVideo("recycler")) {
+            SaveManager.markVideoAsSeen("recycler");
+            StoryIntroUI.play("./images/story/story_time6.mp4", () => {
+                Dialogues.update(key, initBy);
+            });
+            return;
         }
         this.#CURRENT = this.#SCRIPTS[key]
         this.#CURRENT_INIT_BY = initBy

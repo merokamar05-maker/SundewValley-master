@@ -1,6 +1,7 @@
 class StoryIntroUI {
     static play(videoPath, onComplete) {
         // 1. Pause Game Engine and Store Music State
+        Level.STORY_PLAYING = true;
         const previousPausedState = GAME_ENGINE.paused;
         GAME_ENGINE.paused = true;
         const previousBGM = Level.BGM;
@@ -102,6 +103,7 @@ class StoryIntroUI {
 
             overlay.style.opacity = '0';
             overlay.style.transition = 'opacity 1s ease';
+            Level.STORY_PLAYING = false;
             setTimeout(() => {
                 overlay.remove();
                 if (onComplete) onComplete();
