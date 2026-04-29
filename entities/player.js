@@ -38,6 +38,25 @@ class Player extends Character {
         return this.#itemBar
     }
 
+    clearItemBar() {
+        this.#itemBar = {};
+    }
+
+    refillItemBarFromInventory() {
+        if (Object.keys(this.#itemBar).length >= ItemBarUI.ITEMS_PER_ROW) return;
+        
+        const inventory = this.getInventory();
+        const invKeys = Object.keys(inventory);
+        if (invKeys.length > 0) {
+            const firstKey = invKeys[0];
+            const amount = inventory[firstKey].amount;
+            // Take out of backpack
+            super.tryUseItem(firstKey, amount);
+            // Put into item bar
+            this.#itemBar[firstKey] = { amount: amount };
+        }
+    }
+
     obtainItem(key, num = 1) {
         if (super.hasItemInInventory(key)) {
             super.obtainItem(key, num)
@@ -57,6 +76,7 @@ class Player extends Character {
             this.#itemBar[key]["amount"] -= num
             if (this.#itemBar[key]["amount"] === 0) {
                 delete this.#itemBar[key]
+                this.refillItemBarFromInventory();
             }
             return true
         }

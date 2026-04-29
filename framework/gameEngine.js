@@ -61,6 +61,10 @@ class GameEngine {
             Level.PLAYER.setMoney(p.money);
             if (Level.PLAYER.addKarma) Level.PLAYER.addKarma(p.karma - Level.PLAYER.getKarma());
             
+            // Clear default items before restoring save to prevent overflow
+            Level.PLAYER.clearInventory();
+            Level.PLAYER.clearItemBar();
+            
             // Restore inventory and itemBar safely
             if (p.inventory) {
                 const currentInv = Level.PLAYER.getInventory();

@@ -74,10 +74,12 @@ class UserInterfaces {
             } else {
                 this.#UI.trade = null
             }
-        } else if (!this.#UI.inventory.isOpening) {
+        } else if (this.#UI.inventory.isOpening) {
+            this.#CURRENT = this.#UI.inventory
+        } else {
             if (Controller.keys["KeyI"]) {
-                this.#CURRENT = this.#UI.inventory
                 this.#UI.inventory.isOpening = true
+                this.#CURRENT = this.#UI.inventory
             } else {
                 this.#CURRENT = this.#UI.itemBar
             }
@@ -131,8 +133,29 @@ class UserInterfaces {
             AchievementManager.draw(ctx)
             LetterUI.draw(ctx)
             if (AchievementManager.isGalleryOpen) AchievementManager.drawGallery(ctx)
+            
+            this.drawBackpackButton(ctx)
         }
 
+    }
+
+    drawBackpackButton(ctx) {
+        if (!Level.PLAYER) return;
+        const fontSize = 28;
+        const padding = 15;
+        // Positioned at bottom right
+        const btnX = ctx.canvas.width - 80;
+        const btnY = ctx.canvas.height - 80;
+        
+        if (MessageButton.draw(ctx, "🎒", fontSize, btnX, btnY, padding, padding, true)) {
+            if (Controller.mouse.leftClick && !Controller.mouse_prev.leftClick) {
+                // Toggle inventory if player is not disabled
+                if (this.#UI.inventory.isOpening || Level.PLAYER.notDisablePlayerController()) {
+                    this.#UI.inventory.isOpening = !this.#UI.inventory.isOpening;
+                    Controller.mouse.leftClick = false; // Prevent multiple clicks in one frame
+                }
+            }
+        }
     }
 
     drawMoney(ctx) {
