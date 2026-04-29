@@ -5,7 +5,6 @@ class Dialogues {
     static LAST_CURED_DAY = -10 // Starts sick at day 0
     static MIMO_INTERACTION_COUNT = 0
     static SOSO_GENEROSITY_LEVEL = 0
-    static SOSO_STORY_SEEN = false
     static Mohamed_INTERACTION_COUNT = 0
     static SEBAEY_INTERACTION_COUNT = 0
     static ZOZO_INTERACTION_COUNT = 0
@@ -916,8 +915,8 @@ class Dialogues {
                   s === 3 ? "Mario_stage4_1" : "Mario_stage5_1";
         }
         // ─────────────────────────────────────────────────────────────
-        if (key === "Soso_interact1" && !this.SOSO_STORY_SEEN) {
-            this.SOSO_STORY_SEEN = true;
+        if (key === "Soso_interact1" && !SaveManager.hasSeenVideo("soso")) {
+            SaveManager.markVideoAsSeen("soso");
             StoryIntroUI.play("./images/story/stoery_time5.mp4", () => {
                 Dialogues.update(key, initBy);
             });
