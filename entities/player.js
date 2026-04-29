@@ -163,7 +163,8 @@ class Player extends Character {
                 ASSET_MANAGER.playSound("Gravel_hit1.ogg");
             }
             if (Controller.keys["KeyC"] && !Controller.keys_prev["KeyC"]) {
-                // Harvesting consumption handled in updateInteraction() frame 1
+                EnergyManager.consume(4);
+                ASSET_MANAGER.playSound("Gravel_hit1.ogg");
             }
         }
 
@@ -205,7 +206,6 @@ class Player extends Character {
             if (this.getMapReference() instanceof FarmLevel) {
                 const _crop = this.getMapReference().getCrop(this.getBlockX(), this.getBlockY())
                 if (_crop != null && _crop.isMatured()) {
-                    EnergyManager.consume(4);
                     _crop.removeFromWorld = true
                     // obtain a random amount of crop
                     this.obtainItem(_crop.getType(), getRandomIntInclusive(1, 3))

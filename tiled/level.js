@@ -531,45 +531,53 @@ class Level extends AbstractTiledMap {
             if (entitiesThatCollideWithPlayer[0] instanceof Npc) {
                 if (!["Nader", "Omar", "Ramy", "Menna"].includes(entitiesThatCollideWithPlayer[0].getName())) {
                     const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
-                    const isHovered = MessageButton.draw(
-                        GAME_ENGINE.ctx, "Interact (V)", _fontSize,
-                        Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                    );
-                    if (Level.PLAYER.notDisablePlayerController() && ((isHovered && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) || Controller.keys["KeyV"])) {
-                        entitiesThatCollideWithPlayer[0].interact();
-                        Controller.mouse.leftClick = false;
-                        Controller.keys["KeyV"] = false;
+                    if (Level.PLAYER.notDisablePlayerController()) {
+                        const isHovered = MessageButton.draw(
+                            GAME_ENGINE.ctx, "Interact (V)", _fontSize,
+                            Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                        );
+                        if ((isHovered && !Controller.mouse_prev.leftClick && Controller.mouse.leftClick) || Controller.keys["KeyV"]) {
+                            entitiesThatCollideWithPlayer[0].interact();
+                            Controller.mouse.leftClick = false;
+                            Controller.keys["KeyV"] = false;
+                        }
                     }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Chest) {
-                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
-                if (Level.PLAYER.notDisablePlayerController() && MessageButton.draw(
-                    GAME_ENGINE.ctx, "Open", _fontSize,
-                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                )) {
-                    if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
-                        GAME_ENGINE.getPlayerUi().openChest(entitiesThatCollideWithPlayer[0]);
+                if (Level.PLAYER.notDisablePlayerController()) {
+                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2;
+                    if (MessageButton.draw(
+                        GAME_ENGINE.ctx, "Open", _fontSize,
+                        Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                    )) {
+                        if (!Controller.mouse_prev.leftClick && Controller.mouse.leftClick) {
+                            GAME_ENGINE.getPlayerUi().openChest(entitiesThatCollideWithPlayer[0]);
+                        }
                     }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Trash) {
-                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
-                MessageButton.draw(
-                    GAME_ENGINE.ctx, "Pick up (F)", _fontSize,
-                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                );
-                if (Level.PLAYER.notDisablePlayerController() && Controller.keys["KeyF"]) {
-                    entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
-                    Controller.keys["KeyF"] = false; // consume input
+                if (Level.PLAYER.notDisablePlayerController()) {
+                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                    MessageButton.draw(
+                        GAME_ENGINE.ctx, "Pick up (F)", _fontSize,
+                        Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                    );
+                    if (Controller.keys["KeyF"]) {
+                        entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
+                        Controller.keys["KeyF"] = false; // consume input
+                    }
                 }
             } else if (entitiesThatCollideWithPlayer[0] instanceof Animal && entitiesThatCollideWithPlayer[0].isEscaped()) {
-                const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
-                MessageButton.draw(
-                    GAME_ENGINE.ctx, "Catch (F)", _fontSize,
-                    Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
-                );
-                if (Level.PLAYER.notDisablePlayerController() && Controller.keys["KeyF"]) {
-                    entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
-                    Controller.keys["KeyF"] = false; // consume input
+                if (Level.PLAYER.notDisablePlayerController()) {
+                    const _fontSize = Level.PLAYER.getMapReference().getTileSize() / 2
+                    MessageButton.draw(
+                        GAME_ENGINE.ctx, "Catch (F)", _fontSize,
+                        Level.PLAYER.getMapReference().getPixelX() + Level.PLAYER.getPixelRight() - _fontSize / 3, Level.PLAYER.getMapReference().getPixelY() + Level.PLAYER.getPixelY() + _fontSize
+                    );
+                    if (Controller.keys["KeyF"]) {
+                        entitiesThatCollideWithPlayer[0].interact(Level.PLAYER);
+                        Controller.keys["KeyF"] = false; // consume input
+                    }
                 }
             }
         }
