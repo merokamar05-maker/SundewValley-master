@@ -274,6 +274,12 @@ class ItemBarUI extends GameObjectsMapContainer {
     drawInfo(ctx) {
         if (this.#latestHovered != null && this.#latestHovered.value != null && this.#latestHovered.key != null) {
             const itemPrice = InventoryItems.PRICES[this.#latestHovered.key] != null ? InventoryItems.PRICES[this.#latestHovered.key] : 0
+            // HUD tooltips (ItemBarUI) go UP, while Menu tooltips (Trade/Inventory) go DOWN
+            // Reduced gap to make it closer to the cursor
+            const isHUD = this.constructor.name === "ItemBarUI";
+            const dy = isHUD ? Controller.mouse.y - 5 : Controller.mouse.y + 10;
+            const offsetYMult = isHUD ? 1.0 : 0;
+            
             // Revert back to a smaller text size (about the height of a tile / 2.5) that fits naturally with UI
             const hoverFontSize = Math.floor(ctx.canvas.height / 35);
             MessageBox.drawLines(
@@ -285,8 +291,8 @@ class ItemBarUI extends GameObjectsMapContainer {
                     `- Total Value: ${itemPrice * this.#latestHovered.value.amount}`
                 ],
                 hoverFontSize,
-                Controller.mouse.x, Controller.mouse.y - hoverFontSize * 5,
-                undefined, undefined, 0, 1.1
+                Controller.mouse.x, dy,
+                undefined, undefined, 0, offsetYMult
             )
         }
     }

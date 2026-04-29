@@ -12,6 +12,7 @@ class Trash extends Entity {
     }
 
     interact(playerRef) {
+        EnergyManager.consume(2);
         playerRef.obtainItem("trash", 1);
         playerRef.addKarma(5); // +5 Karma for cleaning up the world
         this.removeFromWorld = true;
