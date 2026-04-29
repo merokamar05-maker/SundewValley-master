@@ -35,6 +35,9 @@ class Animal extends Creature {
         if (currentLevel.onAnimalCaught) {
             currentLevel.onAnimalCaught(this);
         }
+        if (typeof AchievementManager !== "undefined") {
+            AchievementManager.notifyAnimalCaught();
+        }
     }
 
     update() {

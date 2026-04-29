@@ -66,6 +66,11 @@ class QuestManager {
         if (q.reward.seeds)  Level.PLAYER.obtainItem(q.reward.seeds, q.reward.seedAmount || 1);
         console.log(`[QuestManager] ✓ "${q.description}" complete!`, q.reward);
         if (typeof QuestUI !== "undefined") QuestUI.showNotification(q.description);
+
+        // Achievement: Daily Hero (3 quests)
+        if (this.#completed.length >= 3 && typeof AchievementManager !== "undefined") {
+            AchievementManager.notifyQuestsAll();
+        }
     }
 
     static #advance(type, target, amount = 1) {

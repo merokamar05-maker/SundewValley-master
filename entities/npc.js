@@ -157,14 +157,25 @@ class Npc extends Character {
             } else {
                 Dialogues.update("Zozo_interact1", this);
             }
+        } else if (name === "Recycler") {
+            Dialogues.RECYCLER_INTERACTION_COUNT++;
+            if (Dialogues.RECYCLER_INTERACTION_COUNT === 1) {
+                Dialogues.update("Recycler_interact1", this);
+            } else {
+                // Cycle through the repeat tips (repeat1, repeat2, repeat3)
+                const stage = (Dialogues.RECYCLER_INTERACTION_COUNT - 2) % 3;
+                if (stage === 0) {
+                    Dialogues.update("Recycler_interact_repeat1", this);
+                } else if (stage === 1) {
+                    Dialogues.update("Recycler_interact_repeat2", this);
+                } else {
+                    Dialogues.update("Recycler_interact_repeat3", this);
+                }
+            }
         } else {
             Dialogues.update(name + "_interact1", this)
         }
-
-
     }
-
-
 
     update() {
         if (this.#isMovingNpc) {

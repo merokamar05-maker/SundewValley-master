@@ -11,7 +11,8 @@ class Dialogues {
     static ZOZO_INTERACTION_COUNT = 0
     static MARIO_INTERACTION_COUNT = 0
     static JANNAH_INTERACTION_COUNT = 0
-    static HAZO_INTERACTION_COUNT = 0
+    static HAZO_INTERACTION_COUNT = 0;
+    static RECYCLER_INTERACTION_COUNT = 0;
 
 
 
@@ -75,6 +76,48 @@ class Dialogues {
                 "Hmm... I don't see any trash in your pockets.", 
                 "Come back when you find some green trash bags!"
             ]
+        },
+        Recycler_interact_repeat1: {
+            contents: [
+                "Thanks for coming back! I really appreciate the help.",
+                "Did you know that recycling one ton of paper can save 17 trees?",
+                "Every bag you bring makes Sundew Valley more beautiful!"
+            ],
+            options: [{
+                text: "I have some trash for you!",
+                act: "$give_trash"
+            }, {
+                text: "I'll keep looking.",
+                act: "$close"
+            }]
+        },
+        Recycler_interact_repeat2: {
+            contents: [
+                "Welcome back, friend. You're becoming a real pro at this.",
+                "Pro tip: Rinsing your containers makes them much easier to recycle.",
+                "It's the small habits that change the world!"
+            ],
+            options: [{
+                text: "Here's more trash!",
+                act: "$give_trash"
+            }, {
+                text: "Got it, thanks!",
+                act: "$close"
+            }]
+        },
+        Recycler_interact_repeat3: {
+            contents: [
+                "Ah, my favorite environmentalist! How's the farm?",
+                "Did you know that glass can be recycled infinitely without losing quality?",
+                "You're doing a great job keeping this place green!"
+            ],
+            options: [{
+                text: "I found some more bags!",
+                act: "$give_trash"
+            }, {
+                text: "See you later!",
+                act: "$close"
+            }]
         },
         Grandmother_interact1: {
             contents: ["*Cough* *Cough*", "Oh my dear... I'm feeling so weak today..."],
@@ -1156,6 +1199,9 @@ class Dialogues {
                                 // Each bag of trash recycled adds to the Good Deed bar
                                 Level.PLAYER.addKarma(totalTrash * 3);
                                 QuestManager.notifyTrash(totalTrash);
+                                if (typeof AchievementManager !== "undefined") {
+                                    AchievementManager.notifyRecycle(totalTrash);
+                                }
                                 FriendshipManager.addPoints("Recycler", Math.min(totalTrash * 3, 15));
 
                                 this.update("Recycler_trash_success", this.#CURRENT_INIT_BY);

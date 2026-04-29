@@ -23,6 +23,11 @@ class FriendshipManager {
         if (!this.#points[npcName]) this.#points[npcName] = 0;
         this.#points[npcName] = Math.min(100, this.#points[npcName] + amount);
         console.log(`[Friendship] ${npcName}: ${this.#points[npcName]} pts → ${this.getHearts(npcName)}♥`);
+        
+        // Notify achievements
+        if (typeof AchievementManager !== "undefined") {
+            AchievementManager.notifyFriendship(this.getHearts(npcName));
+        }
     }
 
     static getPoints(npcName) { return this.#points[npcName] || 0; }

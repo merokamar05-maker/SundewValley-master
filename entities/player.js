@@ -233,9 +233,11 @@ class Player extends Character {
             this.#arrowVisible = false;
         }
 
-        // Eat food/veggies with R key
+        // Eat food/veggies/drinks with R key
         if (this.notDisablePlayerController() && Controller.keys["KeyR"] && !Controller.keys_prev["KeyR"]) {
-            const consumeKeys = Object.keys(this.#itemBar).filter(k => InventoryItems.isFood(k) || InventoryItems.isVegetable(k));
+            const consumeKeys = Object.keys(this.#itemBar).filter(k => 
+                InventoryItems.isFood(k) || InventoryItems.isVegetable(k) || InventoryItems.isDrink(k)
+            );
             if (consumeKeys.length > 0) {
                 const itemKey = consumeKeys[0];
                 const energyGain = EnergyManager.ENERGY_BY_ITEM[itemKey] || 15;
@@ -243,6 +245,11 @@ class Player extends Character {
                 EnergyManager.restore(energyGain);
                 ASSET_MANAGER.playSound("Gravel_hit3.ogg");
                 Controller.keys["KeyR"] = false;
+
+                // Achievement notification
+                if (InventoryItems.isDrink(itemKey)) {
+                    AchievementManager.notifyDrink();
+                }
             }
         }
 

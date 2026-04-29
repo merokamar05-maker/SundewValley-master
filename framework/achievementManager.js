@@ -1,16 +1,17 @@
 class AchievementManager {
     static #DEFS = {
-        first_harvest:  { title: "First Harvest!",     desc: "Harvested your first crop",          icon: "🌱", target: 1  },
-        green_thumb:    { title: "Green Thumb",        desc: "Harvested 50 crops",                 icon: "🌾", target: 50 },
-        master_farmer:  { title: "Master Farmer",      desc: "Harvested 200 crops",                icon: "🚜", target: 200},
-        friendly_face:  { title: "Friendly Face",      desc: "Reached 3 hearts with an NPC",       icon: "🤝", target: 1  },
-        best_friends:   { title: "Best Friends",       desc: "Reached 10 hearts with an NPC",      icon: "💕", target: 1  },
-        eco_warrior:    { title: "Eco Warrior",        desc: "Recycled 10 trash bags",             icon: "♻️", target: 10 },
-        rich_farmer:    { title: "Rich Farmer",        desc: "Accumulated 5,000 coins",            icon: "💰", target: 1  },
-        daily_hero:     { title: "Daily Hero",         desc: "Completed all 3 daily quests",       icon: "📋", target: 1  },
-        animal_lover:   { title: "Animal Lover",       desc: "Caught 3 escaped animals",           icon: "🐄", target: 3  },
-        early_bird:     { title: "Early Bird",         desc: "Went to sleep before 22:00",         icon: "😴", target: 1  },
-        legend:         { title: "Legend!",            desc: "Unlocked 10 other achievements",     icon: "⭐", target: 10 }
+        first_harvest:  { title: "First Harvest!",     desc: "Harvested your first crop",          icon: "🌱", target: 1,   reward: { money: 100 } },
+        green_thumb:    { title: "Green Thumb",        desc: "Harvested 50 crops",                 icon: "🌾", target: 50,  reward: { money: 500, items: [{ key: "pumpkin_seed", count: 5 }] } },
+        master_farmer:  { title: "Master Farmer",      desc: "Harvested 200 crops",                icon: "🚜", target: 200, reward: { money: 2000, items: [{ key: "carrot_seed", count: 10 }] } },
+        friendly_face:  { title: "Friendly Face",      desc: "Reached 3 hearts with an NPC",       icon: "🤝", target: 1,   reward: { money: 300 } },
+        best_friends:   { title: "Best Friends",       desc: "Reached 10 hearts with an NPC",      icon: "💕", target: 1,   reward: { money: 1000, items: [{ key: "medicinal_juice", count: 1 }] } },
+        eco_warrior:    { title: "Eco Warrior",        desc: "Recycled 10 trash bags",             icon: "♻️", target: 10,  reward: { money: 200, items: [{ key: "cabbage_seed", count: 5 }] } },
+        rich_farmer:    { title: "Rich Farmer",        desc: "Accumulated 5,000 coins",            icon: "💰", target: 1,   reward: { money: 500 } },
+        daily_hero:     { title: "Daily Hero",         desc: "Completed all 3 daily quests",       icon: "📋", target: 1,   reward: { money: 400, items: [{ key: "apple_juice", count: 2 }] } },
+        animal_lover:   { title: "Animal Lover",       desc: "Caught 3 escaped animals",           icon: "🐄", target: 3,   reward: { money: 600, items: [{ key: "chicken", count: 1 }] } },
+        early_bird:     { title: "Early Bird",         desc: "Went to sleep before 22:00",         icon: "😴", target: 1,   reward: { money: 100 } },
+        juice_lover:    { title: "Juice Lover",        desc: "Drank 5 juices",                     icon: "🍹", target: 5,   reward: { money: 500, items: [{ key: "orange_juice", count: 3 }] } },
+        legend:         { title: "Legend!",            desc: "Unlocked 10 other achievements",     icon: "⭐", target: 10,  reward: { money: 5000 } }
     };
 
     static #state = {};
@@ -24,12 +25,50 @@ class AchievementManager {
         if (!def) return;
         const s = this.#state[id] || (this.#state[id] = { progress: 0, unlocked: false });
         if (s.unlocked) return;
+        
         s.progress += amount;
+        console.log(`[Achievement] ${id} progress: ${s.progress}/${def.target}`);
+
         if (s.progress >= def.target) {
             s.unlocked = true;
             s.progress = def.target;
             this.#queue.push({ ...def, id });
+            console.log(`[Achievement] ${id} UNLOCKED!`);
+            this.grantReward(id);
+            
+            // Update Legend achievement progress
+            if (id !== "legend") {
+                const unlockedCount = Object.values(this.#state).filter(st => st.unlocked && st !== this.#state["legend"]).length;
+                const sLegend = this.#state["legend"] || (this.#state["legend"] = { progress: 0, unlocked: false });
+                if (!sLegend.unlocked) {
+                    sLegend.progress = unlockedCount;
+                    if (sLegend.progress >= this.#DEFS["legend"].target) {
+                        this.notify("legend", 0); // Trigger unlock
+                    }
+                }
+            }
         }
+    }
+
+    static grantReward(id) {
+        const def = this.#DEFS[id];
+        if (!def || !def.reward) return;
+        const player = Level.PLAYER;
+        if (!player) {
+            console.warn(`[Achievement] Could not grant reward for ${id}: Player not found`);
+            return;
+        }
+
+        console.log(`[Achievement] Granting reward for ${id}:`, def.reward);
+        if (def.reward.money) {
+            player.earnMoney(def.reward.money);
+        }
+        if (def.reward.items) {
+            def.reward.items.forEach(item => {
+                player.obtainItem(item.key, item.count);
+            });
+        }
+        ASSET_MANAGER.playSound("Gravel_hit3.ogg");
     }
 
     static notifyHarvest()      { this.notify("first_harvest"); this.notify("green_thumb"); this.notify("master_farmer"); }
@@ -39,6 +78,7 @@ class AchievementManager {
     static notifyQuestsAll()    { this.notify("daily_hero"); }
     static notifyAnimalCaught() { this.notify("animal_lover"); }
     static notifyEarlyBird()    { this.notify("early_bird"); }
+    static notifyDrink()        { this.notify("juice_lover"); }
 
     static update(dt) {
         if (!this.#showing && this.#queue.length > 0) {
@@ -56,7 +96,7 @@ class AchievementManager {
         const a = this.#showing;
         const slide = Math.min(1, (4.0 - this.#timer) / 0.3);
         const fade  = this.#timer < 0.5 ? this.#timer / 0.5 : 1;
-        const boxW = 340, boxH = 75;
+        const boxW = 340, boxH = 95; // Increased height for reward text
         const bx = ctx.canvas.width / 2 - boxW / 2;
         const by = 16 - (1 - slide) * (boxH + 16);
         ctx.save();
@@ -67,20 +107,40 @@ class AchievementManager {
         ctx.strokeStyle = "#ffd700";
         ctx.lineWidth = 2;
         ctx.stroke();
-        ctx.font = "28px Segoe UI Emoji";
+        
+        ctx.font = "32px Segoe UI Emoji";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "#fff";
         ctx.fillText(a.icon, bx + 15, by + boxH / 2);
+        
         ctx.font = "bold 11px Segoe UI";
         ctx.fillStyle = "#ffd700";
-        ctx.fillText("🏆 ACHIEVEMENT UNLOCKED!", bx + 55, by + 18);
+        ctx.fillText("🏆 ACHIEVEMENT UNLOCKED!", bx + 60, by + 18);
+        
         ctx.font = "bold 16px Segoe UI";
         ctx.fillStyle = "#fff";
-        ctx.fillText(a.title, bx + 55, by + 36);
+        ctx.fillText(a.title, bx + 60, by + 36);
+        
         ctx.font = "12px Segoe UI";
         ctx.fillStyle = "#aaa";
-        ctx.fillText(a.desc, bx + 55, by + 54);
+        ctx.fillText(a.desc, bx + 60, by + 54);
+
+        // Draw Reward Info
+        if (a.reward) {
+            let rewardText = "🎁 Reward: ";
+            if (a.reward.money) rewardText += `${a.reward.money} Coins `;
+            if (a.reward.items) {
+                a.reward.items.forEach(it => {
+                    const itemName = InventoryItems.NAMES[it.key] || it.key;
+                    rewardText += `+ ${it.count}x ${itemName} `;
+                });
+            }
+            ctx.font = "bold 12px Segoe UI";
+            ctx.fillStyle = "#00ff88";
+            ctx.fillText(rewardText, bx + 60, by + 74);
+        }
+        
         ctx.restore();
     }
 
@@ -88,7 +148,7 @@ class AchievementManager {
         const all = Object.entries(this.#DEFS);
         const cols = 3;
         const rows = Math.ceil(all.length / cols);
-        const cardW = 380, cardH = 110, gap = 15;
+        const cardW = 380, cardH = 130, gap = 15; // Increased card height
         const totalW = cols * cardW + (cols - 1) * gap;
         const totalH = rows * cardH + (rows - 1) * gap;
         const startX = (ctx.canvas.width - totalW) / 2;
@@ -139,22 +199,42 @@ class AchievementManager {
             ctx.textAlign = "left";
             ctx.font = "bold 16px Segoe UI";
             ctx.fillStyle = unlocked ? "#ffd700" : "#888";
-            ctx.fillText(def.title, cx + 85, cy + 35);
+            ctx.fillText(def.title, cx + 85, cy + 30);
             ctx.font = "13px Segoe UI";
             ctx.fillStyle = unlocked ? "#fff" : "#555";
-            ctx.fillText(def.desc, cx + 85, cy + 58);
+            ctx.fillText(def.desc, cx + 85, cy + 50);
+
+            // Reward info in gallery
+            if (def.reward) {
+                let rewardText = "Reward: ";
+                if (def.reward.money) rewardText += `${def.reward.money} Coins `;
+                if (def.reward.items) {
+                    def.reward.items.forEach(it => {
+                         const itemName = InventoryItems.NAMES[it.key] || it.key;
+                         rewardText += `+ ${it.count} ${itemName} `;
+                    });
+                }
+                ctx.font = "italic 11px Segoe UI";
+                ctx.fillStyle = unlocked ? "#00ff88" : "#447755";
+                ctx.fillText(rewardText, cx + 85, cy + 70);
+            }
 
             if (unlocked) {
                 ctx.font = "bold 11px Segoe UI";
                 ctx.fillStyle = "#00ff88";
                 ctx.textAlign = "right";
                 ctx.fillText("UNLOCKED ✓", cx + cardW - 15, cy + cardH - 15);
-            } else if (def.target > 1) {
+            } else {
                 const frac = Math.min(s.progress / def.target, 1);
                 ctx.fillStyle = "rgba(255,255,255,0.05)";
-                ctx.fillRect(cx + 85, cy + 75, cardW - 105, 5);
+                ctx.fillRect(cx + 85, cy + 85, cardW - 105, 5);
                 ctx.fillStyle = "#ffd700";
-                ctx.fillRect(cx + 85, cy + 75, (cardW - 105) * frac, 5);
+                ctx.fillRect(cx + 85, cy + 85, (cardW - 105) * frac, 5);
+                
+                ctx.font = "10px Segoe UI";
+                ctx.fillStyle = "#888";
+                ctx.textAlign = "right";
+                ctx.fillText(`${s.progress} / ${def.target}`, cx + cardW - 20, cy + 100);
             }
             ctx.restore();
         });
@@ -164,7 +244,7 @@ class AchievementManager {
         ctx.font = "bold 16px Segoe UI";
         const tw = ctx.measureText(btnText).width;
         const tx = (ctx.canvas.width - tw) / 2;
-        const ty = ctx.canvas.height - 70;
+        const ty = ctx.canvas.height - 40;
         
         const isHover = Controller.mouse.x > tx - 10 && Controller.mouse.x < tx + tw + 10 &&
                         Controller.mouse.y > ty - 20 && Controller.mouse.y < ty + 10;
